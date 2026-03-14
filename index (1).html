@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nexca">
+<title>Nexca — 地域をもっと近くに</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root {
+  --bg: #08080e;
+  --surface: #111118;
+  --surface2: #1a1a24;
+  --surface3: #22222f;
+  --accent: #ff3d5a;
+  --accent2: #00e5a0;
+  --accent3: #ffbe00;
+  --text: #f0f0f8;
+  --text-dim: #7070a0;
+  --radius: 16px;
+  --pill: 100px;
+  --tab-h: 64px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* ===== SCREENS ===== */
+.screen {
+  position: fixed;
+  inset: 0;
+  bottom: var(--tab-h);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.screen.active { display: flex; }
+
+/* ===== BOTTOM NAV ===== */
+#bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--tab-h);
+  background: rgba(11,11,18,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 1000;
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 16px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.15s;
+  border: none;
+  background: none;
+  color: var(--text);
+}
+.nav-btn.active { opacity: 1; }
+.nav-btn:active { transform: scale(0.92); }
+.nav-btn .nav-icon { font-size: 22px; }
+.nav-btn .nav-label { font-size: 10px; font-weight: 700; font-family: 'Zen Kaku Gothic New', sans-serif; }
+.nav-btn.active .nav-icon { filter: drop-shadow(0 0 6px var(--accent)); }
+
+/* ===== HEADER ===== */
+.screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px 18px 12px;
+  background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.screen-header > * { pointer-events: all; }
+
+.logo {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -1.5px;
+  color: var(--text);
+}
+.logo span { color: var(--accent); }
+/* Nexca brand */
+
+/* ===== FILTER BTN ===== */
+#filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: var(--pill);
+  padding: 7px 14px;
+  color: var(--text);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+}
+#filter-btn:hover { border-color: var(--accent); background: rgba(255,61,90,0.1); }
+
+/* ===== VIDEO FEED ===== */
+#feed-screen {
+  background: var(--bg);
+}
+
+#video-stack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.video-slide {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s;
+  will-change: transform;
+}
+.video-slide.current { transform: translateY(0); opacity: 1; z-index: 10; }
+.video-slide.above { transform: translateY(-100%); opacity: 0; z-index: 5; }
+.video-slide.below { transform: translateY(100%); opacity: 0; z-index: 5; }
+
+.video-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.video-iframe-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.video-iframe-wrap iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 177.78vh;
+  height: 100vh;
+  min-width: 100%;
+  min-height: 56.25vw;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.video-placeholder-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-placeholder-emoji {
+  font-size: 120px;
+  opacity: 0.12;
+  user-select: none;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.3) 0%,
+    transparent 30%,
+    transparent 45%,
+    rgba(0,0,0,0.7) 80%,
+    rgba(0,0,0,0.92) 100%
+  );
+}
+
+/* Bottom info */
+.slide-bottom {
+  position: absolute;
+  bottom: 0; left: 0;
+  right: 64px;
+  padding: 0 16px 20px;
+  z-index: 20;
+}
+
+.event-genre-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--pill);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  border: 1px solid;
+}
+
+.event-title-big {
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+.event-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.event-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+}
+
+.detail-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: var(--pill);
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  transition: all 0.15s;
+}
+.detail-open-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* Right side buttons */
+.slide-right {
+  position: absolute;
+  right: 12px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 20;
+}
+
+.slide-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: white;
+}
+.slide-action-circle {
+  width: 46px; height: 46px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px;
+  transition: all 0.15s;
+}
+.slide-action-btn:active .slide-action-circle { transform: scale(0.9); }
+.slide-action-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+}
+
+.liked .slide-action-circle {
+  background: rgba(255,61,90,0.25);
+  border-color: rgba(255,61,90,0.5);
+}
+
+/* Swipe hint */
+.swipe-hint {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  font-weight: 700;
+  z-index: 20;
+  pointer-events: none;
+  animation: hintBounce 2s infinite;
+}
+@keyframes hintBounce {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-4px); }
+}
+
+/* ===== FILTER MODAL ===== */
+#filter-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 62px 14px 0;
+}
+#filter-modal.open { display: flex; }
+
+.filter-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+}
+
+.filter-box {
+  position: relative;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 8px;
+  min-width: 230px;
+  animation: dropIn 0.2s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+@keyframes dropIn {
+  from { opacity:0; transform: translateY(-10px) scale(0.96); }
+  to { opacity:1; transform: translateY(0) scale(1); }
+}
+
+.filter-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 12px 6px;
+}
+
+.genre-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.genre-opt:hover { background: rgba(255,255,255,0.06); }
+.genre-opt.active { background: rgba(255,61,90,0.12); }
+
+.genre-opt-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.genre-opt-text { flex: 1; }
+.genre-opt-name { font-size: 14px; font-weight: 700; }
+.genre-opt-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.genre-opt-check { font-size: 15px; color: var(--accent); opacity: 0; }
+.genre-opt.active .genre-opt-check { opacity: 1; }
+
+.date-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 12px 12px;
+}
+.date-chip {
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: var(--pill);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  color: var(--text);
+}
+.date-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+.filter-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
+
+/* ===== DETAIL DRAWER ===== */
+#detail-drawer {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: calc(-100% - var(--tab-h));
+  z-index: 300;
+  background: var(--surface);
+  border-radius: 22px 22px 0 0;
+  border-top: 1.5px solid rgba(255,255,255,0.08);
+  max-height: 85dvh;
+  display: flex;
+  flex-direction: column;
+  transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1);
+}
+#detail-drawer.open { bottom: var(--tab-h); }
+
+.drawer-handle {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+.drawer-body {
+  overflow-y: auto;
+  padding: 16px 18px 32px;
+  flex: 1;
+}
+
+.drawer-event-title {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.drawer-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--pill);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  border: 1px solid;
+}
+
+.info-card {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 13px 15px;
+  margin-bottom: 10px;
+}
+.info-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.info-card-value {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.desc-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 20px;
+}
+
+.cta-stack { display: flex; flex-direction: column; gap: 10px; }
+
+.cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 13px;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  color: white;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.cta-button:active { opacity: 0.85; transform: scale(0.98); }
+.cta-reserve { background: var(--accent); box-shadow: 0 4px 20px rgba(255,61,90,0.3); }
+.cta-instagram { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
+.cta-hp { background: var(--surface2); border: 1.5px solid rgba(255,255,255,0.12); }
+
+/* ===== BACKDROP ===== */
+#drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 290;
+  display: none;
+  backdrop-filter: blur(2px);
+}
+#drawer-backdrop.open { display: block; }
+
+/* ===== FLYER SCREEN ===== */
+#flyer-screen {
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.flyer-header {
+  padding: 52px 18px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: rgba(8,8,14,0.95);
+  backdrop-filter: blur(12px);
+  z-index: 30;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.flyer-title {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.flyer-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: var(--pill);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+}
+
+.flyer-genre-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.flyer-genre-tabs::-webkit-scrollbar { display: none; }
+
+.genre-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: var(--pill);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text-dim);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.genre-tab.active {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(255,61,90,0.12);
+}
+
+.flyer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 4px 14px 20px;
+}
+
+.flyer-card {
+  background: var(--surface2);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 1.5px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+.flyer-card:active { transform: scale(0.96); }
+
+.flyer-thumb {
+  width: 100%;
+  aspect-ratio: 3/4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  position: relative;
+  overflow: hidden;
+}
+.flyer-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.flyer-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.8) 100%);
+}
+.flyer-play-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+
+.flyer-card-info {
+  padding: 10px 10px 12px;
+}
+.flyer-card-genre {
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.flyer-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.flyer-card-date {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ===== MYPAGE SCREEN ===== */
+#mypage-screen {
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.mypage-header {
+  padding: 52px 18px 20px;
+  text-align: center;
+}
+
+.user-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 12px;
+  overflow: hidden;
+}
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.user-name {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+.user-email {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 0 18px 24px;
+}
+.stat-card {
+  background: var(--surface2);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+  border: 1.5px solid rgba(255,255,255,0.06);
+}
+.stat-number {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 3px;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 900;
+  padding: 0 18px;
+  margin-bottom: 12px;
+}
+
+.liked-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 14px 20px;
+}
+
+/* Login screen */
+#login-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 40px 24px;
+}
+#login-screen.hidden { display: none; }
+
+.login-logo {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: -2px;
+  margin-bottom: 8px;
+}
+.login-logo span { color: var(--accent); }
+
+.login-tagline {
+  font-size: 15px;
+  color: var(--text-dim);
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.login-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 300px;
+}
+.login-feature-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.login-feature-text { font-size: 14px; font-weight: 700; }
+.login-feature-sub { font-size: 12px; color: var(--text-dim); }
+
+.google-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: white;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 40px;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 24px rgba(255,255,255,0.1);
+}
+.google-login-btn:active { transform: scale(0.97); }
+.google-login-btn img { width: 22px; }
+
+.skip-btn {
+  margin-top: 16px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  padding: 8px;
+}
+
+/* Loading */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  transition: opacity 0.4s;
+}
+#loading-screen.hidden { opacity: 0; pointer-events: none; }
+
+.loading-logo {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  letter-spacing: -2px;
+  animation: pulse 1.5s infinite;
+}
+.loading-logo span { color: var(--accent); }
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Video player overlay (from flyer) */
+#video-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 800;
+  display: none;
+  flex-direction: column;
+}
+#video-overlay.open { display: flex; }
+
+.video-overlay-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 50px 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+  z-index: 10;
+}
+.video-overlay-back {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  border: none;
+  color: white;
+}
+.video-overlay-title {
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+}
+
+.video-overlay-content {
+  flex: 1;
+  position: relative;
+}
+.video-overlay-content iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.video-overlay-detail {
+  padding: 16px 18px 32px;
+  background: var(--surface);
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  gap: 12px;
+}
+.empty-state-icon { font-size: 48px; opacity: 0.3; }
+.empty-state-text { font-size: 15px; color: var(--text-dim); font-weight: 700; }
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: calc(var(--tab-h) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(30,30,40,0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--pill);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  backdrop-filter: blur(10px);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-screen">
+  <div class="loading-logo">Nex<span>ca</span></div>
+</div>
+
+<!-- Login -->
+<div id="login-screen" class="hidden">
+  <div class="login-logo">Nex<span>ca</span></div>
+  <div class="login-tagline">広島の「今」を、もっと近くに。</div>
+
+  <div class="login-feature">
+    <div class="login-feature-icon" style="background:rgba(255,61,90,0.15);">🎉</div>
+    <div>
+      <div class="login-feature-text">地域イベントを動画で発見</div>
+      <div class="login-feature-sub">TikTok感覚でスクロール</div>
+    </div>
+  </div>
+  <div class="login-feature">
+    <div class="login-feature-icon" style="background:rgba(0,229,160,0.15);">🏆</div>
+    <div>
+      <div class="login-feature-text">参加でスタンプを獲得</div>
+      <div class="login-feature-sub">コインを貯めて特典をゲット</div>
+    </div>
+  </div>
+  <div class="login-feature">
+    <div class="login-feature-icon" style="background:rgba(255,190,0,0.15);">❤️</div>
+    <div>
+      <div class="login-feature-text">気になるイベントをいいね保存</div>
+      <div class="login-feature-sub">マイページでいつでも確認</div>
+    </div>
+  </div>
+
+  <button class="google-login-btn" onclick="loginWithGoogle()">
+    <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Googleでログイン
+  </button>
+  <button class="skip-btn" onclick="skipLogin()">ログインせずに見る</button>
+</div>
+
+<!-- Main App -->
+<!-- Feed Screen -->
+<div id="feed-screen" class="screen active">
+  <div class="screen-header">
+    <div class="logo">Nex<span>ca</span></div>
+    <button id="filter-btn" onclick="openFilter()">
+      <span id="filter-icon">📍</span>
+      <span id="filter-label">すべて</span>
+      <span style="font-size:10px;opacity:0.5;">▼</span>
+    </button>
+  </div>
+  <div id="video-stack"></div>
+</div>
+
+<!-- Flyer Screen -->
+<div id="flyer-screen" class="screen">
+  <div class="flyer-header">
+    <div class="flyer-title">チラシ一覧</div>
+    <button class="flyer-filter-btn" onclick="openFlyerFilter()">🔍 絞り込み</button>
+  </div>
+  <div class="flyer-genre-tabs" id="flyer-tabs">
+    <div class="genre-tab active" data-genre="all" onclick="setFlyerGenre(this)">📍 すべて</div>
+    <div class="genre-tab" data-genre="event" onclick="setFlyerGenre(this)">🎉 イベント</div>
+    <div class="genre-tab" data-genre="volunteer" onclick="setFlyerGenre(this)">🤝 ボランティア</div>
+    <div class="genre-tab" data-genre="learn" onclick="setFlyerGenre(this)">🚀 学び</div>
+  </div>
+  <div class="flyer-grid" id="flyer-grid"></div>
+</div>
+
+<!-- MyPage Screen -->
+<div id="mypage-screen" class="screen">
+  <div class="mypage-header">
+    <div class="user-avatar" id="user-avatar">👤</div>
+    <div class="user-name" id="user-name">ゲスト</div>
+    <div class="user-email" id="user-email">ログインしていません</div>
+    <button class="google-login-btn" id="mypage-login-btn" onclick="loginWithGoogle()" style="max-width:240px;font-size:14px;padding:13px 24px;margin-top:0;">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Googleでログイン
+    </button>
+  </div>
+
+  <div class="stats-row" id="stats-row" style="display:none;">
+    <div class="stat-card">
+      <div class="stat-number" id="stat-likes">0</div>
+      <div class="stat-label">いいね</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="stat-stamps">0</div>
+      <div class="stat-label">スタンプ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--accent3);" id="stat-coins">0</div>
+      <div class="stat-label">コイン</div>
+    </div>
+  </div>
+
+  <div id="liked-section" style="display:none;">
+    <div class="section-title">❤️ いいねしたイベント</div>
+    <div class="liked-grid" id="liked-grid"></div>
+  </div>
+
+  <div id="logout-section" style="display:none;padding:0 18px 32px;">
+    <button onclick="logout()" style="width:100%;padding:14px;background:var(--surface2);border:1.5px solid rgba(255,255,255,0.1);border-radius:13px;color:var(--text-dim);font-size:14px;font-weight:700;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;">
+      ログアウト
+    </button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav id="bottom-nav">
+  <button class="nav-btn active" onclick="switchTab('feed', this)">
+    <span class="nav-icon">▶️</span>
+    <span class="nav-label">動画</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('flyer', this)">
+    <span class="nav-icon">🗂️</span>
+    <span class="nav-label">チラシ</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('mypage', this)">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">マイページ</span>
+  </button>
+</nav>
+
+<!-- Filter Modal -->
+<div id="filter-modal">
+  <div class="filter-backdrop" onclick="closeFilter()"></div>
+  <div class="filter-box">
+    <div class="filter-section-title">ジャンル</div>
+    <div class="genre-opt active" data-genre="all" onclick="selectGenre(this)">
+      <div class="genre-opt-icon" style="background:rgba(255,255,255,0.08);">📍</div>
+      <div class="genre-opt-text">
+        <div class="genre-opt-name">すべて</div>
+        <div class="genre-opt-sub">全ジャンル表示</div>
+      </div>
+      <div class="genre-opt-check">✓</div>
+    </div>
+    <div class="genre-opt" data-genre="event" onclick="selectGenre(this)">
+      <div class="genre-opt-icon" style="background:rgba(255,61,90,0.12);">🎉</div>
+      <div class="genre-opt-text">
+        <div class="genre-opt-name">イベント・おでかけ</div>
+        <div class="genre-opt-sub">お祭り・体験・おでかけ</div>
+      </div>
+      <div class="genre-opt-check">✓</div>
+    </div>
+    <div class="genre-opt" data-genre="volunteer" onclick="selectGenre(this)">
+      <div class="genre-opt-icon" style="background:rgba(0,229,160,0.12);">🤝</div>
+      <div class="genre-opt-text">
+        <div class="genre-opt-name">ボランティア</div>
+        <div class="genre-opt-sub">地域貢献・社会活動</div>
+      </div>
+      <div class="genre-opt-check">✓</div>
+    </div>
+    <div class="genre-opt" data-genre="learn" onclick="selectGenre(this)">
+      <div class="genre-opt-icon" style="background:rgba(255,190,0,0.12);">🚀</div>
+      <div class="genre-opt-text">
+        <div class="genre-opt-name">学び・挑戦</div>
+        <div class="genre-opt-sub">ワークショップ・スキルアップ</div>
+      </div>
+      <div class="genre-opt-check">✓</div>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-section-title">日程</div>
+    <div class="date-chips-row">
+      <div class="date-chip active" onclick="selectDate(this,'all')">すべて</div>
+      <div class="date-chip" onclick="selectDate(this,'today')">今日</div>
+      <div class="date-chip" onclick="selectDate(this,'week')">今週</div>
+      <div class="date-chip" onclick="selectDate(this,'weekend')">週末</div>
+      <div class="date-chip" onclick="selectDate(this,'month')">今月</div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Drawer -->
+<div id="drawer-backdrop" onclick="closeDrawer()"></div>
+<div id="detail-drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<!-- Video Overlay (from flyer tap) -->
+<div id="video-overlay">
+  <div class="video-overlay-header">
+    <button class="video-overlay-back" onclick="closeVideoOverlay()">←</button>
+    <div class="video-overlay-title" id="overlay-title"></div>
+  </div>
+  <div class="video-overlay-content" id="overlay-video"></div>
+  <div class="video-overlay-detail" id="overlay-detail"></div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ===== SUPABASE CONFIG =====
+const SUPABASE_URL = 'https://uhplvogodumzwggbehrj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_WA3RrbOgjEMEfi9nqlG59w_IYcy26T0';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+// ===== SAMPLE DATA (実際の動画・チラシに差し替え可能) =====
+const sampleEvents = [
+  {
+    id: 'ev1',
+    genre: 'event',
+    genreLabel: 'イベント・おでかけ',
+    genreEmoji: '🎉',
+    title: '広島フードフェスティバル2026',
+    date_start: '2026-03-15',
+    date_end: '2026-03-16',
+    time_start: '10:00〜18:00',
+    location: '広島市中央公園',
+    address: '〒730-0011 広島市中区基町15',
+    price: '入場無料',
+    description: '広島県内の飲食店・農家が大集合！地元の旬の食材を使ったグルメが楽しめる2日間のフードフェス。ステージでは地元アーティストのライブパフォーマンスも開催。子どもから大人まで楽しめるワークショップも予定しています。',
+    video_id: '',
+    thumbnail_url: '',
+    instagram_url: 'https://instagram.com',
+    homepage_url: 'https://example.com',
+    reserve_url: '',
+    has_reserve: false,
+    is_feed: true,
+    bg: 'linear-gradient(135deg, #1a0805 0%, #5a1a08 50%, #c05020 100%)',
+    accentColor: '#ff3d5a',
+    emoji: '🍜'
+  },
+  {
+    id: 'ev2',
+    genre: 'volunteer',
+    genreLabel: 'ボランティア',
+    genreEmoji: '🤝',
+    title: '宮島清掃ボランティア',
+    date_start: '2026-03-22',
+    date_end: '2026-03-22',
+    time_start: '9:00〜13:00',
+    location: '宮島桟橋集合',
+    address: '〒739-0588 廿日市市宮島町1-1',
+    price: '参加無料',
+    description: '世界遺産・宮島の海岸や参道を一緒に清掃しませんか？自然と文化を守るため地元の方々と活動します。軍手・ゴミ袋は主催者が準備します。初めての方も大歓迎です。',
+    video_id: '',
+    thumbnail_url: '',
+    instagram_url: 'https://instagram.com',
+    homepage_url: 'https://example.com',
+    reserve_url: 'https://example.com/reserve',
+    has_reserve: true,
+    is_feed: true,
+    bg: 'linear-gradient(135deg, #011a10 0%, #053d20 50%, #0e9040 100%)',
+    accentColor: '#00e5a0',
+    emoji: '🌊'
+  },
+  {
+    id: 'ev3',
+    genre: 'learn',
+    genreLabel: '学び・挑戦',
+    genreEmoji: '🚀',
+    title: '高校生起業家ピッチコンテスト',
+    date_start: '2026-04-05',
+    date_end: '2026-04-05',
+    time_start: '13:00〜17:30',
+    location: '広島市立大学サテライト',
+    address: '〒730-0011 広島市中区基町5-44',
+    price: '観覧無料',
+    description: '広島在住の高校生・大学生が自分のアイデアを3分でプレゼン！審査員は現役起業家・投資家・大学教授。優勝者には活動支援金10万円を授与。観覧も無料です。',
+    video_id: '',
+    thumbnail_url: '',
+    instagram_url: 'https://instagram.com',
+    homepage_url: 'https://example.com',
+    reserve_url: 'https://example.com/reserve',
+    has_reserve: true,
+    is_feed: true,
+    bg: 'linear-gradient(135deg, #050515 0%, #1a0a35 50%, #4a1a80 100%)',
+    accentColor: '#ffbe00',
+    emoji: '💡'
+  },
+  {
+    id: 'ev4',
+    genre: 'event',
+    genreLabel: 'イベント・おでかけ',
+    genreEmoji: '🎉',
+    title: '平和公園 夜桜ライトアップ',
+    date_start: '2026-03-28',
+    date_end: '2026-04-06',
+    time_start: '日没〜21:00',
+    location: '広島平和記念公園',
+    address: '〒730-0811 広島市中区中島町1',
+    price: '無料',
+    description: '広島の春の風物詩、平和公園の夜桜ライトアップ。ソメイヨシノ約50本が幻想的にライトアップされ、原爆ドームとの共演が生み出す景色は圧巻。週末にはキャンドルイベントも。',
+    video_id: '',
+    thumbnail_url: '',
+    instagram_url: 'https://instagram.com',
+    homepage_url: 'https://example.com',
+    reserve_url: '',
+    has_reserve: false,
+    is_feed: true,
+    bg: 'linear-gradient(135deg, #0a0515 0%, #300a50 50%, #7a208a 100%)',
+    accentColor: '#ff3d5a',
+    emoji: '🌸'
+  },
+  {
+    id: 'ev5',
+    genre: 'learn',
+    genreLabel: '学び・挑戦',
+    genreEmoji: '🚀',
+    title: 'プログラミング入門ワークショップ',
+    date_start: '2026-04-12',
+    date_end: '2026-04-12',
+    time_start: '14:00〜17:00',
+    location: '広島市まちづくり市民交流プラザ',
+    address: '〒730-0036 広島市中区袋町6-36',
+    price: '1,500円（材料費込み）',
+    description: 'FigmaでUIデザインの基礎からHTML/CSSでの実装まで3時間で体験。デザインとプログラミングの両方を触れる入門ワークショップ。PCさえあれば初心者OK。',
+    video_id: '',
+    thumbnail_url: '',
+    instagram_url: 'https://instagram.com',
+    homepage_url: 'https://example.com',
+    reserve_url: 'https://example.com/reserve',
+    has_reserve: true,
+    is_feed: true,
+    bg: 'linear-gradient(135deg, #050a15 0%, #102d5a 50%, #1a4a80 100%)',
+    accentColor: '#ffbe00',
+    emoji: '💻'
+  }
+];
+
+// ===== STATE =====
+let currentUser = null;
+let currentEventIndex = 0;
+let filteredEvents = [...sampleEvents];
+let currentGenre = 'all';
+let currentDate = 'all';
+let flyerGenre = 'all';
+let likes = new Set();
+let touchStartY = 0;
+let drawerEventId = null;
+let isTransitioning = false;
+
+// ===== INIT =====
+async function init() {
+  // Check auth state
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    hideLoginScreen();
+  } else {
+    document.getElementById('loading-screen').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    return;
+  }
+
+  await loadUserLikes();
+  renderFeed();
+  renderFlyers();
+  renderMyPage();
+  setupSwipe();
+
+  setTimeout(() => {
+    document.getElementById('loading-screen').classList.add('hidden');
+  }, 800);
+
+  // Auth state change
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      currentUser = session.user;
+      hideLoginScreen();
+      loadUserLikes().then(() => {
+        renderFeed();
+        renderMyPage();
+      });
+    } else {
+      currentUser = null;
+    }
+  });
+}
+
+function hideLoginScreen() {
+  document.getElementById('login-screen').classList.add('hidden');
+}
+
+function skipLogin() {
+  document.getElementById('login-screen').classList.add('hidden');
+  renderFeed();
+  renderFlyers();
+  setupSwipe();
+  setTimeout(() => {
+    document.getElementById('loading-screen').classList.add('hidden');
+  }, 500);
+}
+
+// ===== AUTH =====
+async function loginWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showToast('ログインエラー: ' + error.message);
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  currentUser = null;
+  likes = new Set();
+  renderMyPage();
+  showToast('ログアウトしました');
+}
+
+// ===== LIKES =====
+async function loadUserLikes() {
+  if (!currentUser) return;
+  try {
+    const { data } = await supabase
+      .from('likes')
+      .select('event_id')
+      .eq('user_id', currentUser.id);
+    if (data) data.forEach(r => likes.add(r.event_id));
+  } catch(e) {}
+}
+
+async function toggleLike(eventId) {
+  if (!currentUser) { showToast('いいねにはログインが必要です'); return; }
+
+  if (likes.has(eventId)) {
+    likes.delete(eventId);
+    try {
+      await supabase.from('likes').delete()
+        .eq('user_id', currentUser.id).eq('event_id', eventId);
+    } catch(e) {}
+    showToast('いいねを取り消しました');
+  } else {
+    likes.add(eventId);
+    try {
+      await supabase.from('likes').insert({ user_id: currentUser.id, event_id: eventId });
+    } catch(e) {}
+    showToast('❤️ いいねしました！');
+  }
+
+  // Update UI
+  const btn = document.getElementById(`like-btn-${eventId}`);
+  if (btn) {
+    btn.classList.toggle('liked', likes.has(eventId));
+    btn.querySelector('.slide-action-circle').textContent = likes.has(eventId) ? '❤️' : '🤍';
+  }
+  updateStatsDisplay();
+}
+
+// ===== FEED =====
+function getFilteredEvents() {
+  let result = sampleEvents.filter(e => e.is_feed);
+  if (currentGenre !== 'all') result = result.filter(e => e.genre === currentGenre);
+  return result;
+}
+
+function renderFeed() {
+  filteredEvents = getFilteredEvents();
+  currentEventIndex = 0;
+  const stack = document.getElementById('video-stack');
+  stack.innerHTML = '';
+
+  if (filteredEvents.length === 0) {
+    stack.innerHTML = `<div class="empty-state" style="position:absolute;inset:0;display:flex;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-text">この条件のイベントはありません</div>
+    </div>`;
+    return;
+  }
+
+  filteredEvents.forEach((ev, i) => {
+    stack.appendChild(createSlide(ev, i));
+  });
+  updateSlidePositions();
+}
+
+function createSlide(ev, idx) {
+  const slide = document.createElement('div');
+  slide.className = 'video-slide below';
+  slide.dataset.idx = idx;
+
+  const isLiked = likes.has(ev.id);
+  const accentColor = ev.accentColor;
+
+  let genreTagStyle = '';
+  if (ev.genre === 'event') genreTagStyle = `background:rgba(255,61,90,0.15);border-color:rgba(255,61,90,0.4);color:#ff8fa0;`;
+  else if (ev.genre === 'volunteer') genreTagStyle = `background:rgba(0,229,160,0.15);border-color:rgba(0,229,160,0.4);color:#00e5a0;`;
+  else genreTagStyle = `background:rgba(255,190,0,0.15);border-color:rgba(255,190,0,0.4);color:#ffbe00;`;
+
+  slide.innerHTML = `
+    <div class="video-bg">
+      <div class="video-placeholder-bg" style="background:${ev.bg};">
+        <div class="video-placeholder-emoji">${ev.emoji}</div>
+        ${ev.video_id ? `
+        <div class="video-iframe-wrap">
+          <iframe src="https://www.youtube.com/embed/${ev.video_id}?autoplay=1&mute=1&loop=1&playlist=${ev.video_id}&controls=0&showinfo=0&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>` : ''}
+      </div>
+      <div class="video-overlay"></div>
+    </div>
+
+    <div class="slide-right">
+      <button class="slide-action-btn ${isLiked ? 'liked' : ''}" id="like-btn-${ev.id}" onclick="toggleLike('${ev.id}')">
+        <div class="slide-action-circle">${isLiked ? '❤️' : '🤍'}</div>
+        <div class="slide-action-label">いいね</div>
+      </button>
+      <button class="slide-action-btn" onclick="shareEvent('${ev.id}')">
+        <div class="slide-action-circle">📤</div>
+        <div class="slide-action-label">シェア</div>
+      </button>
+    </div>
+
+    <div class="slide-bottom">
+      <div class="event-genre-tag" style="${genreTagStyle}">${ev.genreEmoji} ${ev.genreLabel}</div>
+      <div class="event-title-big">${ev.title}</div>
+      <div class="event-meta-row">
+        <div class="event-meta-item">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}</div>
+        <div class="event-meta-item">📍 ${ev.location}</div>
+      </div>
+      <button class="detail-open-btn" onclick="openDrawer('${ev.id}')">📋 詳細情報</button>
+    </div>
+    <div class="swipe-hint">↑ スワイプで次へ</div>
+  `;
+  return slide;
+}
+
+function updateSlidePositions() {
+  document.querySelectorAll('.video-slide').forEach(slide => {
+    const idx = parseInt(slide.dataset.idx);
+    slide.classList.remove('current','above','below');
+    if (idx === currentEventIndex) slide.classList.add('current');
+    else if (idx < currentEventIndex) slide.classList.add('above');
+    else slide.classList.add('below');
+  });
+}
+
+function goNext() {
+  if (isTransitioning || currentEventIndex >= filteredEvents.length - 1) return;
+  isTransitioning = true;
+  currentEventIndex++;
+  updateSlidePositions();
+  setTimeout(() => isTransitioning = false, 420);
+}
+
+function goPrev() {
+  if (isTransitioning || currentEventIndex <= 0) return;
+  isTransitioning = true;
+  currentEventIndex--;
+  updateSlidePositions();
+  setTimeout(() => isTransitioning = false, 420);
+}
+
+function setupSwipe() {
+  const stack = document.getElementById('video-stack');
+  stack.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  stack.addEventListener('touchend', e => {
+    const diff = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); }
+  }, { passive: true });
+
+  let wheelTimer;
+  stack.addEventListener('wheel', e => {
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => { e.deltaY > 30 ? goNext() : goPrev(); }, 80);
+  });
+}
+
+// ===== FILTER =====
+function openFilter() { document.getElementById('filter-modal').classList.add('open'); }
+function closeFilter() { document.getElementById('filter-modal').classList.remove('open'); }
+function openFlyerFilter() { openFilter(); }
+
+function selectGenre(el) {
+  document.querySelectorAll('.genre-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  currentGenre = el.dataset.genre;
+
+  const icons = { all:'📍', event:'🎉', volunteer:'🤝', learn:'🚀' };
+  const labels = { all:'すべて', event:'イベント', volunteer:'ボランティア', learn:'学び・挑戦' };
+  document.getElementById('filter-icon').textContent = icons[currentGenre];
+  document.getElementById('filter-label').textContent = labels[currentGenre];
+
+  renderFeed();
+  closeFilter();
+}
+
+function selectDate(el, val) {
+  document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentDate = val;
+}
+
+// ===== DRAWER =====
+function openDrawer(eventId) {
+  const ev = sampleEvents.find(e => e.id === eventId);
+  if (!ev) return;
+  drawerEventId = eventId;
+
+  const isLiked = likes.has(ev.id);
+  let tagStyle = '';
+  if (ev.genre === 'event') tagStyle = `background:rgba(255,61,90,0.15);border-color:rgba(255,61,90,0.4);color:#ff8fa0;`;
+  else if (ev.genre === 'volunteer') tagStyle = `background:rgba(0,229,160,0.15);border-color:rgba(0,229,160,0.4);color:#00e5a0;`;
+  else tagStyle = `background:rgba(255,190,0,0.15);border-color:rgba(255,190,0,0.4);color:#ffbe00;`;
+
+  document.getElementById('drawer-body').innerHTML = `
+    <div class="drawer-event-title">${ev.title}</div>
+    <div class="drawer-tag" style="${tagStyle}">${ev.genreEmoji} ${ev.genreLabel}</div>
+
+    <div class="info-card">
+      <div class="info-card-label">📅 日程・時間</div>
+      <div class="info-card-value">${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}${ev.date_end && ev.date_end !== ev.date_start ? ' 〜 ' + ev.date_end.replace(/-/g,'/') : ''}　${ev.time_start}</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-label">📍 場所・住所</div>
+      <div class="info-card-value">${ev.location}<br><span style="font-size:12px;color:var(--text-dim);">${ev.address}</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-label">💴 参加費</div>
+      <div class="info-card-value">${ev.price}</div>
+    </div>
+
+    <p class="desc-text">${ev.description}</p>
+
+    <div class="cta-stack">
+      ${ev.has_reserve ? `<a class="cta-button cta-reserve" href="${ev.reserve_url}" target="_blank">✏️ 予約する</a>` : ''}
+      ${ev.instagram_url ? `<a class="cta-button cta-instagram" href="${ev.instagram_url}" target="_blank">📸 Instagramを見る</a>` : ''}
+      ${ev.homepage_url ? `<a class="cta-button cta-hp" href="${ev.homepage_url}" target="_blank">🌐 公式ホームページ</a>` : ''}
+    </div>
+  `;
+
+  document.getElementById('detail-drawer').classList.add('open');
+  document.getElementById('drawer-backdrop').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('detail-drawer').classList.remove('open');
+  document.getElementById('drawer-backdrop').classList.remove('open');
+}
+
+// ===== FLYERS =====
+function setFlyerGenre(el) {
+  document.querySelectorAll('.genre-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  flyerGenre = el.dataset.genre;
+  renderFlyers();
+}
+
+function renderFlyers() {
+  const events = flyerGenre === 'all' ? sampleEvents : sampleEvents.filter(e => e.genre === flyerGenre);
+  const grid = document.getElementById('flyer-grid');
+
+  if (events.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-text">この条件のイベントはありません</div>
+    </div>`;
+    return;
+  }
+
+  let genreColor = { event: '#ff8fa0', volunteer: '#00e5a0', learn: '#ffbe00' };
+
+  grid.innerHTML = events.map(ev => `
+    <div class="flyer-card" onclick="openVideoOverlay('${ev.id}')">
+      <div class="flyer-thumb" style="background:${ev.bg};">
+        <span style="font-size:52px;opacity:0.25;">${ev.emoji}</span>
+        <div class="flyer-thumb-overlay"></div>
+        <div class="flyer-play-badge">▶</div>
+      </div>
+      <div class="flyer-card-info">
+        <div class="flyer-card-genre" style="color:${genreColor[ev.genre]}">${ev.genreEmoji} ${ev.genreLabel}</div>
+        <div class="flyer-card-title">${ev.title}</div>
+        <div class="flyer-card-date">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== VIDEO OVERLAY =====
+function openVideoOverlay(eventId) {
+  const ev = sampleEvents.find(e => e.id === eventId);
+  if (!ev) return;
+
+  document.getElementById('overlay-title').textContent = ev.title;
+
+  if (ev.video_id) {
+    document.getElementById('overlay-video').innerHTML = `
+      <iframe src="https://www.youtube.com/embed/${ev.video_id}?autoplay=1&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%;height:100%;"></iframe>
+    `;
+  } else {
+    document.getElementById('overlay-video').innerHTML = `
+      <div style="width:100%;height:100%;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:80px;opacity:0.3;">${ev.emoji}</div>
+    `;
+  }
+
+  document.getElementById('overlay-detail').innerHTML = `
+    <div style="font-size:16px;font-weight:900;margin-bottom:8px;">${ev.title}</div>
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''} &nbsp; 📍 ${ev.location}</div>
+    <div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.75);margin-bottom:16px;">${ev.description}</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${ev.has_reserve ? `<a class="cta-button cta-reserve" href="${ev.reserve_url}" target="_blank" style="font-size:14px;padding:12px;">✏️ 予約する</a>` : ''}
+      ${ev.instagram_url ? `<a class="cta-button cta-instagram" href="${ev.instagram_url}" target="_blank" style="font-size:14px;padding:12px;">📸 Instagram</a>` : ''}
+    </div>
+  `;
+
+  document.getElementById('video-overlay').classList.add('open');
+}
+
+function closeVideoOverlay() {
+  document.getElementById('video-overlay').classList.remove('open');
+  document.getElementById('overlay-video').innerHTML = '';
+}
+
+// ===== MYPAGE =====
+function renderMyPage() {
+  if (currentUser) {
+    const meta = currentUser.user_metadata || {};
+    document.getElementById('user-name').textContent = meta.full_name || meta.name || 'ユーザー';
+    document.getElementById('user-email').textContent = currentUser.email || '';
+
+    if (meta.avatar_url || meta.picture) {
+      document.getElementById('user-avatar').innerHTML = `<img src="${meta.avatar_url || meta.picture}" alt="">`;
+    }
+
+    document.getElementById('mypage-login-btn').style.display = 'none';
+    document.getElementById('stats-row').style.display = 'grid';
+    document.getElementById('liked-section').style.display = 'block';
+    document.getElementById('logout-section').style.display = 'block';
+
+    updateStatsDisplay();
+    renderLikedGrid();
+  } else {
+    document.getElementById('user-name').textContent = 'ゲスト';
+    document.getElementById('user-email').textContent = 'ログインしていません';
+    document.getElementById('user-avatar').innerHTML = '👤';
+    document.getElementById('mypage-login-btn').style.display = 'flex';
+    document.getElementById('stats-row').style.display = 'none';
+    document.getElementById('liked-section').style.display = 'none';
+    document.getElementById('logout-section').style.display = 'none';
+  }
+}
+
+function updateStatsDisplay() {
+  document.getElementById('stat-likes').textContent = likes.size;
+}
+
+function renderLikedGrid() {
+  const likedEvents = sampleEvents.filter(e => likes.has(e.id));
+  const grid = document.getElementById('liked-grid');
+
+  if (likedEvents.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div class="empty-state-icon">🤍</div>
+      <div class="empty-state-text">いいねしたイベントはまだありません</div>
+    </div>`;
+    return;
+  }
+
+  const genreColor = { event: '#ff8fa0', volunteer: '#00e5a0', learn: '#ffbe00' };
+  grid.innerHTML = likedEvents.map(ev => `
+    <div class="flyer-card" onclick="openVideoOverlay('${ev.id}')">
+      <div class="flyer-thumb" style="background:${ev.bg};">
+        <span style="font-size:52px;opacity:0.25;">${ev.emoji}</span>
+        <div class="flyer-thumb-overlay"></div>
+        <div class="flyer-play-badge">▶</div>
+      </div>
+      <div class="flyer-card-info">
+        <div class="flyer-card-genre" style="color:${genreColor[ev.genre]}">${ev.genreEmoji}</div>
+        <div class="flyer-card-title">${ev.title}</div>
+        <div class="flyer-card-date">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== TABS =====
+function switchTab(tab, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab + '-screen').classList.add('active');
+  btn.classList.add('active');
+
+  if (tab === 'mypage') renderMyPage();
+  if (tab === 'flyer') renderFlyers();
+}
+
+// ===== UTILS =====
+function shareEvent(eventId) {
+  const ev = sampleEvents.find(e => e.id === eventId);
+  if (!ev) return;
+  if (navigator.share) {
+    navigator.share({ title: ev.title, text: `${ev.date_start} ${ev.location}`, url: location.href });
+  } else {
+    showToast('URLをコピーしてシェアしてください');
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
