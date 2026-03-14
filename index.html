@@ -1266,40 +1266,41 @@ let isTransitioning = false;
 
 // ===== INIT =====
 async function init() {
-  // Check auth state
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    hideLoginScreen();
-  } else {
-    document.getElementById('loading-screen').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-    return;
-  }
-
-  await loadUserLikes();
+  // まずアプリを表示する（ログイン不要で見れる）
   renderFeed();
   renderFlyers();
-  renderMyPage();
   setupSwipe();
 
   setTimeout(() => {
     document.getElementById('loading-screen').classList.add('hidden');
   }, 800);
 
-  // Auth state change
-  supabase.auth.onAuthStateChange((_event, session) => {
+  // Supabaseの認証チェック（失敗しても続行）
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       currentUser = session.user;
       hideLoginScreen();
-      loadUserLikes().then(() => {
-        renderFeed();
-        renderMyPage();
-      });
-    } else {
-      currentUser = null;
+      await loadUserLikes();
+      renderMyPage();
     }
-  });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        currentUser = session.user;
+        hideLoginScreen();
+        loadUserLikes().then(() => {
+          renderFeed();
+          renderMyPage();
+        });
+      } else {
+        currentUser = null;
+        renderMyPage();
+      }
+    });
+  } catch(e) {
+    console.log('Auth check failed, continuing as guest');
+  }
 }
 
 function hideLoginScreen() {
