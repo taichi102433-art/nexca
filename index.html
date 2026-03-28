@@ -7,1728 +7,1332 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Nexca">
-<title>Nexca — 地域をもっと近くに</title>
-<link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
+<title>Nexca</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root {
-  --bg: #08080e;
-  --surface: #111118;
-  --surface2: #1a1a24;
-  --surface3: #22222f;
-  --accent: #ff3d5a;
-  --accent2: #00e5a0;
-  --accent3: #ffbe00;
-  --text: #f0f0f8;
-  --text-dim: #7070a0;
-  --radius: 16px;
-  --pill: 100px;
-  --tab-h: 64px;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-}
-
-/* ===== SCREENS ===== */
-.screen {
-  position: fixed;
-  inset: 0;
-  bottom: var(--tab-h);
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-}
-.screen.active { display: flex; }
-
-/* ===== BOTTOM NAV ===== */
-#bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: var(--tab-h);
-  background: rgba(11,11,18,0.95);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255,255,255,0.07);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 1000;
-}
-
-.nav-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 8px 16px;
-  cursor: pointer;
-  opacity: 0.4;
-  transition: opacity 0.2s, transform 0.15s;
-  border: none;
-  background: none;
-  color: var(--text);
-}
-.nav-btn.active { opacity: 1; }
-.nav-btn:active { transform: scale(0.92); }
-.nav-btn .nav-icon { font-size: 22px; }
-.nav-btn .nav-label { font-size: 10px; font-weight: 700; font-family: 'Zen Kaku Gothic New', sans-serif; }
-.nav-btn.active .nav-icon { filter: drop-shadow(0 0 6px var(--accent)); }
-
-/* ===== HEADER ===== */
-.screen-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 50px 18px 12px;
-  background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  z-index: 50;
-  pointer-events: none;
-}
-.screen-header > * { pointer-events: all; }
-
-.logo {
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  letter-spacing: -1.5px;
-  color: var(--text);
-}
-.logo span { color: var(--accent); }
-/* Nexca brand */
-
-/* ===== FILTER BTN ===== */
-#filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.08);
-  border: 1.5px solid rgba(255,255,255,0.12);
-  border-radius: var(--pill);
-  padding: 7px 14px;
-  color: var(--text);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(10px);
-}
-#filter-btn:hover { border-color: var(--accent); background: rgba(255,61,90,0.1); }
-
-/* ===== VIDEO FEED ===== */
-#feed-screen {
-  background: var(--bg);
-}
-
-#video-stack {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.video-slide {
-  position: absolute;
-  inset: 0;
-  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s;
-  will-change: transform;
-}
-.video-slide.current { transform: translateY(0); opacity: 1; z-index: 10; }
-.video-slide.above { transform: translateY(-100%); opacity: 0; z-index: 5; }
-.video-slide.below { transform: translateY(100%); opacity: 0; z-index: 5; }
-
-.video-bg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.video-iframe-wrap {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-.video-iframe-wrap iframe {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 177.78vh;
-  height: 100vh;
-  min-width: 100%;
-  min-height: 56.25vw;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.video-placeholder-bg {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.video-placeholder-emoji {
-  font-size: 120px;
-  opacity: 0.12;
-  user-select: none;
-}
-
-.video-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.3) 0%,
-    transparent 30%,
-    transparent 45%,
-    rgba(0,0,0,0.7) 80%,
-    rgba(0,0,0,0.92) 100%
-  );
-}
-
-/* Bottom info */
-.slide-bottom {
-  position: absolute;
-  bottom: 0; left: 0;
-  right: 64px;
-  padding: 0 16px 20px;
-  z-index: 20;
-}
-
-.event-genre-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: var(--pill);
-  font-size: 11px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  border: 1px solid;
-}
-
-.event-title-big {
-  font-size: 19px;
-  font-weight: 900;
-  line-height: 1.3;
-  margin-bottom: 6px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-}
-
-.event-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.event-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.8);
-}
-
-.detail-open-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255,255,255,0.2);
-  border-radius: var(--pill);
-  padding: 9px 18px;
-  font-size: 13px;
-  font-weight: 700;
-  color: white;
-  cursor: pointer;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-  transition: all 0.15s;
-}
-.detail-open-btn:hover { background: rgba(255,255,255,0.2); }
-
-/* Right side buttons */
-.slide-right {
-  position: absolute;
-  right: 12px;
-  bottom: 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  z-index: 20;
-}
-
-.slide-action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  color: white;
-}
-.slide-action-circle {
-  width: 46px; height: 46px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(255,255,255,0.15);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 19px;
-  transition: all 0.15s;
-}
-.slide-action-btn:active .slide-action-circle { transform: scale(0.9); }
-.slide-action-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.7);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-}
-
-.liked .slide-action-circle {
-  background: rgba(255,61,90,0.25);
-  border-color: rgba(255,61,90,0.5);
-}
-
-/* Swipe hint */
-.swipe-hint {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  color: rgba(255,255,255,0.3);
-  font-weight: 700;
-  z-index: 20;
-  pointer-events: none;
-  animation: hintBounce 2s infinite;
-}
-@keyframes hintBounce {
-  0%,100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-4px); }
-}
-
-/* ===== FILTER MODAL ===== */
-#filter-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: none;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding: 62px 14px 0;
-}
-#filter-modal.open { display: flex; }
-
-.filter-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
-}
-
-.filter-box {
-  position: relative;
-  background: var(--surface2);
-  border: 1.5px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius);
-  padding: 8px;
-  min-width: 230px;
-  animation: dropIn 0.2s ease;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-@keyframes dropIn {
-  from { opacity:0; transform: translateY(-10px) scale(0.96); }
-  to { opacity:1; transform: translateY(0) scale(1); }
-}
-
-.filter-section-title {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 8px 12px 6px;
-}
-
-.genre-opt {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.genre-opt:hover { background: rgba(255,255,255,0.06); }
-.genre-opt.active { background: rgba(255,61,90,0.12); }
-
-.genre-opt-icon {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-.genre-opt-text { flex: 1; }
-.genre-opt-name { font-size: 14px; font-weight: 700; }
-.genre-opt-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-.genre-opt-check { font-size: 15px; color: var(--accent); opacity: 0; }
-.genre-opt.active .genre-opt-check { opacity: 1; }
-
-.date-chips-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 4px 12px 12px;
-}
-.date-chip {
-  padding: 6px 12px;
-  background: var(--surface);
-  border: 1.5px solid rgba(255,255,255,0.1);
-  border-radius: var(--pill);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-  color: var(--text);
-}
-.date-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
-.filter-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
-
-/* ===== DETAIL DRAWER ===== */
-#detail-drawer {
-  position: fixed;
-  left: 0; right: 0;
-  bottom: calc(-100% - var(--tab-h));
-  z-index: 300;
-  background: var(--surface);
-  border-radius: 22px 22px 0 0;
-  border-top: 1.5px solid rgba(255,255,255,0.08);
-  max-height: 85dvh;
-  display: flex;
-  flex-direction: column;
-  transition: bottom 0.38s cubic-bezier(0.4,0,0.2,1);
-}
-#detail-drawer.open { bottom: var(--tab-h); }
-
-.drawer-handle {
-  width: 36px; height: 4px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 2px;
-  margin: 12px auto 0;
-  flex-shrink: 0;
-}
-
-.drawer-body {
-  overflow-y: auto;
-  padding: 16px 18px 32px;
-  flex: 1;
-}
-
-.drawer-event-title {
-  font-size: 20px;
-  font-weight: 900;
-  margin-bottom: 4px;
-  line-height: 1.3;
-}
-
-.drawer-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: var(--pill);
-  font-size: 11px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  border: 1px solid;
-}
-
-.info-card {
-  background: var(--surface2);
-  border-radius: 12px;
-  padding: 13px 15px;
-  margin-bottom: 10px;
-}
-.info-card-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 5px;
-}
-.info-card-value {
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.desc-text {
-  font-size: 14px;
-  line-height: 1.8;
-  color: rgba(255,255,255,0.75);
-  margin-bottom: 20px;
-}
-
-.cta-stack { display: flex; flex-direction: column; gap: 10px; }
-
-.cta-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 13px;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  color: white;
-  transition: opacity 0.15s, transform 0.15s;
-}
-.cta-button:active { opacity: 0.85; transform: scale(0.98); }
-.cta-reserve { background: var(--accent); box-shadow: 0 4px 20px rgba(255,61,90,0.3); }
-.cta-instagram { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
-.cta-hp { background: var(--surface2); border: 1.5px solid rgba(255,255,255,0.12); }
-
-/* ===== BACKDROP ===== */
-#drawer-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  z-index: 290;
-  display: none;
-  backdrop-filter: blur(2px);
-}
-#drawer-backdrop.open { display: block; }
-
-/* ===== FLYER SCREEN ===== */
-#flyer-screen {
-  background: var(--bg);
-  overflow-y: auto;
-}
-
-.flyer-header {
-  padding: 52px 18px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  background: rgba(8,8,14,0.95);
-  backdrop-filter: blur(12px);
-  z-index: 30;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.flyer-title {
-  font-size: 20px;
-  font-weight: 900;
-}
-
-.flyer-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--surface2);
-  border: 1.5px solid rgba(255,255,255,0.1);
-  border-radius: var(--pill);
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  color: var(--text);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-}
-
-.flyer-genre-tabs {
-  display: flex;
-  gap: 8px;
-  padding: 12px 18px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.flyer-genre-tabs::-webkit-scrollbar { display: none; }
-
-.genre-tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  background: var(--surface2);
-  border: 1.5px solid rgba(255,255,255,0.08);
-  border-radius: var(--pill);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  color: var(--text-dim);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-  transition: all 0.15s;
-  flex-shrink: 0;
-}
-.genre-tab.active {
-  color: var(--text);
-  border-color: var(--accent);
-  background: rgba(255,61,90,0.12);
-}
-
-.flyer-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 4px 14px 20px;
-}
-
-.flyer-card {
-  background: var(--surface2);
-  border-radius: 14px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  border: 1.5px solid rgba(255,255,255,0.06);
-  position: relative;
-}
-.flyer-card:active { transform: scale(0.96); }
-
-.flyer-thumb {
-  width: 100%;
-  aspect-ratio: 3/4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  position: relative;
-  overflow: hidden;
-}
-.flyer-thumb-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.flyer-thumb-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.8) 100%);
-}
-.flyer-play-badge {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(6px);
-  border-radius: 50%;
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
-}
-
-.flyer-card-info {
-  padding: 10px 10px 12px;
-}
-.flyer-card-genre {
-  font-size: 10px;
-  font-weight: 700;
-  margin-bottom: 3px;
-}
-.flyer-card-title {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.35;
-  margin-bottom: 4px;
-}
-.flyer-card-date {
-  font-size: 11px;
-  color: var(--text-dim);
-}
-
-/* ===== MYPAGE SCREEN ===== */
-#mypage-screen {
-  background: var(--bg);
-  overflow-y: auto;
-}
-
-.mypage-header {
-  padding: 52px 18px 20px;
-  text-align: center;
-}
-
-.user-avatar {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent3));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px;
-  margin: 0 auto 12px;
-  overflow: hidden;
-}
-.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-.user-name {
-  font-size: 20px;
-  font-weight: 900;
-  margin-bottom: 4px;
-}
-.user-email {
-  font-size: 13px;
-  color: var(--text-dim);
-  margin-bottom: 20px;
-}
-
-.stats-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin: 0 18px 24px;
-}
-.stat-card {
-  background: var(--surface2);
-  border-radius: 14px;
-  padding: 14px 10px;
-  text-align: center;
-  border: 1.5px solid rgba(255,255,255,0.06);
-}
-.stat-number {
-  font-size: 24px;
-  font-weight: 900;
-  margin-bottom: 3px;
-}
-.stat-label {
-  font-size: 11px;
-  color: var(--text-dim);
-  font-weight: 700;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 900;
-  padding: 0 18px;
-  margin-bottom: 12px;
-}
-
-.liked-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 0 14px 20px;
-}
-
-/* Login screen */
-#login-screen {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  padding: 40px 24px;
-}
-#login-screen.hidden { display: none; }
-
-.login-logo {
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 700;
-  font-size: 42px;
-  letter-spacing: -2px;
-  margin-bottom: 8px;
-}
-.login-logo span { color: var(--accent); }
-
-.login-tagline {
-  font-size: 15px;
-  color: var(--text-dim);
-  margin-bottom: 60px;
-  text-align: center;
-}
-
-.login-feature {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  width: 100%;
-  max-width: 300px;
-}
-.login-feature-icon {
-  width: 40px; height: 40px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-.login-feature-text { font-size: 14px; font-weight: 700; }
-.login-feature-sub { font-size: 12px; color: var(--text-dim); }
-
-.google-login-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: white;
-  color: #1a1a1a;
-  border: none;
-  border-radius: 14px;
-  padding: 16px 32px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-  max-width: 320px;
-  margin-top: 40px;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-  transition: transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 4px 24px rgba(255,255,255,0.1);
-}
-.google-login-btn:active { transform: scale(0.97); }
-.google-login-btn img { width: 22px; }
-
-.skip-btn {
-  margin-top: 16px;
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-size: 14px;
-  cursor: pointer;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-  padding: 8px;
-}
-
-/* Loading */
-#loading-screen {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3000;
-  transition: opacity 0.4s;
-}
-#loading-screen.hidden { opacity: 0; pointer-events: none; }
-
-.loading-logo {
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 700;
-  font-size: 48px;
-  letter-spacing: -2px;
-  animation: pulse 1.5s infinite;
-}
-.loading-logo span { color: var(--accent); }
-@keyframes pulse {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Video player overlay (from flyer) */
-#video-overlay {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  z-index: 800;
-  display: none;
-  flex-direction: column;
-}
-#video-overlay.open { display: flex; }
-
-.video-overlay-header {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  padding: 50px 18px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-  z-index: 10;
-}
-.video-overlay-back {
-  width: 40px; height: 40px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  border: none;
-  color: white;
-}
-.video-overlay-title {
-  font-size: 16px;
-  font-weight: 700;
-  flex: 1;
-}
-
-.video-overlay-content {
-  flex: 1;
-  position: relative;
-}
-.video-overlay-content iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.video-overlay-detail {
-  padding: 16px 18px 32px;
-  background: var(--surface);
-  max-height: 40vh;
-  overflow-y: auto;
-}
-
-/* Empty state */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 24px;
-  text-align: center;
-  gap: 12px;
-}
-.empty-state-icon { font-size: 48px; opacity: 0.3; }
-.empty-state-text { font-size: 15px; color: var(--text-dim); font-weight: 700; }
-
-/* Toast */
-#toast {
-  position: fixed;
-  bottom: calc(var(--tab-h) + 16px);
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(30,30,40,0.95);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--pill);
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-  z-index: 2000;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  backdrop-filter: blur(10px);
-}
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+:root{--bg:#0a0a0f;--bg2:#12121a;--s1:#111119;--s2:#1a1a26;--s3:#22222f;--red:#FF1744;--green:#00e5a0;--yellow:#ffbe00;--blue:#4d9fff;--txt:#f0f0f8;--dim:#7070a0;--r:14px;--pill:100px;--nav:60px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:'Hiragino Sans','Noto Sans JP',sans-serif;}
+#ob{position:fixed;inset:0;z-index:9000;background:linear-gradient(180deg,var(--bg),var(--bg2));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;}
+#ob.hide{display:none;}
+.ob-logo{font-weight:700;font-size:36px;letter-spacing:-2px;margin-bottom:5px;}
+.ob-logo span{color:var(--red);}
+.ob-sub{font-size:12px;color:var(--dim);margin-bottom:32px;text-align:center;}
+.ob-lbl{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;width:100%;max-width:290px;}
+.ob-list{display:flex;flex-direction:column;gap:9px;width:100%;max-width:290px;}
+.ob-item{padding:14px 16px;background:var(--s2);border:2px solid rgba(255,255,255,0.07);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all 0.2s;}
+.ob-item.sel{border-color:var(--red);background:rgba(255,23,68,0.1);}
+.ob-badge{margin-left:auto;font-size:10px;padding:2px 7px;border-radius:var(--pill);background:rgba(255,255,255,0.08);color:var(--dim);}
+.ob-btn{width:100%;max-width:290px;padding:14px;background:var(--red);border:none;border-radius:12px;font-size:15px;font-weight:700;color:white;cursor:pointer;margin-top:18px;font-family:inherit;opacity:0.35;pointer-events:none;}
+.ob-btn.on{opacity:1;pointer-events:all;}
+.screen{position:fixed;top:0;left:0;right:0;bottom:var(--nav);display:none;flex-direction:column;overflow:hidden;}
+.screen.on{display:flex;}
+#nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-around;z-index:1000;}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;cursor:pointer;opacity:0.3;border:none;background:none;color:var(--txt);font-family:inherit;}
+.nb.on{opacity:1;}
+.nb-ic{font-size:18px;}
+.nb-lb{font-size:9px;font-weight:700;}
+#ab{position:fixed;top:78px;left:14px;z-index:500;display:none;align-items:center;gap:5px;background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--pill);padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+#feed{background:var(--bg);}
+#stack{position:absolute;inset:0;}
+#fhd{position:absolute;top:0;left:0;right:0;z-index:100;display:flex;align-items:flex-start;justify-content:flex-end;padding:46px 14px 10px;background:linear-gradient(to bottom,rgba(10,10,15,0.85),transparent);pointer-events:none;}
+#fhd>*{pointer-events:all;}
+.logo{font-weight:700;font-size:20px;letter-spacing:-1px;position:absolute;left:14px;top:44px;}
+.logo span{color:var(--red);}
+#fbtn{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--pill);padding:5px 12px;color:var(--txt);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(10px);}
+.slide{position:absolute;inset:0;transition:transform 0.38s cubic-bezier(0.4,0,0.2,1),opacity 0.38s;will-change:transform;}
+.slide.cur{transform:translateY(0);opacity:1;z-index:10;}
+.slide.up{transform:translateY(-100%);opacity:0;z-index:5;}
+.slide.dn{transform:translateY(100%);opacity:0;z-index:5;}
+.sbg{position:absolute;inset:0;}
+.sbg-in{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.sbg-em{font-size:90px;opacity:0.1;user-select:none;}
+.sovl{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,transparent 25%,transparent 50%,rgba(0,0,0,0.5) 72%,rgba(0,0,0,0.88) 100%);}
+.srt{position:absolute;right:11px;bottom:90px;display:flex;flex-direction:column;gap:14px;z-index:20;align-items:center;}
+.sact{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;color:white;}
+.sact-c{width:42px;height:42px;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;transition:transform 0.15s;}
+.sact:active .sact-c{transform:scale(0.86);}
+.sact-l{font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);}
+.sact.lk .sact-c{background:rgba(255,23,68,0.22);border-color:rgba(255,23,68,0.5);}
+.sbot{position:absolute;left:0;right:56px;bottom:0;padding:0 13px 16px;z-index:20;}
+.sgtag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:var(--pill);font-size:10px;font-weight:700;margin-bottom:5px;border:1px solid;}
+.stitle{font-size:17px;font-weight:900;line-height:1.3;margin-bottom:4px;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
+.smeta{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;}
+.smeta-i{font-size:11px;color:rgba(255,255,255,0.78);}
+.sdbtn{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.11);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,0.18);border-radius:var(--pill);padding:7px 14px;font-size:11px;font-weight:700;color:white;cursor:pointer;font-family:inherit;}
+.shint{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0.18);pointer-events:none;animation:bup 2s infinite;}
+@keyframes bup{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(-3px)}}
+#fm{position:fixed;inset:0;z-index:600;display:none;align-items:flex-end;padding-bottom:var(--nav);}
+#fm.on{display:flex;}
+.fmbg{position:absolute;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);}
+.fmbox{position:relative;width:100%;background:var(--s1);border-radius:20px 20px 0 0;border-top:1.5px solid rgba(255,255,255,0.08);max-height:82vh;overflow-y:auto;padding-bottom:12px;}
+.fm-bar{width:32px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:10px auto 4px;}
+.fm-sec{padding:10px 16px 6px;font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+.fm-div{height:1px;background:rgba(255,255,255,0.06);margin:6px 16px;}
+.fm-gopts{display:flex;flex-direction:column;gap:6px;padding:4px 14px 10px;}
+.fm-gopt{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--s2);border-radius:11px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;}
+.fm-gopt.on{border-color:var(--red);background:rgba(255,23,68,0.08);}
+.fm-gopt-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.fm-gopt-n{font-size:13px;font-weight:700;}
+.fm-gopt-s{font-size:11px;color:var(--dim);margin-top:1px;}
+.fm-gopt-chk{margin-left:auto;color:var(--red);font-size:14px;opacity:0;}
+.fm-gopt.on .fm-gopt-chk{opacity:1;}
+.fm-subopts{display:flex;flex-direction:column;gap:5px;padding:4px 14px 10px;}
+.fm-subopt{padding:10px 14px;background:var(--s2);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--dim);border:2px solid transparent;transition:all 0.15s;}
+.fm-subopt.on{color:var(--txt);border-color:var(--red);background:rgba(255,23,68,0.08);}
+.fm-dateopts{display:flex;flex-direction:column;gap:5px;padding:4px 14px 10px;}
+.fm-dateopt{padding:10px 14px;background:var(--s2);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--dim);border:2px solid transparent;transition:all 0.15s;}
+.fm-dateopt.on{color:var(--txt);border-color:var(--red);background:rgba(255,23,68,0.08);}
+#drw{position:fixed;left:0;right:0;bottom:calc(-100% - var(--nav));z-index:400;background:var(--s1);border-radius:20px 20px 0 0;border-top:1.5px solid rgba(255,255,255,0.07);max-height:90dvh;display:flex;flex-direction:column;transition:bottom 0.36s cubic-bezier(0.4,0,0.2,1);}
+#drw.on{bottom:var(--nav);}
+#drwbg{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:390;display:none;backdrop-filter:blur(2px);}
+#drwbg.on{display:block;}
+.drw-bar{width:32px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:10px auto 0;flex-shrink:0;}
+.drw-body{overflow-y:auto;padding:13px 15px 30px;flex:1;}
+.drw-t{font-size:17px;font-weight:900;margin-bottom:4px;line-height:1.3;}
+.drw-gt{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--pill);font-size:10px;font-weight:700;margin-bottom:8px;border:1px solid;}
+.drw-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:11px;}
+.drw-tag{padding:3px 8px;background:var(--s2);border-radius:var(--pill);font-size:10px;font-weight:700;color:var(--dim);}
+.ptbar{display:flex;align-items:center;gap:8px;background:rgba(255,190,0,0.07);border:1px solid rgba(255,190,0,0.22);border-radius:10px;padding:9px 11px;margin-bottom:11px;}
+.ptbar-bdg{font-size:10px;font-weight:700;color:var(--yellow);background:rgba(255,190,0,0.12);padding:2px 7px;border-radius:var(--pill);}
+.ic{background:var(--s2);border-radius:10px;padding:10px 12px;margin-bottom:7px;}
+.ic-l{font-size:9px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.ic-v{font-size:13px;line-height:1.6;}
+.gmapbtn{display:flex;align-items:center;gap:6px;margin-top:8px;padding:9px 12px;background:#1a2a4a;border-radius:9px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none;}
+.desc{font-size:13px;line-height:1.8;color:rgba(255,255,255,0.7);margin-bottom:16px;}
+.part-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--yellow),#f0a000);border:none;border-radius:12px;font-size:14px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.ctas{display:flex;flex-direction:column;gap:7px;}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border:none;text-decoration:none;color:white;}
+.cta-a{background:var(--red);}
+.cta-m{background:linear-gradient(135deg,#1a73e8,#4285f4);}
+.cta-i{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);}
+.cta-h{background:var(--s2);border:1.5px solid rgba(255,255,255,0.09);}
+.part-st{padding:12px;border-radius:10px;text-align:center;font-size:13px;font-weight:700;margin-bottom:10px;}
+.part-st.ok{background:rgba(0,229,160,0.1);color:var(--green);}
+.part-st.ng{background:rgba(255,23,68,0.1);color:var(--red);}
+#flyer{background:var(--bg);}
+.fl-hd{padding:48px 14px 9px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.fl-title{font-size:18px;font-weight:900;}
+.fl-btns{display:flex;gap:6px;}
+.flbtn{display:flex;align-items:center;gap:3px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--pill);padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--txt);font-family:inherit;}
+.ftabs{display:flex;gap:6px;padding:9px 14px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
+.ftabs::-webkit-scrollbar{display:none;}
+.ftab{display:flex;align-items:center;gap:3px;padding:6px 12px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.07);border-radius:var(--pill);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;color:var(--dim);font-family:inherit;flex-shrink:0;transition:all 0.15s;}
+.ftab.on{color:var(--txt);border-color:var(--red);background:rgba(255,23,68,0.1);}
+.fl-scr{overflow-y:auto;flex:1;}
+.fl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 11px 18px;}
+.fc{background:var(--s2);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform 0.15s;border:1.5px solid rgba(255,255,255,0.05);}
+.fc:active{transform:scale(0.95);}
+.fct{width:100%;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.fct-em{font-size:44px;opacity:0.18;}
+.fct-ovl{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.8) 100%);}
+.fct-play{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.fct-fixed{position:absolute;top:7px;left:7px;background:rgba(0,0,0,0.6);border-radius:var(--pill);padding:2px 7px;font-size:9px;font-weight:700;color:var(--yellow);}
+.fci{padding:8px 8px 10px;}
+.fcg{font-size:9px;font-weight:700;margin-bottom:2px;}
+.fct-t{font-size:11px;font-weight:700;line-height:1.3;margin-bottom:2px;}
+.fcd{font-size:10px;color:var(--dim);}
+.fctags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap;}
+.fctag{font-size:8px;padding:2px 5px;background:var(--s3);border-radius:var(--pill);color:var(--dim);font-weight:700;}
+#mapview{display:none;flex:1;flex-direction:column;}
+#mapview.on{display:flex;}
+.mphold{flex:1;background:var(--s2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;}
+.mplist{padding:9px;overflow-y:auto;}
+.mpitem{display:flex;align-items:center;gap:9px;padding:10px;background:var(--s2);border-radius:10px;margin-bottom:6px;cursor:pointer;text-decoration:none;color:var(--txt);}
+#diag{background:linear-gradient(180deg,var(--bg),var(--bg2));overflow:hidden;}
+#diag-start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;text-align:center;}
+.d-logo{font-weight:700;font-size:24px;letter-spacing:-1px;margin-bottom:4px;}
+.d-logo span{color:var(--red);}
+.d-label{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:16px;}
+.d-catch{font-size:18px;font-weight:900;margin-bottom:8px;line-height:1.4;}
+.d-sub{font-size:12px;color:var(--dim);margin-bottom:28px;line-height:1.6;}
+.d-btn{padding:14px 36px;background:var(--red);border:none;border-radius:12px;font-size:16px;font-weight:700;color:white;cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(255,23,68,0.35);}
+.d-note{font-size:11px;color:var(--dim);margin-top:10px;}
+.d-mascot{width:120px;height:120px;margin:0 auto 16px;}
+#diag-q{position:absolute;inset:0;display:none;flex-direction:column;}
+.q-prog-wrap{padding:52px 16px 0;flex-shrink:0;}
+.q-prog-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-bottom:4px;}
+.q-prog-fill{height:100%;background:var(--red);border-radius:2px;transition:width 0.4s ease;}
+.q-prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);font-weight:700;}
+.q-back{position:absolute;top:50px;left:14px;width:34px;height:34px;background:rgba(255,255,255,0.07);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;color:var(--txt);font-size:16px;z-index:10;}
+.q-content{flex:1;overflow-y:auto;padding:16px 16px 20px;}
+.q-step{font-size:10px;font-weight:700;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.q-text{font-size:18px;font-weight:900;line-height:1.5;margin-bottom:20px;}
+.q-opts{display:flex;flex-direction:column;gap:9px;}
+.q-opt{padding:14px 16px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.06);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:left;color:var(--txt);}
+.q-opt.sel{background:rgba(255,23,68,0.12);border-color:rgba(255,23,68,0.4);}
+.q-chk-row{display:flex;align-items:center;gap:10px;}
+.q-chk-box{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,0.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.q-opt.sel .q-chk-box{background:var(--red);border-color:var(--red);}
+.q-next-btn{margin:14px 16px 8px;padding:13px;background:var(--red);border:none;border-radius:11px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:inherit;display:none;}
+.q-next-btn.show{display:block;}
+.q-pref-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding-bottom:8px;}
+.q-pref{padding:9px 4px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.06);border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;color:var(--dim);transition:all 0.15s;}
+.q-pref.sel{background:rgba(255,23,68,0.12);border-color:rgba(255,23,68,0.4);color:var(--txt);}
+#diag-load{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+.load-mascot{width:90px;height:90px;animation:bounce 0.6s ease-in-out infinite alternate;}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-18px)}}
+.load-text{font-size:16px;font-weight:900;}
+.load-dots{display:flex;gap:6px;margin-top:4px;}
+.load-dot{width:7px;height:7px;background:var(--red);border-radius:50%;animation:ldot 1.2s ease-in-out infinite;}
+.load-dot:nth-child(2){animation-delay:0.2s;}.load-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes ldot{0%,100%{opacity:0.2;transform:scale(0.8);}50%{opacity:1;transform:scale(1);}}
+#diag-result{position:absolute;inset:0;display:none;overflow-y:auto;}
+.res-wrap{padding:52px 16px 32px;}
+.res-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-align:center;color:var(--dim);margin-bottom:12px;}
+.res-char{width:140px;height:140px;margin:0 auto 16px;}
+.res-you{font-size:13px;color:var(--dim);text-align:center;margin-bottom:4px;}
+.res-name{font-size:38px;font-weight:900;text-align:center;margin-bottom:2px;}
+.res-type{font-size:13px;font-weight:700;text-align:center;color:var(--dim);margin-bottom:4px;}
+.res-kuchi{font-size:13px;font-weight:700;text-align:center;font-style:italic;margin-bottom:16px;}
+.res-catch{font-size:16px;font-weight:900;text-align:center;padding:14px 18px;border-radius:14px;margin-bottom:12px;line-height:1.5;}
+.res-card{background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.06);border-radius:13px;padding:14px;margin-bottom:10px;}
+.res-card-t{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
+.res-card-v{font-size:13px;line-height:1.8;color:rgba(255,255,255,0.78);}
+.res-compat{display:flex;align-items:center;gap:12px;}
+.res-compat-char{width:56px;height:56px;flex-shrink:0;}
+.res-compat-name{font-size:15px;font-weight:900;margin-bottom:3px;}
+.res-compat-desc{font-size:12px;color:var(--dim);line-height:1.6;}
+.res-evitem{display:flex;align-items:center;gap:10px;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;margin-bottom:6px;cursor:pointer;}
+.res-btns{display:flex;flex-direction:column;gap:9px;margin-bottom:20px;}
+.res-main-btn{padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;color:white;}
+.res-share-btn{padding:13px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--txt);}
+.res-retry{text-align:center;font-size:13px;color:var(--dim);cursor:pointer;text-decoration:underline;margin-bottom:20px;}
+.res-all-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
+.res-all-item{text-align:center;cursor:pointer;}
+.res-all-char{width:60px;height:60px;margin:0 auto 4px;}
+.res-all-name{font-size:10px;font-weight:700;}
+.res-all-item.dim{opacity:0.25;filter:grayscale(1);}
+#vov{position:fixed;inset:0;background:#000;z-index:800;display:none;flex-direction:column;}
+#vov.on{display:flex;}
+.vov-hd{position:absolute;top:0;left:0;right:0;padding:46px 14px 12px;display:flex;align-items:center;gap:9px;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);z-index:10;}
+.vov-bk{width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:none;color:white;}
+.vov-ct{flex:1;position:relative;}
+.vov-ct iframe{position:absolute;inset:0;width:100%;height:100%;}
+.vov-dt{padding:12px 14px 26px;background:var(--s1);max-height:38vh;overflow-y:auto;}
+#points{background:var(--bg);overflow-y:auto;}
+.pt-hero{margin:14px;background:linear-gradient(135deg,#1a1508,#2a1e08);border:1.5px solid rgba(255,190,0,0.28);border-radius:16px;padding:18px;}
+.pt-hero-lbl{font-size:10px;font-weight:700;color:rgba(255,190,0,0.6);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.pt-hero-val{font-size:42px;font-weight:900;color:var(--yellow);line-height:1;}
+.pt-hero-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;}
+.pt-hs{background:rgba(255,255,255,0.04);border-radius:9px;padding:9px 8px;text-align:center;}
+.pt-hs-n{font-size:16px;font-weight:900;color:var(--yellow);}
+.pt-hs-l{font-size:9px;color:var(--dim);font-weight:700;margin-top:2px;}
+.pt-camp{display:flex;align-items:center;gap:6px;margin-top:10px;padding:7px 10px;background:rgba(255,23,68,0.08);border:1px solid rgba(255,23,68,0.2);border-radius:8px;font-size:11px;font-weight:700;color:#ff8fa0;}
+.pt-next{margin:0 14px 14px;background:var(--s2);border-radius:12px;padding:13px;}
+.pt-next-lbl{font-size:10px;font-weight:700;color:var(--dim);margin-bottom:7px;}
+.pt-next-row{display:flex;align-items:center;gap:10px;}
+.pt-next-n{font-size:13px;font-weight:700;}
+.pt-next-pt{font-size:11px;color:var(--yellow);margin-top:2px;}
+.pt-prog{height:5px;background:rgba(255,255,255,0.07);border-radius:3px;margin-top:7px;overflow:hidden;}
+.pt-prog-bar{height:100%;background:linear-gradient(90deg,var(--yellow),#ff8c00);border-radius:3px;transition:width 0.5s ease;}
+.pt-tabs{display:flex;margin:0 14px 14px;background:var(--s2);border-radius:10px;padding:4px;}
+.pt-tab{flex:1;padding:8px 4px;text-align:center;font-size:11px;font-weight:700;cursor:pointer;color:var(--dim);border-radius:7px;transition:all 0.15s;}
+.pt-tab.on{background:var(--s1);color:var(--txt);}
+.earn-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.earn-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.earn-name{font-size:12px;font-weight:700;}
+.earn-sub{font-size:10px;color:var(--dim);margin-top:1px;}
+.earn-pt{font-size:14px;font-weight:900;color:var(--yellow);}
+.earn-camp{font-size:9px;color:var(--red);font-weight:700;background:rgba(255,23,68,0.1);padding:1px 6px;border-radius:var(--pill);}
+.shop-cat{padding:0 14px 6px;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+.shop-item{display:flex;align-items:center;gap:12px;padding:13px;background:var(--s2);border-radius:12px;cursor:pointer;margin-bottom:8px;border:1.5px solid transparent;}
+.shop-item.avail{border-color:rgba(255,190,0,0.2);}
+.shop-ic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.shop-name{font-size:13px;font-weight:700;}
+.shop-desc{font-size:10px;color:var(--dim);margin-top:2px;line-height:1.5;}
+.shop-pt{font-size:15px;font-weight:900;color:var(--yellow);text-align:right;}
+.shop-pt-u{font-size:10px;color:var(--dim);text-align:right;}
+.shop-tag{font-size:9px;padding:2px 6px;border-radius:var(--pill);font-weight:700;display:inline-block;margin-top:3px;}
+.shop-tag.goods{background:rgba(255,190,0,0.12);color:var(--yellow);}
+.shop-tag.title{background:rgba(168,85,247,0.15);color:#c084fc;}
+.shop-tag.cpn{background:rgba(0,229,160,0.12);color:var(--green);}
+.shop-tag.lk{background:rgba(255,255,255,0.06);color:var(--dim);}
+.mis-item{background:var(--s2);border-radius:12px;padding:12px;margin-bottom:8px;border:1.5px solid rgba(255,255,255,0.05);}
+.mis-item.done{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.05);}
+.mis-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.mis-name{font-size:13px;font-weight:700;}
+.mis-pt{font-size:13px;font-weight:900;color:var(--yellow);}
+.mis-sub{font-size:11px;color:var(--dim);margin-bottom:6px;}
+.mis-prog{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+.mis-bar{height:100%;background:linear-gradient(90deg,var(--green),#00b87a);border-radius:2px;}
+.mis-st{font-size:10px;font-weight:700;margin-top:4px;color:var(--dim);}
+.mis-st.done{color:var(--green);}
+.phi{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.phi-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.phi-t{font-size:12px;font-weight:700;}
+.phi-d{font-size:9px;color:var(--dim);}
+.phi-a{font-size:13px;font-weight:900;}
+#mypage{background:var(--bg);overflow-y:auto;}
+.mp-top{padding:48px 14px 16px;text-align:center;}
+.mp-av{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 9px;overflow:hidden;}
+.mp-av img{width:100%;height:100%;object-fit:cover;}
+.mp-name{font-size:17px;font-weight:900;margin-bottom:2px;}
+.mp-age{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:var(--pill);font-size:10px;font-weight:700;background:rgba(255,23,68,0.1);color:var(--red);margin-bottom:2px;}
+.mp-email{font-size:11px;color:var(--dim);margin-bottom:12px;}
+.mp-ptcard{margin:0 14px 16px;background:linear-gradient(135deg,#1a1508,#2a1e08);border:1.5px solid rgba(255,190,0,0.25);border-radius:13px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.mp-ptcard-val{font-size:28px;font-weight:900;color:var(--yellow);}
+.mp-ptcard-lbl{font-size:10px;color:rgba(255,190,0,0.6);font-weight:700;}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:0 14px 18px;}
+.sc{background:var(--s2);border-radius:11px;padding:11px 7px;text-align:center;border:1.5px solid rgba(255,255,255,0.05);}
+.sc-n{font-size:20px;font-weight:900;margin-bottom:1px;}
+.sc-l{font-size:9px;color:var(--dim);font-weight:700;}
+.sec{font-size:14px;font-weight:900;padding:0 14px;margin-bottom:9px;}
+.stamp-wrap{margin:0 14px 16px;background:var(--s2);border-radius:12px;padding:14px;}
+.stamp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px;}
+.stamp-cell{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.cpn-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:11px;margin-bottom:7px;border:1.5px solid;}
+.rev-card{margin:0 14px 16px;background:var(--s2);border-radius:12px;padding:14px;}
+.rev-q{font-size:12px;font-weight:700;margin-bottom:5px;color:rgba(255,255,255,0.8);}
+.rev-ta{width:100%;padding:9px;background:var(--s3);border:1.5px solid rgba(255,255,255,0.07);border-radius:8px;color:var(--txt);font-size:12px;font-family:inherit;resize:none;height:65px;margin-bottom:7px;}
+.rev-sel{width:100%;padding:9px;background:var(--s3);border:1.5px solid rgba(255,255,255,0.07);border-radius:8px;color:var(--txt);font-size:12px;font-weight:700;font-family:inherit;margin-bottom:7px;appearance:none;}
+.rev-submit{width:100%;padding:11px;background:var(--green);border:none;border-radius:9px;font-size:13px;font-weight:700;color:#0a1a12;cursor:pointer;font-family:inherit;}
+.refcard{margin:0 14px 16px;background:linear-gradient(135deg,rgba(77,159,255,0.1),rgba(77,159,255,0.03));border:1.5px solid rgba(77,159,255,0.22);border-radius:12px;padding:13px;}
+.refcard-t{font-size:13px;font-weight:900;color:var(--blue);margin-bottom:2px;}
+.refcard-s{font-size:11px;color:var(--dim);margin-bottom:9px;}
+.ref-code{background:var(--s1);border-radius:8px;padding:9px;text-align:center;font-size:16px;font-weight:900;letter-spacing:3px;color:var(--blue);cursor:pointer;}
+.lc{margin:0 14px 16px;background:var(--s2);border-radius:14px;padding:18px;text-align:center;}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:9px;background:white;color:#1a1a1a;border:none;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;margin-top:12px;}
+.logoutbtn{width:calc(100% - 28px);margin:0 14px 24px;padding:12px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.08);border-radius:11px;color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+#agem,#partm,#exm{position:fixed;inset:0;z-index:700;display:none;}
+#agem.on,#partm.on,#exm.on{display:flex;}
+#agem{align-items:flex-end;padding-bottom:var(--nav);}
+.agem-bg{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);}
+.agem-box{position:relative;width:100%;background:var(--s1);border-radius:20px 20px 0 0;border-top:1.5px solid rgba(255,255,255,0.07);padding:13px 14px 26px;}
+.agem-t{font-size:14px;font-weight:900;margin-bottom:12px;text-align:center;}
+.agem-item{padding:12px 14px;background:var(--s2);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid transparent;display:flex;align-items:center;gap:8px;margin-bottom:7px;transition:all 0.15s;}
+.agem-item.on{border-color:var(--red);}
+#partm{align-items:flex-end;padding-bottom:var(--nav);}
+.partm-bg{position:absolute;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);}
+.partm-box{position:relative;width:100%;background:var(--s1);border-radius:20px 20px 0 0;border-top:1.5px solid rgba(255,255,255,0.07);padding:14px 16px 28px;}
+.partm-t{font-size:16px;font-weight:900;margin-bottom:4px;}
+.partm-s{font-size:12px;color:var(--dim);margin-bottom:8px;}
+.partm-ev{font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:12px;}
+.qr-area{background:var(--s2);border-radius:12px;padding:20px;text-align:center;margin-bottom:10px;cursor:pointer;border:2px dashed rgba(255,255,255,0.12);}
+.code-input{width:100%;padding:14px;background:var(--s2);border:2px solid rgba(255,255,255,0.1);border-radius:11px;color:var(--txt);font-size:20px;font-weight:900;text-align:center;letter-spacing:4px;margin-bottom:10px;}
+.code-input:focus{outline:none;border-color:var(--yellow);}
+.part-submit{width:100%;padding:13px;background:var(--yellow);border:none;border-radius:11px;font-size:14px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;}
+#exm{align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);}
+.exmbox{background:var(--s1);border-radius:16px;padding:18px;width:100%;max-width:300px;border:1.5px solid rgba(255,255,255,0.09);}
+.exm-t{font-size:16px;font-weight:900;margin-bottom:3px;}
+.exm-s{font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.6;}
+.exm-cost{font-size:24px;font-weight:900;color:var(--yellow);text-align:center;padding:12px;background:rgba(255,190,0,0.08);border-radius:10px;margin-bottom:14px;}
+.exm-ex{width:100%;padding:12px;background:var(--yellow);border:none;border-radius:10px;font-size:14px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;margin-bottom:7px;}
+.exm-cc{width:100%;padding:12px;background:var(--s2);border:none;border-radius:10px;color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+#toast{position:fixed;bottom:calc(var(--nav)+12px);left:50%;transform:translateX(-50%) translateY(16px);background:rgba(18,18,28,0.97);border:1px solid rgba(255,255,255,0.09);border-radius:var(--pill);padding:8px 16px;font-size:12px;font-weight:700;white-space:nowrap;z-index:3000;opacity:0;transition:opacity 0.3s,transform 0.3s;backdrop-filter:blur(10px);}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 18px;text-align:center;gap:8px;}
+.empty-ic{font-size:40px;opacity:0.22;}
+.empty-t{font-size:13px;color:var(--dim);font-weight:700;}
 </style>
 </head>
 <body>
+<!-- ONBOARDING -->
+<div id="ob">
+  <div class="ob-logo">Nex<span>ca</span></div>
+  <div class="ob-sub">まだ知らない体験が、次の自分を連れてくる。</div>
 
-<!-- Loading -->
-<div id="loading-screen">
-  <div class="loading-logo">Nex<span>ca</span></div>
+  <!-- STEP1: 年齢層 -->
+  <div id="ob-step1" style="width:100%;max-width:290px;">
+    <div class="ob-lbl">STEP 1 / 2　あなたはどれ？</div>
+    <div class="ob-list">
+      <div class="ob-item" onclick="pickAge(this,'中学生')">📚 中学生</div>
+      <div class="ob-item" onclick="pickAge(this,'高校生')">🎒 高校生</div>
+      <div class="ob-item" onclick="pickAge(this,'大学生')">🎓 大学生</div>
+      <div class="ob-item" onclick="pickAge(this,'社会人')">💼 社会人</div>
+    </div>
+    <button class="ob-btn" id="ob-btn1" onclick="goObStep2()">次へ →</button>
+  </div>
+
+  <!-- STEP2: 地域選択 -->
+  <div id="ob-step2" style="width:100%;max-width:290px;display:none;">
+    <div class="ob-lbl">STEP 2 / 2　お住まいの地域は？</div>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:10px;text-align:center;">※ あなたに合った情報を優先表示します</div>
+    <div style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding-right:4px;">
+      <div style="font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;padding:2px 0;">── 広島市内 ──</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市中区')">🏙️ 広島市中区</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市東区')">🏙️ 広島市東区</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市南区')">🏙️ 広島市南区</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市西区')">🏙️ 広島市西区</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市安佐南区')">🏙️ 広島市安佐南区</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市安佐北区')">🏙️ 広島市安佐北区</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市安芸区')">🏙️ 広島市安芸区</div>
+      <div class="ob-item" onclick="pickCity(this,'広島市佐伯区')">🏙️ 広島市佐伯区</div>
+      <div style="font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;padding:2px 0;margin-top:4px;">── 広島県内 ──</div>
+      <div class="ob-item" onclick="pickCity(this,'呉市')">🌊 呉市</div>
+      <div class="ob-item" onclick="pickCity(this,'福山市')">🌸 福山市</div>
+      <div class="ob-item" onclick="pickCity(this,'東広島市')">🍇 東広島市</div>
+      <div class="ob-item" onclick="pickCity(this,'廿日市市')">⛩️ 廿日市市</div>
+      <div class="ob-item" onclick="pickCity(this,'尾道市')">🛳️ 尾道市</div>
+      <div class="ob-item" onclick="pickCity(this,'三原市')">🏯 三原市</div>
+      <div class="ob-item" onclick="pickCity(this,'三次市')">🌾 三次市</div>
+      <div class="ob-item" onclick="pickCity(this,'大竹市')">🏭 大竹市</div>
+      <div class="ob-item" onclick="pickCity(this,'安芸高田市')">🗻 安芸高田市</div>
+      <div class="ob-item" onclick="pickCity(this,'その他・県外')">📍 その他・県外</div>
+    </div>
+    <button class="ob-btn" id="ob-btn2" onclick="startApp()">はじめる →</button>
+  </div>
 </div>
-
-<!-- Login -->
-<div id="login-screen" class="hidden">
-  <div class="login-logo">Nex<span>ca</span></div>
-  <div class="login-tagline">広島の「今」を、もっと近くに。</div>
-
-  <div class="login-feature">
-    <div class="login-feature-icon" style="background:rgba(255,61,90,0.15);">🎉</div>
-    <div>
-      <div class="login-feature-text">地域イベントを動画で発見</div>
-      <div class="login-feature-sub">TikTok感覚でスクロール</div>
-    </div>
+<div id="ab" onclick="openAgeMod()"><span id="ab-ic">🎒</span><span id="ab-lb">高校生</span> <span style="font-size:9px;opacity:0.4;">▼</span></div>
+<div id="agem">
+  <div class="agem-bg" onclick="closeAgeMod()"></div>
+  <div class="agem-box">
+    <div class="agem-t">年齢層を変更</div>
+    <div class="agem-item" onclick="swAge(this,'中学生')">📚 中学生</div>
+    <div class="agem-item" onclick="swAge(this,'高校生')">🎒 高校生</div>
+    <div class="agem-item" onclick="swAge(this,'大学生')">🎓 大学生</div>
+    <div class="agem-item" onclick="swAge(this,'社会人')">💼 社会人</div>
   </div>
-  <div class="login-feature">
-    <div class="login-feature-icon" style="background:rgba(0,229,160,0.15);">🏆</div>
-    <div>
-      <div class="login-feature-text">参加でスタンプを獲得</div>
-      <div class="login-feature-sub">コインを貯めて特典をゲット</div>
-    </div>
-  </div>
-  <div class="login-feature">
-    <div class="login-feature-icon" style="background:rgba(255,190,0,0.15);">❤️</div>
-    <div>
-      <div class="login-feature-text">気になるイベントをいいね保存</div>
-      <div class="login-feature-sub">マイページでいつでも確認</div>
-    </div>
-  </div>
-
-  <button class="google-login-btn" onclick="loginWithGoogle()">
-    <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-    Googleでログイン
-  </button>
-  <button class="skip-btn" onclick="skipLogin()">ログインせずに見る</button>
 </div>
-
-<!-- Main App -->
-<!-- Feed Screen -->
-<div id="feed-screen" class="screen active">
-  <div class="screen-header">
+<div id="partm">
+  <div class="partm-bg" onclick="closePartM()"></div>
+  <div class="partm-box">
+    <div class="partm-t">📱 参加証明 / スタンプ</div>
+    <div class="partm-s" id="partm-s">会場・店頭のQRコードを読み込んでください</div>
+    <div class="partm-ev" id="partm-ev"></div>
+    <div id="partm-content">
+      <div class="qr-area" onclick="simQR()">
+        <div style="font-size:40px;margin-bottom:8px;">📷</div>
+        <div style="font-size:13px;font-weight:700;">QRコードをスキャン</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px;">会場・店頭のQRにかざす</div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--dim);margin:8px 0;">または</div>
+      <input class="code-input" id="part-code" type="text" maxlength="6" placeholder="コードを入力" oninput="this.value=this.value.toUpperCase()">
+      <button class="part-submit" onclick="submitPart()">参加証明する</button>
+    </div>
+  </div>
+</div>
+<div id="exm"><div class="exmbox" id="exmbox"></div></div>
+<!-- FEED -->
+<div id="feed" class="screen on">
+  <div id="fhd">
     <div class="logo">Nex<span>ca</span></div>
-    <button id="filter-btn" onclick="openFilter()">
-      <span id="filter-icon">📍</span>
-      <span id="filter-label">すべて</span>
-      <span style="font-size:10px;opacity:0.5;">▼</span>
-    </button>
+    <button id="fbtn" onclick="openFM()"><span id="fi">📍</span><span id="fl">すべて</span> <span style="font-size:9px;opacity:0.4;">▼</span></button>
   </div>
-  <div id="video-stack"></div>
+  <div id="stack"></div>
 </div>
-
-<!-- Flyer Screen -->
-<div id="flyer-screen" class="screen">
-  <div class="flyer-header">
-    <div class="flyer-title">チラシ一覧</div>
-    <button class="flyer-filter-btn" onclick="openFlyerFilter()">🔍 絞り込み</button>
-  </div>
-  <div class="flyer-genre-tabs" id="flyer-tabs">
-    <div class="genre-tab active" data-genre="all" onclick="setFlyerGenre(this)">📍 すべて</div>
-    <div class="genre-tab" data-genre="event" onclick="setFlyerGenre(this)">🎉 イベント</div>
-    <div class="genre-tab" data-genre="volunteer" onclick="setFlyerGenre(this)">🤝 ボランティア</div>
-    <div class="genre-tab" data-genre="learn" onclick="setFlyerGenre(this)">🚀 学び</div>
-  </div>
-  <div class="flyer-grid" id="flyer-grid"></div>
-</div>
-
-<!-- MyPage Screen -->
-<div id="mypage-screen" class="screen">
-  <div class="mypage-header">
-    <div class="user-avatar" id="user-avatar">👤</div>
-    <div class="user-name" id="user-name">ゲスト</div>
-    <div class="user-email" id="user-email">ログインしていません</div>
-    <button class="google-login-btn" id="mypage-login-btn" onclick="loginWithGoogle()" style="max-width:240px;font-size:14px;padding:13px 24px;margin-top:0;">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Googleでログイン
-    </button>
-  </div>
-
-  <div class="stats-row" id="stats-row" style="display:none;">
-    <div class="stat-card">
-      <div class="stat-number" id="stat-likes">0</div>
-      <div class="stat-label">いいね</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="stat-stamps">0</div>
-      <div class="stat-label">スタンプ</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" style="color:var(--accent3);" id="stat-coins">0</div>
-      <div class="stat-label">コイン</div>
+<!-- FLYER -->
+<div id="flyer" class="screen">
+  <div class="fl-hd">
+    <div class="fl-title">チラシ一覧</div>
+    <div class="fl-btns">
+      <button class="flbtn" onclick="toggleMap()" id="mpbtn">🗺️ 地図</button>
+      <button class="flbtn" onclick="openFM()">🔍 絞込</button>
     </div>
   </div>
-
-  <div id="liked-section" style="display:none;">
-    <div class="section-title">❤️ いいねしたイベント</div>
-    <div class="liked-grid" id="liked-grid"></div>
+  <div class="ftabs">
+    <div class="ftab on" data-g="all" onclick="setFG(this)">📍 すべて</div>
+    <div class="ftab" data-g="event" onclick="setFG(this)">🎉 イベント</div>
+    <div class="ftab" data-g="learn" onclick="setFG(this)">🚀 学び</div>
+    <div class="ftab" data-g="volunteer" onclick="setFG(this)">🤝 ボランティア</div>
   </div>
-
-  <div id="logout-section" style="display:none;padding:0 18px 32px;">
-    <button onclick="logout()" style="width:100%;padding:14px;background:var(--surface2);border:1.5px solid rgba(255,255,255,0.1);border-radius:13px;color:var(--text-dim);font-size:14px;font-weight:700;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;">
-      ログアウト
-    </button>
+  <div class="fl-scr" id="flscr"><div class="fl-grid" id="flgrid"></div></div>
+  <div id="mapview">
+    <div class="mphold">
+      <div style="font-size:42px;">🗺️</div>
+      <div style="font-size:13px;font-weight:700;color:var(--dim);">地図ビュー</div>
+      <div style="font-size:11px;color:var(--dim);text-align:center;padding:0 26px;">下のリストからタップしてGoogleマップで確認</div>
+    </div>
+    <div class="mplist" id="mplist"></div>
   </div>
 </div>
-
-<!-- Bottom Nav -->
-<nav id="bottom-nav">
-  <button class="nav-btn active" onclick="switchTab('feed', this)">
-    <span class="nav-icon">▶️</span>
-    <span class="nav-label">動画</span>
-  </button>
-  <button class="nav-btn" onclick="switchTab('flyer', this)">
-    <span class="nav-icon">🗂️</span>
-    <span class="nav-label">チラシ</span>
-  </button>
-  <button class="nav-btn" onclick="switchTab('mypage', this)">
-    <span class="nav-icon">👤</span>
-    <span class="nav-label">マイページ</span>
-  </button>
+<!-- DIAGNOSIS -->
+<div id="diag" class="screen">
+  <div id="diag-start">
+    <div class="d-mascot" id="d-mascot"></div>
+    <div class="d-logo">Nex<span>ca</span></div>
+    <div class="d-label">STYLE DIAGNOSIS</div>
+    <div class="d-catch">次の自分に出会う、<br>14の質問</div>
+    <div class="d-sub">行動パターンから診断。<br>あなたにピッタリのイベント＆キャラが見つかる。</div>
+    <button class="d-btn" onclick="startDiag()">診断スタート</button>
+    <div class="d-note">所要時間：約2分</div>
+  </div>
+  <div id="diag-q">
+    <button class="q-back" onclick="diagBack()">←</button>
+    <div class="q-prog-wrap">
+      <div class="q-prog-bar"><div class="q-prog-fill" id="q-prog-fill" style="width:0%"></div></div>
+      <div class="q-prog-lbl"><span id="q-step-lbl">STEP 1</span><span id="q-num-lbl">1 / 14</span></div>
+    </div>
+    <div class="q-content">
+      <div class="q-step" id="q-step"></div>
+      <div class="q-text" id="q-text"></div>
+      <div id="q-opts-wrap"></div>
+      <button class="q-next-btn" id="q-next-btn" onclick="diagNext()">次へ →</button>
+    </div>
+  </div>
+  <div id="diag-load">
+    <div class="load-mascot" id="load-mascot"></div>
+    <div class="load-text">ネクストリートを探索中…</div>
+    <div class="load-dots"><div class="load-dot"></div><div class="load-dot"></div><div class="load-dot"></div></div>
+  </div>
+  <div id="diag-result"><div class="res-wrap" id="res-wrap"></div></div>
+</div>
+<!-- POINTS -->
+<div id="points" class="screen">
+  <div style="padding:48px 14px 14px;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;"><div style="font-size:18px;font-weight:900;">⭐ ポイント</div></div>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="pt-hero">
+      <div class="pt-hero-lbl">保有ポイント</div>
+      <div class="pt-hero-val"><span id="ph-val">0</span><span style="font-size:15px;font-weight:700;color:rgba(255,190,0,0.55);margin-left:3px;">pt</span></div>
+      <div class="pt-hero-row">
+        <div class="pt-hs"><div class="pt-hs-n" id="ph-month">0</div><div class="pt-hs-l">今月獲得</div></div>
+        <div class="pt-hs"><div class="pt-hs-n" id="ph-total">0</div><div class="pt-hs-l">累計</div></div>
+        <div class="pt-hs"><div class="pt-hs-n" id="ph-used">0</div><div class="pt-hs-l">使用済</div></div>
+      </div>
+      <div class="pt-camp">🔥 初回参加・友達紹介・振り返りが2倍！</div>
+    </div>
+    <div class="pt-next" id="pt-next"></div>
+    <div class="pt-tabs">
+      <div class="pt-tab on" onclick="setPTab(this,'earn')">貯め方</div>
+      <div class="pt-tab" onclick="setPTab(this,'shop')">交換所</div>
+      <div class="pt-tab" onclick="setPTab(this,'mis')">ミッション</div>
+      <div class="pt-tab" onclick="setPTab(this,'hist')">履歴</div>
+    </div>
+    <div id="pt-earn"><div style="padding:0 14px 14px;" id="earn-list"></div></div>
+    <div id="pt-shop" style="display:none;">
+      <div style="padding:0 14px 8px;font-size:12px;color:var(--dim);line-height:1.6;">参加・学び・応援の証をNexca特典や掲載店の特典に。</div>
+      <div class="shop-cat" style="margin-top:6px;">🎪 Nexca出店グッズ購入権</div>
+      <div style="padding:0 14px;" id="shop-goods"></div>
+      <div class="shop-cat" style="margin-top:4px;">🏅 デジタル称号</div>
+      <div style="padding:0 14px;" id="shop-title"></div>
+      <div class="shop-cat" style="margin-top:4px;">🎟️ 掲載店割引クーポン</div>
+      <div style="padding:0 14px;font-size:11px;color:var(--dim);margin-bottom:8px;">Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。</div>
+      <div style="padding:0 14px;" id="shop-cpn"></div>
+    </div>
+    <div id="pt-mis" style="display:none;"><div style="padding:0 14px;" id="mis-list"></div></div>
+    <div id="pt-hist" style="display:none;"><div style="padding:0 14px 14px;" id="phist-list"></div></div>
+  </div>
+</div>
+<!-- MYPAGE -->
+<div id="mypage" class="screen">
+  <div class="mp-top">
+    <div class="mp-av" id="mpav">👤</div>
+    <div class="mp-name" id="mpname">ゲスト</div>
+    <div class="mp-age" id="mpage">🎒 高校生</div>
+    <div class="mp-email" id="mpemail">ログインしていません</div>
+  </div>
+  <div id="gsec">
+    <div class="lc">
+      <div style="font-size:15px;font-weight:900;margin-bottom:6px;">ログインしてポイントを貯めよう</div>
+      <div style="font-size:11px;color:var(--dim);">今なら初回参加・友達紹介・振り返りが2倍！</div>
+      <button class="gbtn" onclick="doLogin()">
+        <svg width="17" height="17" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Googleでログイン
+      </button>
+    </div>
+  </div>
+  <div id="lsec" style="display:none;">
+    <div class="mp-ptcard" onclick="goTab('points',document.querySelectorAll('.nb')[3])">
+      <div style="font-size:22px;">⭐</div>
+      <div><div class="mp-ptcard-lbl">保有ポイント</div><div class="mp-ptcard-val" id="mp-ptv">0<span style="font-size:13px;opacity:0.6;">pt</span></div></div>
+      <div style="font-size:16px;color:var(--yellow);margin-left:auto;">›</div>
+    </div>
+    <div class="stats">
+      <div class="sc"><div class="sc-n" id="st-lk">0</div><div class="sc-l">いいね</div></div>
+      <div class="sc"><div class="sc-n" id="st-pa">0</div><div class="sc-l">参加証明</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--yellow);" id="st-pt">0</div><div class="sc-l">合計pt</div></div>
+    </div>
+    <div class="sec">🐾 スタンプ帳</div>
+    <div class="stamp-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--dim);">掲載店・イベントでQR読み込みでスタンプ獲得</div>
+        <div style="font-size:12px;font-weight:900;color:var(--yellow);" id="stamp-lbl">0 / 20</div>
+      </div>
+      <div class="stamp-grid" id="stamp-grid"></div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:8px;">
+        <div style="font-size:10px;color:var(--dim);">🎯 5個 → 缶バッジ購入権GET</div>
+        <div style="font-size:10px;color:var(--dim);">🎯 10個 → アクキー購入権GET</div>
+        <div style="font-size:10px;color:var(--dim);">🎯 20個 → Legend称号 + ボーナス50pt</div>
+      </div>
+    </div>
+    <div id="cpn-sec" style="display:none;">
+      <div class="sec">🎟️ 保有クーポン</div>
+      <div style="padding:0 14px 16px;" id="cpn-list"></div>
+    </div>
+    <div class="sec">✍️ 振り返りを書く</div>
+    <div class="rev-card">
+      <div style="font-size:13px;font-weight:900;margin-bottom:3px;">参加したイベントの振り返り</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:10px;">振り返り完了で +20pt（2倍キャンペーン中 +40pt）</div>
+      <select class="rev-sel" id="rev-ev"><option value="">イベントを選択</option></select>
+      <div class="rev-q">① 今日一番印象に残ったことは？</div>
+      <textarea class="rev-ta" id="rev-q1" placeholder="例：初めて同世代の起業家と話せて刺激を受けた"></textarea>
+      <div class="rev-q">② 新しく知ったこと・学んだことは？</div>
+      <textarea class="rev-ta" id="rev-q2" placeholder="例：ビジネスモデルの考え方を初めて学んだ"></textarea>
+      <div class="rev-q">③ この経験を次にどう活かしたい？</div>
+      <textarea class="rev-ta" id="rev-q3" placeholder="例：自分のアイデアをまとめてコンテストに応募してみたい"></textarea>
+      <button class="rev-submit" onclick="submitReview()">✍️ 振り返りを送る → +20pt</button>
+    </div>
+    <div class="sec">👥 友達紹介 (+40pt)</div>
+    <div class="refcard">
+      <div class="refcard-t">友達を招待してポイントゲット</div>
+      <div class="refcard-s">友達が登録＋参加証明まで完了するとお互いに40ptもらえる！</div>
+      <div class="ref-code" onclick="copyRef()" id="rcode">NEXCA-????</div>
+    </div>
+    <div class="sec">❤️ いいねしたイベント</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 11px 16px;" id="lgrid"></div>
+    <button class="logoutbtn" onclick="doLogout()">ログアウト</button>
+  </div>
+</div>
+<!-- NAV -->
+<nav id="nav">
+  <button class="nb on" onclick="goTab('feed',this)"><span class="nb-ic">▶️</span><span class="nb-lb">動画</span></button>
+  <button class="nb" onclick="goTab('flyer',this)"><span class="nb-ic">🗂️</span><span class="nb-lb">チラシ</span></button>
+  <button class="nb" onclick="goTab('diag',this)"><span class="nb-ic">🎯</span><span class="nb-lb">診断</span></button>
+  <button class="nb" onclick="goTab('points',this)"><span class="nb-ic">⭐</span><span class="nb-lb">ポイント</span></button>
+  <button class="nb" onclick="goTab('mypage',this)"><span class="nb-ic">👤</span><span class="nb-lb">マイページ</span></button>
 </nav>
-
-<!-- Filter Modal -->
-<div id="filter-modal">
-  <div class="filter-backdrop" onclick="closeFilter()"></div>
-  <div class="filter-box">
-    <div class="filter-section-title">ジャンル</div>
-    <div class="genre-opt active" data-genre="all" onclick="selectGenre(this)">
-      <div class="genre-opt-icon" style="background:rgba(255,255,255,0.08);">📍</div>
-      <div class="genre-opt-text">
-        <div class="genre-opt-name">すべて</div>
-        <div class="genre-opt-sub">全ジャンル表示</div>
-      </div>
-      <div class="genre-opt-check">✓</div>
+<!-- FILTER -->
+<div id="fm">
+  <div class="fmbg" onclick="closeFM()"></div>
+  <div class="fmbox">
+    <div class="fm-bar"></div>
+    <div class="fm-sec">大ジャンル</div>
+    <div class="fm-gopts">
+      <div class="fm-gopt on" data-g="all" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(255,255,255,0.07);">📍</div><div><div class="fm-gopt-n">すべて</div><div class="fm-gopt-s">全ジャンル表示</div></div><div class="fm-gopt-chk">✓</div></div>
+      <div class="fm-gopt" data-g="event" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(255,61,90,0.1);">🎉</div><div><div class="fm-gopt-n">イベント・おでかけ</div><div class="fm-gopt-s">お祭り・カフェ・スポット・古着</div></div><div class="fm-gopt-chk">✓</div></div>
+      <div class="fm-gopt" data-g="learn" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(255,190,0,0.1);">🚀</div><div><div class="fm-gopt-n">学び・挑戦</div><div class="fm-gopt-s">ワークショップ・就活・コンテスト</div></div><div class="fm-gopt-chk">✓</div></div>
+      <div class="fm-gopt" data-g="volunteer" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(0,229,160,0.1);">🤝</div><div><div class="fm-gopt-n">ボランティア</div><div class="fm-gopt-s">地域貢献・社会活動</div></div><div class="fm-gopt-chk">✓</div></div>
     </div>
-    <div class="genre-opt" data-genre="event" onclick="selectGenre(this)">
-      <div class="genre-opt-icon" style="background:rgba(255,61,90,0.12);">🎉</div>
-      <div class="genre-opt-text">
-        <div class="genre-opt-name">イベント・おでかけ</div>
-        <div class="genre-opt-sub">お祭り・体験・おでかけ</div>
-      </div>
-      <div class="genre-opt-check">✓</div>
-    </div>
-    <div class="genre-opt" data-genre="volunteer" onclick="selectGenre(this)">
-      <div class="genre-opt-icon" style="background:rgba(0,229,160,0.12);">🤝</div>
-      <div class="genre-opt-text">
-        <div class="genre-opt-name">ボランティア</div>
-        <div class="genre-opt-sub">地域貢献・社会活動</div>
-      </div>
-      <div class="genre-opt-check">✓</div>
-    </div>
-    <div class="genre-opt" data-genre="learn" onclick="selectGenre(this)">
-      <div class="genre-opt-icon" style="background:rgba(255,190,0,0.12);">🚀</div>
-      <div class="genre-opt-text">
-        <div class="genre-opt-name">学び・挑戦</div>
-        <div class="genre-opt-sub">ワークショップ・スキルアップ</div>
-      </div>
-      <div class="genre-opt-check">✓</div>
-    </div>
-    <div class="filter-divider"></div>
-    <div class="filter-section-title">日程</div>
-    <div class="date-chips-row">
-      <div class="date-chip active" onclick="selectDate(this,'all')">すべて</div>
-      <div class="date-chip" onclick="selectDate(this,'today')">今日</div>
-      <div class="date-chip" onclick="selectDate(this,'week')">今週</div>
-      <div class="date-chip" onclick="selectDate(this,'weekend')">週末</div>
-      <div class="date-chip" onclick="selectDate(this,'month')">今月</div>
+    <div class="fm-div"></div>
+    <div class="fm-sec">小ジャンル</div>
+    <div class="fm-subopts" id="fm-subs"></div>
+    <div class="fm-div"></div>
+    <div class="fm-sec">日程</div>
+    <div class="fm-dateopts">
+      <div class="fm-dateopt on" onclick="pickDate(this,'all')">📅 すべての日程</div>
+      <div class="fm-dateopt" onclick="pickDate(this,'today')">📅 今日</div>
+      <div class="fm-dateopt" onclick="pickDate(this,'week')">📅 今週</div>
+      <div class="fm-dateopt" onclick="pickDate(this,'weekend')">📅 週末</div>
+      <div class="fm-dateopt" onclick="pickDate(this,'month')">📅 今月</div>
     </div>
   </div>
 </div>
-
-<!-- Detail Drawer -->
-<div id="drawer-backdrop" onclick="closeDrawer()"></div>
-<div id="detail-drawer">
-  <div class="drawer-handle"></div>
-  <div class="drawer-body" id="drawer-body"></div>
+<!-- DRAWER -->
+<div id="drwbg" onclick="closeDrw()"></div>
+<div id="drw"><div class="drw-bar"></div><div class="drw-body" id="drwbody"></div></div>
+<!-- VIDEO OVERLAY -->
+<div id="vov">
+  <div class="vov-hd"><button class="vov-bk" onclick="closeVOV()">←</button><div style="font-size:14px;font-weight:700;flex:1;" id="vov-t"></div></div>
+  <div class="vov-ct" id="vov-c"></div>
+  <div class="vov-dt" id="vov-d"></div>
 </div>
-
-<!-- Video Overlay (from flyer tap) -->
-<div id="video-overlay">
-  <div class="video-overlay-header">
-    <button class="video-overlay-back" onclick="closeVideoOverlay()">←</button>
-    <div class="video-overlay-title" id="overlay-title"></div>
+<!-- ORGANIZER PAGE OVERLAY -->
+<div id="org-ov" style="position:fixed;inset:0;z-index:600;display:none;flex-direction:column;background:var(--bg);">
+  <div style="padding:46px 14px 12px;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;flex-shrink:0;">
+    <button onclick="closeOrgPage()" style="width:34px;height:34px;background:var(--s2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:none;color:var(--txt);">←</button>
+    <div style="font-size:15px;font-weight:900;">主催者ページ</div>
   </div>
-  <div class="video-overlay-content" id="overlay-video"></div>
-  <div class="video-overlay-detail" id="overlay-detail"></div>
+  <div style="overflow-y:auto;flex:1;padding:16px;" id="org-ov-body"></div>
 </div>
-
-<!-- Toast -->
 <div id="toast"></div>
-
 <script>
-// ===== SUPABASE CONFIG =====
-const SUPABASE_URL = 'https://uhplvogodumzwggbehrj.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_WA3RrbOgjEMEfi9nqlG59w_IYcy26T0';
-const supabase = { auth: { getSession: async () => ({ data: { session: null } }), signInWithOAuth: async (o) => { window.location.href = "https://accounts.google.com"; }, signOut: async () => {}, onAuthStateChange: (cb) => { return { data: { subscription: { unsubscribe: () => {} } } }; } }, from: (t) => ({ select: (s) => ({ eq: (a,b) => Promise.resolve({ data: [] }) }), insert: (d) => Promise.resolve({}), delete: () => ({ eq: (a,b) => ({ eq: (c,d) => Promise.resolve({}) }) }) }) };
+// SUPABASE INIT
+const SUPABASE_URL = 'https://umbscalpmmofbzfpmhhr.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtYnNjYWxwbW1vZmJ6ZnBtaGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTIwNDMsImV4cCI6MjA5MDI4ODA0M30.lgI836TkVP8EqxgIVH8FHCz8iQ87cJZikkw9S9W49Ic';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+// DB HELPERS
+async function loadProfile(){
+  if(!user) return;
+  const {data}=await sb.from('profiles').select('*').eq('id',user.id).single();
+  if(data){pts=data.points||0;ptsTotal=data.points_total||0;ptsUsed=data.points_used||0;ptsMonthly=data.points_monthly||0;stampCnt=data.stamp_count||0;age=data.age_group||'高校生';userCity=data.prefecture||'広島県';}
+}
+async function saveProfile(){
+  if(!user) return;
+  await sb.from('profiles').update({points:Math.floor(pts),points_total:Math.floor(ptsTotal),points_used:Math.floor(ptsUsed),points_monthly:Math.floor(ptsMonthly),stamp_count:stampCnt,age_group:age,prefecture:userCity}).eq('id',user.id);
+}
+async function loadLikes(){
+  if(!user) return;
+  const {data}=await sb.from('likes').select('event_id').eq('user_id',user.id);
+  if(data) likes=new Set(data.map(r=>r.event_id));
+}
+async function saveLike(evId,isLiked){
+  if(!user) return;
+  if(isLiked) await sb.from('likes').upsert({user_id:user.id,event_id:evId});
+  else await sb.from('likes').delete().eq('user_id',user.id).eq('event_id',evId);
+}
+async function loadParticipations(){
+  if(!user) return;
+  const {data}=await sb.from('participations').select('event_id,status').eq('user_id',user.id);
+  if(data) data.forEach(r=>participations[r.event_id]=r.status);
+}
+async function saveParticipation(evId){
+  if(!user) return;
+  await sb.from('participations').upsert({user_id:user.id,event_id:evId,status:'approved'});
+}
+async function loadStamps(){
+  if(!user) return;
+  const {data}=await sb.from('stamps').select('event_id').eq('user_id',user.id);
+  if(data){stampedPlaces=new Set(data.map(r=>r.event_id));stampCnt=stampedPlaces.size;}
+}
+async function saveStamp(evId){
+  if(!user) return;
+  await sb.from('stamps').upsert({user_id:user.id,event_id:evId});
+}
+async function savePointHistory(reason,amt,camp){
+  if(!user) return;
+  await sb.from('point_history').insert({user_id:user.id,reason,amount:amt,is_campaign:camp});
+}
+async function loadPointHistory(){
+  if(!user) return;
+  const {data}=await sb.from('point_history').select('*').eq('user_id',user.id).order('created_at',{ascending:false}).limit(50);
+  if(data) phist=data.map(r=>({reason:r.reason,amt:r.amount,date:new Date(r.created_at).toLocaleDateString('ja-JP'),camp:r.is_campaign}));
+}
+async function saveReview(evId,q1,q2,q3){
+  if(!user) return;
+  await sb.from('reviews').upsert({user_id:user.id,event_id:evId,q1,q2,q3});
+}
+async function loadReviews(){
+  if(!user) return;
+  const {data}=await sb.from('reviews').select('event_id').eq('user_id',user.id);
+  if(data) reviews=data.map(r=>({evId:r.event_id}));
+}
+async function loadAllUserData(){
+  await loadProfile();await loadLikes();await loadParticipations();await loadStamps();await loadPointHistory();await loadReviews();
+  updStats();renderPtHero();renderEarnList();renderShopAll();renderMissions();renderMP();renderFeed();renderFlyer();renderStampBook();
+}
 
-// ===== SAMPLE DATA (実際の動画・チラシに差し替え可能) =====
-const sampleEvents = [
-  {
-    id: 'ev1',
-    genre: 'event',
-    genreLabel: 'イベント・おでかけ',
-    genreEmoji: '🎉',
-    title: '広島フードフェスティバル2026',
-    date_start: '2026-03-15',
-    date_end: '2026-03-16',
-    time_start: '10:00〜18:00',
-    location: '広島市中央公園',
-    address: '〒730-0011 広島市中区基町15',
-    price: '入場無料',
-    description: '広島県内の飲食店・農家が大集合！地元の旬の食材を使ったグルメが楽しめる2日間のフードフェス。ステージでは地元アーティストのライブパフォーマンスも開催。子どもから大人まで楽しめるワークショップも予定しています。',
-    video_id: '',
-    thumbnail_url: '',
-    instagram_url: 'https://instagram.com',
-    homepage_url: 'https://example.com',
-    reserve_url: '',
-    has_reserve: false,
-    is_feed: true,
-    bg: 'linear-gradient(135deg, #1a0805 0%, #5a1a08 50%, #c05020 100%)',
-    accentColor: '#ff3d5a',
-    emoji: '🍜'
-  },
-  {
-    id: 'ev2',
-    genre: 'volunteer',
-    genreLabel: 'ボランティア',
-    genreEmoji: '🤝',
-    title: '宮島清掃ボランティア',
-    date_start: '2026-03-22',
-    date_end: '2026-03-22',
-    time_start: '9:00〜13:00',
-    location: '宮島桟橋集合',
-    address: '〒739-0588 廿日市市宮島町1-1',
-    price: '参加無料',
-    description: '世界遺産・宮島の海岸や参道を一緒に清掃しませんか？自然と文化を守るため地元の方々と活動します。軍手・ゴミ袋は主催者が準備します。初めての方も大歓迎です。',
-    video_id: '',
-    thumbnail_url: '',
-    instagram_url: 'https://instagram.com',
-    homepage_url: 'https://example.com',
-    reserve_url: 'https://example.com/reserve',
-    has_reserve: true,
-    is_feed: true,
-    bg: 'linear-gradient(135deg, #011a10 0%, #053d20 50%, #0e9040 100%)',
-    accentColor: '#00e5a0',
-    emoji: '🌊'
-  },
-  {
-    id: 'ev3',
-    genre: 'learn',
-    genreLabel: '学び・挑戦',
-    genreEmoji: '🚀',
-    title: '高校生起業家ピッチコンテスト',
-    date_start: '2026-04-05',
-    date_end: '2026-04-05',
-    time_start: '13:00〜17:30',
-    location: '広島市立大学サテライト',
-    address: '〒730-0011 広島市中区基町5-44',
-    price: '観覧無料',
-    description: '広島在住の高校生・大学生が自分のアイデアを3分でプレゼン！審査員は現役起業家・投資家・大学教授。優勝者には活動支援金10万円を授与。観覧も無料です。',
-    video_id: '',
-    thumbnail_url: '',
-    instagram_url: 'https://instagram.com',
-    homepage_url: 'https://example.com',
-    reserve_url: 'https://example.com/reserve',
-    has_reserve: true,
-    is_feed: true,
-    bg: 'linear-gradient(135deg, #050515 0%, #1a0a35 50%, #4a1a80 100%)',
-    accentColor: '#ffbe00',
-    emoji: '💡'
-  },
-  {
-    id: 'ev4',
-    genre: 'event',
-    genreLabel: 'イベント・おでかけ',
-    genreEmoji: '🎉',
-    title: '平和公園 夜桜ライトアップ',
-    date_start: '2026-03-28',
-    date_end: '2026-04-06',
-    time_start: '日没〜21:00',
-    location: '広島平和記念公園',
-    address: '〒730-0811 広島市中区中島町1',
-    price: '無料',
-    description: '広島の春の風物詩、平和公園の夜桜ライトアップ。ソメイヨシノ約50本が幻想的にライトアップされ、原爆ドームとの共演が生み出す景色は圧巻。週末にはキャンドルイベントも。',
-    video_id: '',
-    thumbnail_url: '',
-    instagram_url: 'https://instagram.com',
-    homepage_url: 'https://example.com',
-    reserve_url: '',
-    has_reserve: false,
-    is_feed: true,
-    bg: 'linear-gradient(135deg, #0a0515 0%, #300a50 50%, #7a208a 100%)',
-    accentColor: '#ff3d5a',
-    emoji: '🌸'
-  },
-  {
-    id: 'ev5',
-    genre: 'learn',
-    genreLabel: '学び・挑戦',
-    genreEmoji: '🚀',
-    title: 'プログラミング入門ワークショップ',
-    date_start: '2026-04-12',
-    date_end: '2026-04-12',
-    time_start: '14:00〜17:00',
-    location: '広島市まちづくり市民交流プラザ',
-    address: '〒730-0036 広島市中区袋町6-36',
-    price: '1,500円（材料費込み）',
-    description: 'FigmaでUIデザインの基礎からHTML/CSSでの実装まで3時間で体験。デザインとプログラミングの両方を触れる入門ワークショップ。PCさえあれば初心者OK。',
-    video_id: '',
-    thumbnail_url: '',
-    instagram_url: 'https://instagram.com',
-    homepage_url: 'https://example.com',
-    reserve_url: 'https://example.com/reserve',
-    has_reserve: true,
-    is_feed: true,
-    bg: 'linear-gradient(135deg, #050a15 0%, #102d5a 50%, #1a4a80 100%)',
-    accentColor: '#ffbe00',
-    emoji: '💻'
+// AUTH STATE LISTENER
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(session?.user){
+    user=session.user;
+    await loadAllUserData();
+    renderMP();
+    if(event==='SIGNED_IN') showToast('🎉 ログインしました！');
+  } else {
+    user=null;renderMP();
   }
+});
+// Check existing session on load
+sb.auth.getSession().then(({data:{session}})=>{
+  if(session?.user){user=session.user;loadAllUserData();}
+});
+
+// CHARACTER SVGs
+const CSVG={
+'アガル':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><ellipse cx="38" cy="36" rx="8" ry="18" fill="#FF8C42" transform="rotate(-15,38,36)"/><ellipse cx="50" cy="28" rx="8" ry="22" fill="#FFD700"/><ellipse cx="62" cy="36" rx="8" ry="18" fill="#FF8C42" transform="rotate(15,62,36)"/><circle cx="50" cy="72" r="28" fill="#FF4D4D" stroke="#000" stroke-width="3"/><circle cx="21" cy="62" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/><circle cx="79" cy="62" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/><circle cx="40" cy="67" r="8" fill="white" stroke="#000" stroke-width="2"/><circle cx="60" cy="67" r="8" fill="white" stroke="#000" stroke-width="2"/><circle cx="42" cy="68" r="4" fill="#222"/><circle cx="62" cy="68" r="4" fill="#222"/><circle cx="43.5" cy="66.5" r="1.5" fill="white"/><circle cx="63.5" cy="66.5" r="1.5" fill="white"/><circle cx="32" cy="74" r="5" fill="#ffb3c1" opacity="0.7"/><circle cx="68" cy="74" r="5" fill="#ffb3c1" opacity="0.7"/><path d="M40 77 Q50 87 60 77" stroke="#000" stroke-width="2.5" fill="#ff6b8a" stroke-linecap="round"/><circle cx="42" cy="98" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="98" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/></svg>',
+'ツムギ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="14" x2="44" y2="28" stroke="#000" stroke-width="3"/><line x1="50" y1="14" x2="56" y2="28" stroke="#000" stroke-width="3"/><circle cx="44" cy="13" r="5" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="56" cy="13" r="5" fill="#FFD700" stroke="#000" stroke-width="2.5"/><rect x="20" y="28" width="60" height="72" rx="18" fill="#FFD700" stroke="#000" stroke-width="3"/><line x1="20" y1="52" x2="80" y2="52" stroke="#8B6914" stroke-width="2.5"/><line x1="20" y1="66" x2="80" y2="66" stroke="#8B6914" stroke-width="2.5"/><circle cx="38" cy="39" r="1.5" fill="#000"/><circle cx="62" cy="39" r="1.5" fill="#000"/><path d="M42 47 Q50 54 58 47" stroke="#000" stroke-width="2" fill="none"/><circle cx="22" cy="70" r="8" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="78" cy="70" r="8" fill="#FFD700" stroke="#000" stroke-width="2.5"/><path d="M78 70 Q90 60 95 65" stroke="#FFD700" stroke-width="2" fill="none" stroke-dasharray="3,2"/><circle cx="42" cy="100" r="9" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="100" r="9" fill="#FFD700" stroke="#000" stroke-width="2.5"/></svg>',
+'ヌクミ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="12" rx="7" ry="10" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="12" rx="4" ry="7" fill="#81C784"/><circle cx="50" cy="72" r="33" fill="#4CAF50" stroke="#000" stroke-width="3"/><circle cx="21" cy="72" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><circle cx="79" cy="72" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><ellipse cx="40" cy="67" rx="7" ry="5" fill="white" stroke="#000" stroke-width="2"/><ellipse cx="60" cy="67" rx="7" ry="5" fill="white" stroke="#000" stroke-width="2"/><ellipse cx="40" cy="68" rx="4" ry="3" fill="#2E7D32"/><ellipse cx="60" cy="68" rx="4" ry="3" fill="#2E7D32"/><circle cx="32" cy="76" r="5" fill="#A8E6CF" opacity="0.7"/><circle cx="68" cy="76" r="5" fill="#A8E6CF" opacity="0.7"/><path d="M42 78 Q50 84 58 78" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/><polygon points="79,62 71,78 87,78" fill="white" stroke="#000" stroke-width="2"/><rect x="72" y="72" width="14" height="5" fill="#222"/><circle cx="42" cy="102" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="102" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/></svg>',
+'テクル':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="24" width="56" height="14" rx="7" fill="#78909C" stroke="#000" stroke-width="2"/><circle cx="38" cy="31" r="7" fill="#80DEEA" stroke="#000" stroke-width="1.5" opacity="0.8"/><circle cx="62" cy="31" r="7" fill="#80DEEA" stroke="#000" stroke-width="1.5" opacity="0.8"/><rect x="22" y="38" width="56" height="66" rx="14" fill="#1A237E" stroke="#000" stroke-width="3"/><polygon points="50,52 43,65 57,65" fill="#5C6BC0" opacity="0.7"/><line x1="65" y1="58" x2="72" y2="68" stroke="#7986CB" stroke-width="2" stroke-linecap="round"/><rect x="33" y="58" width="14" height="8" rx="4" fill="white" stroke="#000" stroke-width="1.5"/><rect x="53" y="58" width="14" height="8" rx="4" fill="white" stroke="#000" stroke-width="1.5"/><circle cx="40" cy="62" r="3.5" fill="#1A237E"/><circle cx="60" cy="62" r="3.5" fill="#1A237E"/><line x1="42" y1="76" x2="58" y2="76" stroke="#000" stroke-width="2.5" stroke-linecap="round"/><rect x="12" y="48" width="14" height="28" rx="7" fill="#1A237E" stroke="#000" stroke-width="2.5"/><rect x="74" y="48" width="14" height="28" rx="7" fill="#1A237E" stroke="#000" stroke-width="2.5"/><circle cx="38" cy="102" r="9" fill="#1A237E" stroke="#000" stroke-width="2.5"/><circle cx="62" cy="102" r="9" fill="#1A237E" stroke="#000" stroke-width="2.5"/></svg>',
+'コネル':'<svg viewBox="0 0 100 115" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="28" rx="26" ry="12" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="26" rx="20" ry="8" fill="#7B1FA2"/><circle cx="50" cy="20" r="6" fill="#CE93D8" stroke="#000" stroke-width="2"/><ellipse cx="50" cy="78" rx="26" ry="36" fill="#9C27B0" stroke="#000" stroke-width="3"/><circle cx="39" cy="68" r="10" fill="white" stroke="#000" stroke-width="2"/><circle cx="61" cy="68" r="10" fill="white" stroke="#000" stroke-width="2"/><circle cx="40" cy="69" r="6" fill="#6A1B9A"/><circle cx="62" cy="69" r="6" fill="#6A1B9A"/><circle cx="38" cy="66" r="2" fill="white"/><circle cx="60" cy="66" r="2" fill="white"/><circle cx="50" cy="82" r="3.5" fill="#000"/><circle cx="22" cy="80" r="8" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><circle cx="78" cy="78" r="8" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><rect x="82" y="72" width="5" height="18" rx="2" fill="#8D6E63"/><ellipse cx="84.5" cy="90" rx="4" ry="6" fill="#CE93D8"/><circle cx="40" cy="112" r="9" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><circle cx="60" cy="112" r="9" fill="#9C27B0" stroke="#000" stroke-width="2.5"/></svg>',
+'フワリ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="75" r="28" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="30" cy="62" r="18" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="70" cy="62" r="18" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="50" cy="55" r="20" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="65" rx="22" ry="18" fill="#E1F5FE" opacity="0.3"/><circle cx="40" cy="68" r="7" fill="white" stroke="#000" stroke-width="1.5"/><circle cx="60" cy="68" r="7" fill="white" stroke="#000" stroke-width="1.5"/><path d="M33 66 Q40 63 47 66" stroke="#000" stroke-width="2" fill="#29B6F6"/><path d="M53 66 Q60 63 67 66" stroke="#000" stroke-width="2" fill="#29B6F6"/><circle cx="40" cy="69" r="3.5" fill="#0277BD"/><circle cx="60" cy="69" r="3.5" fill="#0277BD"/><path d="M44 78 Q50 83 56 78" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="80" r="7" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="86" cy="80" r="7" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="38" cy="100" r="8" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="62" cy="100" r="8" fill="#29B6F6" stroke="#000" stroke-width="2"/></svg>',
+'ネクスケ':'<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="34" cy="22" rx="10" ry="22" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/><ellipse cx="66" cy="22" rx="10" ry="22" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/><ellipse cx="34" cy="18" rx="5" ry="14" fill="#FF1744"/><ellipse cx="66" cy="18" rx="5" ry="14" fill="#FF1744"/><ellipse cx="50" cy="80" rx="32" ry="36" fill="#FAFAFA" stroke="#000" stroke-width="3"/><rect x="74" y="60" width="18" height="28" rx="6" fill="#FF1744" stroke="#000" stroke-width="2"/><circle cx="40" cy="74" r="9" fill="white" stroke="#000" stroke-width="2"/><circle cx="60" cy="74" r="9" fill="white" stroke="#000" stroke-width="2"/><circle cx="41" cy="75" r="5" fill="#111"/><circle cx="61" cy="75" r="5" fill="#111"/><circle cx="39.5" cy="73.5" r="2" fill="white"/><circle cx="59.5" cy="73.5" r="2" fill="white"/><path d="M38 86 Q50 98 62 86" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="8" y="78" width="18" height="14" rx="3" fill="#FFD700" stroke="#8B6914" stroke-width="2"/><circle cx="40" cy="114" r="9" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/><circle cx="60" cy="114" r="9" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/></svg>',
+'カゲ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="70" r="30" fill="#212121"/><circle cx="28" cy="55" r="18" fill="#212121"/><circle cx="72" cy="55" r="18" fill="#212121"/><circle cx="50" cy="48" r="20" fill="#212121"/><ellipse cx="40" cy="66" rx="7" ry="5" fill="#FFD700" opacity="0.9"/><ellipse cx="60" cy="66" rx="7" ry="5" fill="#FFD700" opacity="0.9"/><ellipse cx="40" cy="66" rx="4" ry="3" fill="#FFF176"/><ellipse cx="60" cy="66" rx="4" ry="3" fill="#FFF176"/><circle cx="30" cy="42" r="3" fill="#FFD700" opacity="0.8"/><circle cx="70" cy="38" r="2.5" fill="#FFD700" opacity="0.7"/><circle cx="78" cy="58" r="2" fill="#FFD700" opacity="0.6"/></svg>'
+};
+function cSVG(t,w,h){return `<div style="width:${w}px;height:${h}px;">${CSVG[t]||CSVG['ネクスケ']}</div>`;}
+
+// DATA
+const SUBS={
+  event:{中学生:['イベント','スポット'],高校生:['イベント','古着','カフェ','スポット'],大学生:['イベント','古着','カフェ','スポット'],社会人:['イベント','古着','カフェ','スポット']},
+  learn:{中学生:['体験・ワークショップ'],高校生:['体験・ワークショップ','コンテスト・募集'],大学生:['体験・ワークショップ','就活・インターン','コンテスト・募集'],社会人:['体験・ワークショップ','コンテスト・募集']},
+  volunteer:{中学生:[],高校生:[],大学生:[],社会人:[]}
+};
+const GS={event:{bg:'rgba(255,61,90,0.13)',bd:'rgba(255,61,90,0.35)',c:'#ff8fa0'},learn:{bg:'rgba(255,190,0,0.13)',bd:'rgba(255,190,0,0.35)',c:'#ffbe00'},volunteer:{bg:'rgba(0,229,160,0.13)',bd:'rgba(0,229,160,0.35)',c:'#00e5a0'}};
+const GC={event:'#ff8fa0',learn:'#ffbe00',volunteer:'#00e5a0'};
+
+const EVS=[
+  {id:'e1',g:'event',sub:'イベント',gl:'イベント・おでかけ',ge:'🎉',title:'広島フードフェスティバル2026',ds:'2026-03-15',de:'2026-03-16',ts:'10:00〜18:00',loc:'広島市中央公園',addr:'広島市中区基町15',price:'入場無料',desc:'広島県内の飲食店・農家が大集合！地元グルメが楽しめる2日間のフードフェス。',vid:'',ig:'https://instagram.com',hp:'https://example.com',rev:'',hasRev:false,feed:true,tags:['高校生歓迎','無料','写真映え'],bg:'linear-gradient(135deg,#1a0805,#5a1a08,#c05020)',em:'🍜',age:['高校生','大学生','社会人'],qr:'FOOD01',fixed:false},
+  {id:'e2',g:'volunteer',sub:'',gl:'ボランティア',ge:'🤝',title:'宮島清掃ボランティア',ds:'2026-03-22',de:'2026-03-22',ts:'9:00〜13:00',loc:'宮島桟橋集合',addr:'廿日市市宮島町1-1',price:'参加無料',desc:'世界遺産・宮島の海岸や参道を清掃します。軍手・ゴミ袋は準備します。初めての方も大歓迎。',vid:'',ig:'https://instagram.com',hp:'https://example.com',rev:'https://example.com',hasRev:true,feed:true,tags:['高校生歓迎','1人OK','初心者OK','単発OK'],bg:'linear-gradient(135deg,#011a10,#053d20,#0e9040)',em:'🌊',age:['高校生','大学生','社会人'],qr:'MIYA01',fixed:false},
+  {id:'e3',g:'learn',sub:'コンテスト・募集',gl:'学び・挑戦',ge:'🚀',title:'高校生起業家ピッチコンテスト',ds:'2026-04-05',de:'2026-04-05',ts:'13:00〜17:30',loc:'広島市立大学サテライト',addr:'広島市中区基町5-44',price:'観覧無料',desc:'高校生・大学生が自分のアイデアを3分でプレゼン！優勝者には活動支援金10万円を授与。',vid:'',ig:'https://instagram.com',hp:'https://example.com',rev:'https://example.com',hasRev:true,feed:true,tags:['高校生歓迎','賞あり','証明書あり'],bg:'linear-gradient(135deg,#050515,#1a0a35,#4a1a80)',em:'💡',age:['高校生','大学生'],qr:'PITCH1',fixed:false},
+  {id:'e4',g:'event',sub:'スポット',gl:'イベント・おでかけ',ge:'🎉',title:'平和公園 夜桜ライトアップ',ds:'2026-03-28',de:'2026-04-06',ts:'日没〜21:00',loc:'広島平和記念公園',addr:'広島市中区中島町1',price:'無料',desc:'ソメイヨシノ約50本が幻想的にライトアップ。原爆ドームとの共演が圧巻。',vid:'',ig:'https://instagram.com',hp:'https://example.com',rev:'',hasRev:false,feed:true,tags:['無料','1人OK','写真映え'],bg:'linear-gradient(135deg,#0a0515,#300a50,#7a208a)',em:'🌸',age:['高校生','大学生','社会人'],qr:'SAKUR1',fixed:false},
+  {id:'e5',g:'learn',sub:'就活・インターン',gl:'学び・挑戦',ge:'🚀',title:'広島IT企業 1dayインターン',ds:'2026-04-10',de:'2026-04-10',ts:'10:00〜17:00',loc:'広島市内（詳細申込後）',addr:'広島市中区',price:'無料（交通費支給あり）',desc:'広島のIT企業でリアルな仕事体験。プログラミング未経験でもOK。',vid:'',ig:'https://instagram.com',hp:'https://example.com',rev:'https://example.com',hasRev:true,feed:true,tags:['大学生歓迎','初心者OK'],bg:'linear-gradient(135deg,#050a15,#102d5a,#1a4a80)',em:'💻',age:['大学生','社会人'],qr:'INTER1',fixed:false},
+  {id:'f1',g:'event',sub:'カフェ',gl:'イベント・おでかけ',ge:'☕',title:'44（キャラントキャトル）',ds:'',de:'',ts:'11:00〜22:00',loc:'広島市中区立町',addr:'広島市中区立町5-17',price:'〜1,500円',desc:'雑居ビル5Fの隠れ家カフェ。名物アップルパイとバニラアイスが絶品。',vid:'',ig:'https://instagram.com',hp:'https://example.com',rev:'',hasRev:false,feed:false,tags:['1人OK','写真映え'],bg:'linear-gradient(135deg,#1a0e05,#3d2a0a,#7a5520)',em:'☕',age:['高校生','大学生','社会人'],qr:'CAFE44',fixed:true},
 ];
 
-// ===== STATE =====
-let currentUser = null;
-let currentEventIndex = 0;
-let filteredEvents = [...sampleEvents];
-let currentGenre = 'all';
-let currentDate = 'all';
-let flyerGenre = 'all';
-let likes = new Set();
-let touchStartY = 0;
-let drawerEventId = null;
-let isTransitioning = false;
+const SHOP_GOODS=[
+  {id:'g1',name:'ステッカー購入権',desc:'Nexca出店時に現地でステッカーを購入できる権利（別途購入代金必要）',cost:100,ic:'🎨',cat:'goods'},
+  {id:'g2',name:'缶バッジ購入権',desc:'Nexca出店時に現地で缶バッジを購入できる権利（別途購入代金必要）',cost:200,ic:'📛',cat:'goods'},
+  {id:'g3',name:'アクキー購入権',desc:'Nexca出店時に現地でアクキーを購入できる権利（別途購入代金必要）',cost:350,ic:'🎭',cat:'goods'},
+  {id:'g4',name:'限定Tシャツ購入権',desc:'Nexca出店時に限定Tシャツを購入できる権利（別途購入代金必要）',cost:500,ic:'👕',cat:'goods'},
+];
+const SHOP_TITLE=[
+  {id:'t1',name:'称号「ネクスカー」',desc:'マイページに称号が表示される',cost:30,ic:'🏅',cat:'title'},
+  {id:'t2',name:'称号「Nexcaサポーター」',desc:'マイページに特別称号が表示される',cost:150,ic:'⭐',cat:'title'},
+  {id:'t3',name:'称号「Nexca Legend」',desc:'最高ランクの称号',cost:600,ic:'👑',cat:'title'},
+];
+const SHOP_CPN=[
+  {id:'c1',name:'掲載店舗 100円OFFクーポン',desc:'Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。',cost:50,ic:'🎟️',cat:'cpn',disc:100},
+  {id:'c2',name:'掲載店舗 200円OFFクーポン',desc:'Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。',cost:100,ic:'🎟️',cat:'cpn',disc:200},
+  {id:'c3',name:'掲載店舗 350円OFFクーポン',desc:'Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。',cost:200,ic:'🎟️',cat:'cpn',disc:350},
+];
+const MISSIONS=[
+  {id:'m1',name:'今月2回参加する',sub:'QR参加証明を2回完了する',pt:20,progress:0,goal:2,done:false},
+  {id:'m2',name:'学びジャンルに参加する',sub:'学び・挑戦のイベントに1回QR参加証明',pt:15,progress:0,goal:1,done:false},
+  {id:'m3',name:'振り返りを2回完了する',sub:'振り返りを2回書いて送る',pt:20,progress:0,goal:2,done:false},
+  {id:'m4',name:'友達と1回参加する',sub:'紹介関係の友達と同一イベントで参加証明',pt:20,progress:0,goal:1,done:false},
+  {id:'m5',name:'スタンプを5個集める',sub:'掲載店舗・イベントでスタンプを5個獲得',pt:25,progress:0,goal:5,done:false},
+];
+const EARN_RULES=[
+  {name:'初回登録',sub:'1アカウント1回のみ',pt:20,ic:'🎉',color:'rgba(255,61,90,0.12)',camp:false},
+  {name:'年齢層設定',sub:'初回設定時のみ',pt:5,ic:'🎒',color:'rgba(255,190,0,0.1)',camp:false},
+  {name:'地域設定',sub:'初回設定時のみ',pt:5,ic:'📍',color:'rgba(77,159,255,0.1)',camp:false},
+  {name:'ログイン',sub:'1日1回',pt:2,ic:'🔑',color:'rgba(255,255,255,0.06)',camp:false},
+  {name:'QR参加証明（イベント）',sub:'当日設置のQRコードを読み込む・1イベント1回',pt:50,ic:'✅',color:'rgba(0,229,160,0.1)',camp:false},
+  {name:'QR参加証明（固定店舗）',sub:'掲載店舗のQRを読み込む・生涯1回のみ',pt:30,ic:'🏪',color:'rgba(77,159,255,0.1)',camp:false},
+  {name:'初回参加ボーナス',sub:'Nexca経由で初めて参加した時',pt:30,ic:'🚀',color:'rgba(168,85,247,0.1)',camp:true},
+  {name:'振り返り完了',sub:'3問全て回答・参加証明済みのみ',pt:20,ic:'✍️',color:'rgba(255,190,0,0.1)',camp:true},
+  {name:'学び達成ボーナス',sub:'振り返りで3項目を15文字以上入力',pt:10,ic:'📚',color:'rgba(0,229,160,0.08)',camp:false},
+  {name:'友達紹介成立',sub:'紹介した友達が参加証明まで完了',pt:40,ic:'👥',color:'rgba(77,159,255,0.1)',camp:true},
+  {name:'友達と一緒に参加',sub:'紹介関係の友達と同一イベントで参加証明',pt:20,ic:'🤝',color:'rgba(0,229,160,0.08)',camp:false},
+  {name:'月2回参加ボーナス',sub:'同月内に2回参加証明完了',pt:20,ic:'🔥',color:'rgba(255,190,0,0.08)',camp:false},
+  {name:'初参加ジャンルボーナス',sub:'各ジャンルで初めて参加した時',pt:15,ic:'⭐',color:'rgba(168,85,247,0.08)',camp:false},
+  {name:'ネクスカ出展ブース来場',sub:'Nexca出展時にQRコードを読み込み',pt:10,ic:'🎪',color:'rgba(255,255,255,0.05)',camp:false},
+];
+const CD={
+  'アガル':{color:'#FF4D4D',type:'ワイワイ × アクション',catch:'考える前に、もう走ってる。',kuchi:'「やろやろ！絶対楽しいって！」',pers:'思い立ったら即行動。楽しそうなことには全力で飛びつくし、退屈な時間が一番の敵。誰かと一緒に盛り上がるのが最高に好きで、気づいたらみんなの中心にいる。',weak:'実は一人の夜が少し苦手。止まるのが怖い。',compat:'テクル',cd:'暴走するあなたを黙って支えてくれる存在。テクルと一緒なら、もっと遠くまで行ける。',bs:'アガルがネクストリートに来る前にいた場所は「灰色の平原」。何も起きない場所で、それでも毎日走っていた──。',evIds:['e1','e4']},
+  'ツムギ':{color:'#FFD700',type:'ワイワイ × クリエイション',catch:'一人じゃできないことを、みんなでやる天才。',kuchi:'「ねえ、一緒にやろうよ！絶対いけるって！」',pers:'人を巻き込むのが天才的に上手い。「一緒にやろう！」の一言で周りが動き出す。アイデアは止まらないし、面倒見もいい。',weak:'自分一人のために何かをした記憶がない。頼りにされていないと不安になる。',compat:'コネル',cd:'あなたが光を当てることで、コネルの才能が世界に届く。最高のパートナー。',bs:'ツムギがかつていた「賑やかな街」では、毎日お祭りのようだった。でもある日、自分がいなくても祭りは続くことに気づいてしまった──。',evIds:['e2','e3']},
+  'ヌクミ':{color:'#4CAF50',type:'ワイワイ × リラクゼーション',catch:'そこにいるだけで、場が温かくなる。',kuchi:'「おなかすいた。何食べたい？おごるよ！」',pers:'ゆるくて温かくて、場の空気を和ませる天才。おいしいものへのアンテナは誰よりも強い。争いごとが嫌いで、間におにぎりを差し出して解決する。',weak:'本気を出すのが怖い。「楽しければいい」は、実は自分を守るための壁。',compat:'アガル',cd:'アガルの勢いをあなたが和ませて、あなたの背中をアガルが押してくれる。',bs:'ヌクミはかつて「競争の街」にいた。料理コンテストに出て、本気で作った最高の一品。結果は──。',evIds:['e1','e4']},
+  'テクル':{color:'#5C6BC0',type:'マイペース × アクション',catch:'言葉は少ない。でも、行動が全てを語る。',kuchi:'「……（無言で手を差し伸べる）」',pers:'一人で黙々と動くのが性に合っている。寡黙だけど冷たくはない。困ってる人がいたら何も言わずに手伝って、お礼を言われる前にいなくなる。',weak:'人に頼れない。「弱さを見せたら終わり」と思っている。',compat:'フワリ',cd:'言葉がなくても通じ合える。静かに過ごす時間が、二人にとって一番大切。',bs:'テクルはかつて冒険チームのリーダーだった。仲間たちの信頼を一身に受けていた。でもある日、テクルの判断が──。',evIds:['e2','e4']},
+  'コネル':{color:'#9C27B0',type:'マイペース × クリエイション',catch:'没頭の先に、まだ誰も見たことのない世界がある。',kuchi:'「…面白いかも（小声）」',pers:'何かに取り組み始めると時間の概念が消える。「あと5分」が3時間になるのは日常。マニアックな知識が深くて、語り出したら止まらない。',weak:'「誰にもわかってもらえない」と思い込む癖。見せる前に諦めてしまう。',compat:'ツムギ',cd:'あなたの作品を世界に届けてくれる最高のプロデューサー。',bs:'コネルがいた「みんな同じ街」では、違うことをすると「変だ」と言われた。コネルは部屋にこもって、ずっと何かを作り続けていた──。',evIds:['e3','e5']},
+  'フワリ':{color:'#29B6F6',type:'マイペース × リラクゼーション',catch:'静かに見ている。でも、全部わかっている。',kuchi:'「……そういうことか（ポツリと）」',pers:'普段はぼんやりしているように見えるけど、実は一番よく見ている。突然、誰もが考えつかない核心を突く一言を言って周りを驚かせる。',weak:'行動に移せない。「自分には何もない」と思っている。',compat:'テクル',cd:'言葉がいらない関係。テクルの隣で静かに過ごす時間が一番好き。',bs:'フワリがいた「忙しい街」では全員が走っていた。立ち止まると怒られる街。フワリは走れなかった──。',evIds:['e4','e3']},
+};
+const ALL_CHARS=['アガル','ツムギ','ヌクミ','テクル','コネル','フワリ'];
+const PREFS=['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'];
+const QS=[
+  {n:1,step:'STEP 1',text:'休みの日、まず何をする？',type:'s',opts:[{l:'誰かに連絡して予定を立てる',s:{e:3}},{l:'SNSで面白そうな情報を探す',s:{e:1}},{l:'家で好きなことに没頭する',s:{e:-2}},{l:'特に決めず、その時の気分で動く',s:{e:0}}]},
+  {n:2,step:'STEP 1',text:'友達と遊ぶとき、あなたの立ち位置は？',type:'s',opts:[{l:'自分が企画して声をかける方',s:{e:3}},{l:'誘われたら基本参加する',s:{e:1}},{l:'少人数の方が楽しい',s:{e:-1}},{l:'一人の時間も大事にしたい',s:{e:-3}}]},
+  {n:3,step:'STEP 1',text:'「めちゃくちゃ楽しそう！」と思うのは？',type:'s',opts:[{l:'体を動かすスポーツやアクティビティ',s:{a:3}},{l:'何かを自分の手で作る体験',s:{c:3}},{l:'おいしいものを食べたり、のんびり過ごす',s:{r:3}},{l:'新しい知識やスキルが身につくこと',s:{c:2}}]},
+  {n:4,step:'STEP 1',text:'SNSで思わず保存しちゃう投稿は？',type:'s',opts:[{l:'絶景や旅先の写真・アウトドア動画',s:{a:2}},{l:'作り方やメイキング動画',s:{c:2}},{l:'カフェ・グルメ・おしゃれスポット',s:{r:2}},{l:'ライフハック・知識・勉強系',s:{c:1,r:1}}]},
+  {n:5,step:'STEP 1',text:'自分へのご褒美として一番嬉しいのは？',type:'s',opts:[{l:'行ったことのない場所・新しい体験',s:{a:3}},{l:'いい道具や素材（画材、ガジェット等）',s:{c:3}},{l:'おいしいご飯・リラックスできる時間',s:{r:3}},{l:'映画・本・展覧会のチケット',s:{c:1,r:1}}]},
+  {n:6,step:'STEP 2',text:'イベントや遊びの情報、どこで見つける？',type:'s',opts:[{l:'友達や家族からの口コミ',s:{e:2}},{l:'Instagram・TikTok等のSNS',s:{e:1}},{l:'自分でネットで検索する',s:{e:-1}},{l:'正直、あんまり見つけられていない',s:{e:-2}}]},
+  {n:7,step:'STEP 2',text:'「行きたいけど行けなかった…」一番の理由は？',type:'s',dataOnly:true,opts:[{l:'一緒に行く人がいなかった',s:{}},{l:'お金が気になった',s:{}},{l:'どんな雰囲気かわからなくて不安だった',s:{}},{l:'そもそも自分に合うかわからなかった',s:{}}]},
+  {n:8,step:'STEP 2',text:'イベントや遊びに使える予算は？（1回あたり）',type:'s',dataOnly:true,opts:[{l:'無料がいい',s:{}},{l:'〜1,000円くらい',s:{}},{l:'数千円なら全然OK',s:{}},{l:'良い体験なら金額は気にしない',s:{}}]},
+  {n:9,step:'STEP 2',text:'新しいことを始めるとき、どうする？',type:'s',opts:[{l:'考えるより先に動く！',s:{e:2,a:1}},{l:'誰か誘ってから動く',s:{e:2}},{l:'まず情報を集めて納得してから',s:{c:1}},{l:'気分が乗ったら…かな',s:{e:-1,r:1}}]},
+  {n:10,step:'STEP 2',text:'理想の休日を一言で言うと？',type:'s',opts:[{l:'冒険と発見！',s:{e:1,a:2}},{l:'仲間と最高の時間！',s:{e:3}},{l:'何かを生み出す達成感！',s:{c:2}},{l:'最高にリラックスした時間',s:{e:-1,r:2}}]},
+  {n:11,step:'STEP 3',text:'普段よく使っているSNSは？（複数選択可）',type:'m',dataOnly:true,opts:[{l:'Instagram',s:{}},{l:'TikTok',s:{}},{l:'YouTube',s:{}},{l:'X（旧Twitter）',s:{}},{l:'LINE',s:{}},{l:'あまり使わない',s:{}}]},
+  {n:12,step:'STEP 3',text:'あなたの年齢は？',type:'s',dataOnly:true,opts:[{l:'〜12歳',s:{}},{l:'13〜15歳',s:{}},{l:'16〜18歳',s:{}},{l:'19〜24歳',s:{}},{l:'25〜34歳',s:{}},{l:'35歳以上',s:{}}]},
+  {n:13,step:'STEP 3',text:'お住まいの都道府県は？',type:'p',dataOnly:true},
+  {n:14,step:'STEP 3',text:'イベント情報、どのくらいの頻度で探す？',type:'s',dataOnly:true,opts:[{l:'ほぼ毎日チェックしたい',s:{}},{l:'週に1〜2回くらい',s:{}},{l:'月に数回',s:{}},{l:'特定の時期だけ',s:{}}]},
+];
 
-// ===== INIT =====
-async function init() {
-  // まずアプリを表示する（ログイン不要で見れる）
-  renderFeed();
-  renderFlyers();
-  setupSwipe();
+// STATE
+let age='高校生',user=null,idx=0,fevs=[];
+let genre='all',sub='',flyG='all';
+let likes=new Set(),pts=0,ptsUsed=0,ptsMonthly=0,ptsTotal=0,stamps=0;
+let stampCnt=0,stampedPlaces=new Set(),fixedVisited=new Set();
+let ownedTitles=new Set(),ownedGoods=[],ownedCpns=[];
+let phist=[],reviews=[],mapOn=false;
+let ty=0,busy=false,partEvId=null,firstPart=true;
+let exItem=null;
+let dScores={e:0,a:0,c:0,r:0},dAnswers={},cQ=0,q2a=null,q3a=null,q5a=null;
+const CAMP=2;
 
-  setTimeout(() => {
-    document.getElementById('loading-screen').classList.add('hidden');
-  }, 800);
-
-  // Supabaseの認証チェック（失敗しても続行）
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      currentUser = session.user;
-      hideLoginScreen();
-      await loadUserLikes();
-      renderMyPage();
-    }
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        currentUser = session.user;
-        hideLoginScreen();
-        loadUserLikes().then(() => {
-          renderFeed();
-          renderMyPage();
-        });
-      } else {
-        currentUser = null;
-        renderMyPage();
-      }
-    });
-  } catch(e) {
-    console.log('Auth check failed, continuing as guest');
-  }
+// ONBOARDING
+let userCity='';
+function pickAge(el,a){
+  document.querySelectorAll('#ob-step1 .ob-item').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');age=a;
+  document.getElementById('ob-btn1').classList.add('on');
+}
+function goObStep2(){
+  document.getElementById('ob-step1').style.display='none';
+  document.getElementById('ob-step2').style.display='block';
+}
+function pickCity(el,city){
+  document.querySelectorAll('#ob-step2 .ob-item').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');userCity=city;
+  document.getElementById('ob-btn2').classList.add('on');
+}
+function startApp(){
+  document.getElementById('ob').classList.add('hide');
+  document.getElementById('ab').style.display='flex';
+  updateAB();renderFeed();renderFlyer();renderPtHero();renderEarnList();renderShopAll();renderMissions();
+  document.getElementById('d-mascot').innerHTML=cSVG('ネクスケ',120,120);
+  addPt('初回登録',20,false);addPt('年齢層設定',5,false);addPt('地域設定',5,false);
+  saveProfile();
+  showToast('🎉 ようこそNexcaへ！ +30pt');
+}
+function updateAB(){
+  const ic={'中学生':'📚','高校生':'🎒','大学生':'🎓','社会人':'💼'};
+  document.getElementById('ab-ic').textContent=ic[age]||'🎒';
+  document.getElementById('ab-lb').textContent=age;
+}
+function openAgeMod(){document.getElementById('agem').classList.add('on');}
+function closeAgeMod(){document.getElementById('agem').classList.remove('on');}
+function swAge(el,a){
+  age=a;updateAB();closeAgeMod();
+  const labels={'中学生':'📚 中学生','高校生':'🎒 高校生','大学生':'🎓 大学生','社会人':'💼 社会人'};
+  document.getElementById('mpage').textContent=labels[a]||a;
+  renderFeed();renderFlyer();updateSubOpts();saveProfile();showToast(a+'モードに切替えました');
 }
 
-function hideLoginScreen() {
-  document.getElementById('login-screen').classList.add('hidden');
+// FILTER
+function openFM(){document.getElementById('fm').classList.add('on');}
+function closeFM(){document.getElementById('fm').classList.remove('on');}
+function pickGenre(el){
+  document.querySelectorAll('.fm-gopt').forEach(b=>b.classList.remove('on'));el.classList.add('on');genre=el.dataset.g;sub='';
+  const ic={all:'📍',event:'🎉',learn:'🚀',volunteer:'🤝'};const lb={all:'すべて',event:'イベント',learn:'学び・挑戦',volunteer:'ボランティア'};
+  document.getElementById('fi').textContent=ic[genre];document.getElementById('fl').textContent=lb[genre];
+  updateSubOpts();renderFeed();closeFM();
+}
+function updateSubOpts(){
+  const row=document.getElementById('fm-subs');
+  if(genre==='all'||genre==='volunteer'){row.innerHTML='<div style="font-size:11px;color:var(--dim);padding:4px 0 8px;">このジャンルに小ジャンルはありません</div>';return;}
+  const list=(SUBS[genre]&&SUBS[genre][age])||[];
+  if(!list.length){row.innerHTML='<div style="font-size:11px;color:var(--dim);padding:4px 0 8px;">なし</div>';return;}
+  row.innerHTML=list.map(s=>`<div class="fm-subopt ${sub===s?'on':''}" onclick="pickSub(this,'${s}')">${s}</div>`).join('');
+}
+function pickSub(el,s){sub=sub===s?'':s;document.querySelectorAll('.fm-subopt').forEach(b=>b.classList.toggle('on',b.textContent===sub));renderFeed();}
+function pickDate(el){document.querySelectorAll('.fm-dateopt').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+
+// FEED
+function renderFeed(){
+  fevs=EVS.filter(e=>e.feed&&e.age.includes(age));
+  if(genre!=='all')fevs=fevs.filter(e=>e.g===genre);
+  if(sub)fevs=fevs.filter(e=>e.sub===sub);
+  idx=0;const st=document.getElementById('stack');st.innerHTML='';
+  if(!fevs.length){st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}
+  fevs.forEach((ev,i)=>st.appendChild(mkSlide(ev,i)));updPos();
+}
+function mkSlide(ev,i){
+  const s=document.createElement('div');s.className='slide dn';s.dataset.i=i;
+  const gs=GS[ev.g]||GS.event;const lk=likes.has(ev.id);
+  s.innerHTML=`<div class="sbg"><div class="sbg-in" style="background:${ev.bg};"><div class="sbg-em">${ev.em}</div></div><div class="sovl"></div></div>
+<div class="srt">
+  <button class="sact${lk?' lk':''}" id="lb-${ev.id}" onclick="toggleLike('${ev.id}')"><div class="sact-c">${lk?'❤️':'🤍'}</div><div class="sact-l">いいね</div></button>
+  <button class="sact" onclick="shareEv('${ev.id}')"><div class="sact-c">📤</div><div class="sact-l">シェア</div></button>
+</div>
+<div class="sbot">
+  <div class="sgtag" style="background:${gs.bg};border-color:${gs.bd};color:${gs.c};">${ev.ge} ${ev.gl}</div>
+  <div class="stitle">${ev.title}</div>
+  <div class="smeta"><span class="smeta-i">📅 ${(ev.ds||'').replace(/-/g,'/')}</span><span class="smeta-i">📍 ${ev.loc}</span></div>
+  <button class="sdbtn" onclick="openDrw('${ev.id}')">📋 詳細情報</button>
+</div>
+<div class="shint">↑ スワイプで次へ</div>`;
+  return s;
+}
+function updPos(){document.querySelectorAll('.slide').forEach(s=>{const i=parseInt(s.dataset.i);s.classList.remove('cur','up','dn');if(i===idx)s.classList.add('cur');else if(i<idx)s.classList.add('up');else s.classList.add('dn');});}
+function next(){if(busy||idx>=fevs.length-1)return;busy=true;idx++;updPos();setTimeout(()=>busy=false,400);}
+function prev(){if(busy||idx<=0)return;busy=true;idx--;updPos();setTimeout(()=>busy=false,400);}
+function setupSwipe(){
+  const st=document.getElementById('stack');
+  st.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+  st.addEventListener('touchend',e=>{const d=ty-e.changedTouches[0].clientY;if(Math.abs(d)>45){d>0?next():prev();}},{passive:true});
+  let wt;st.addEventListener('wheel',e=>{clearTimeout(wt);wt=setTimeout(()=>{e.deltaY>25?next():prev();},70);});
 }
 
-function skipLogin() {
-  document.getElementById('login-screen').classList.add('hidden');
-  renderFeed();
-  renderFlyers();
-  setupSwipe();
-  setTimeout(() => {
-    document.getElementById('loading-screen').classList.add('hidden');
-  }, 500);
+// DRAWER
+function openDrw(id){
+  const ev=EVS.find(e=>e.id===id);if(!ev)return;
+  const gs=GS[ev.g]||GS.event;
+  const pst=participations&&participations[ev.id];
+  const fDone=ev.fixed&&fixedVisited.has(ev.id);
+  let pSec=fDone?`<div class="part-st ok">✅ 訪問済みです（固定店舗は生涯1回のみポイント付与）</div>`:
+    pst==='approved'?`<div class="part-st ok">✅ 参加証明済み</div>`:
+    `<button class="part-btn" onclick="openPartM('${ev.id}')">📱 QRで${ev.fixed?'訪問証明 → +30pt':'参加証明 → +50pt'} + スタンプ1個</button>`;
+  const dateStr=ev.ds?(ev.ds||'').replace(/-/g,'/')+(ev.de&&ev.de!==ev.ds?' 〜 '+ev.de.replace(/-/g,'/'):'')+'　'+ev.ts:'常時営業　'+ev.ts;
+  const mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);
+  document.getElementById('drwbody').innerHTML=`
+<div class="drw-t">${ev.title}</div>
+<div class="drw-gt" style="background:${gs.bg};border-color:${gs.bd};color:${gs.c};">${ev.ge} ${ev.gl}${ev.fixed?' · 固定掲載':''}</div>
+<div class="drw-tags">${ev.tags.map(t=>`<div class="drw-tag">${t}</div>`).join('')}</div>
+<div class="ptbar"><div style="font-size:18px;">⭐</div><div style="flex:1;"><div style="font-size:11px;font-weight:700;color:var(--yellow);">参加してポイントゲット！</div><div style="font-size:10px;color:var(--dim);margin-top:1px;">${ev.fixed?'訪問証明+30pt（生涯1回）':'参加証明+50pt・振り返り+20pt（2倍キャンペーン中）'}</div></div><div class="ptbar-bdg">${ev.fixed?'固定':'×2'}</div></div>
+${pSec}
+<div class="ic"><div class="ic-l">📅 日程・時間</div><div class="ic-v">${dateStr}</div></div>
+<div class="ic">
+  <div class="ic-l">📍 場所・住所</div>
+  <div class="ic-v">${ev.loc}<br><span style="font-size:11px;color:var(--dim);">${ev.addr}</span></div>
+  <a href="${mapUrl}" target="_blank" class="gmapbtn">🗺️ Googleマップで場所を確認する</a>
+</div>
+<div class="ic"><div class="ic-l">💴 参加費</div><div class="ic-v">${ev.price}</div></div>
+<p class="desc">${ev.desc}</p>
+<div class="ctas">
+  ${ev.hasRev?`<a class="cta cta-a" href="${ev.rev}" target="_blank">✏️ 申し込む・予約する</a>`:''}
+  <a class="cta cta-m" href="${mapUrl}" target="_blank">🗺️ 地図で場所を確認</a>
+  ${ev.ig?`<a class="cta cta-i" href="${ev.ig}" target="_blank">📸 Instagramを見る</a>`:''}
+  ${ev.hp?`<a class="cta cta-h" href="${ev.hp}" target="_blank">🌐 公式ホームページ</a>`:''}
+  <button class="cta" style="background:rgba(168,85,247,0.15);border:1.5px solid rgba(168,85,247,0.3);color:#c084fc;" onclick="openOrgPage('${ev.id}')">🏢 主催者ページを見る</button>
+</div>`;
+  document.getElementById('drw').classList.add('on');document.getElementById('drwbg').classList.add('on');
 }
+function closeDrw(){document.getElementById('drw').classList.remove('on');document.getElementById('drwbg').classList.remove('on');}
+var participations={};
 
-// ===== AUTH =====
-async function loginWithGoogle() {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.href }
-  });
-  if (error) showToast('ログインエラー: ' + error.message);
+// FLYER
+function setFG(el){document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));el.classList.add('on');flyG=el.dataset.g;renderFlyer();}
+function renderFlyer(){
+  let evs=flyG==='all'?EVS:EVS.filter(e=>e.g===flyG);
+  evs=evs.filter(e=>e.age.includes(age));
+  const grid=document.getElementById('flgrid');
+  if(!evs.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}
+  grid.innerHTML=evs.map(ev=>`
+<div class="fc" onclick="openVOV('${ev.id}')">
+  <div class="fct" style="background:${ev.bg};">${ev.vid?`<iframe src="https://www.youtube.com/embed/${ev.vid}?mute=1&controls=0" style="position:absolute;inset:0;width:100%;height:100%;" frameborder="0"></iframe>`:`<div class="fct-em">${ev.em}</div>`}<div class="fct-ovl"></div><div class="fct-play">▶</div>${ev.fixed?'<div class="fct-fixed">固定掲載</div>':''}</div>
+  <div class="fci"><div class="fcg" style="color:${GC[ev.g]}">${ev.ge} ${ev.gl}</div><div class="fct-t">${ev.title}</div><div class="fcd">${ev.ds?'📅 '+(ev.ds||'').replace(/-/g,'/'):ev.ts}</div><div class="fctags">${ev.tags.slice(0,3).map(t=>`<span class="fctag">${t}</span>`).join('')}</div></div>
+</div>`).join('');
+  document.getElementById('mplist').innerHTML=evs.map(ev=>`
+<a class="mpitem" href="https://maps.google.com/?q=${encodeURIComponent(ev.addr)}" target="_blank">
+  <div style="font-size:20px;">${ev.em}</div>
+  <div style="flex:1;"><div style="font-size:12px;font-weight:700;">${ev.title}</div><div style="font-size:10px;color:var(--dim);">📍 ${ev.loc}</div></div>
+  <div style="font-size:15px;color:var(--blue);">›</div>
+</a>`).join('');
 }
+function toggleMap(){mapOn=!mapOn;document.getElementById('mapview').classList.toggle('on',mapOn);document.getElementById('flscr').style.display=mapOn?'none':'';document.getElementById('mpbtn').textContent=mapOn?'📋 一覧':'🗺️ 地図';}
 
-async function logout() {
-  await supabase.auth.signOut();
-  currentUser = null;
-  likes = new Set();
-  renderMyPage();
-  showToast('ログアウトしました');
+// VIDEO OVERLAY
+function openVOV(id){
+  const ev=EVS.find(e=>e.id===id);if(!ev)return;
+  document.getElementById('vov-t').textContent=ev.title;
+  document.getElementById('vov-c').innerHTML=ev.vid?`<iframe src="https://www.youtube.com/embed/${ev.vid}?autoplay=1&playsinline=1" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="width:100%;height:100%;"></iframe>`:`<div style="width:100%;height:100%;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:68px;opacity:0.22;">${ev.em}</div>`;
+  const mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);
+  document.getElementById('vov-d').innerHTML=`<div style="font-size:14px;font-weight:900;margin-bottom:5px;">${ev.title}</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">${ev.tags.map(t=>`<span style="font-size:9px;padding:2px 7px;background:var(--s2);border-radius:20px;color:var(--dim);font-weight:700;">${t}</span>`).join('')}</div><div style="font-size:11px;color:var(--dim);margin-bottom:10px;">${ev.ds?'📅 '+(ev.ds||'').replace(/-/g,'/'):''}　📍 ${ev.loc}</div><div style="display:flex;flex-direction:column;gap:6px;">${ev.hasRev?`<a class="cta cta-a" href="${ev.rev}" target="_blank" style="font-size:12px;padding:10px;">✏️ 申し込む</a>`:''}<a class="cta cta-m" href="${mapUrl}" target="_blank" style="font-size:12px;padding:10px;">🗺️ 地図で見る</a></div>`;
+  document.getElementById('vov').classList.add('on');
 }
+function closeVOV(){document.getElementById('vov').classList.remove('on');document.getElementById('vov-c').innerHTML='';}
 
-// ===== LIKES =====
-async function loadUserLikes() {
-  if (!currentUser) return;
-  try {
-    const { data } = await supabase
-      .from('likes')
-      .select('event_id')
-      .eq('user_id', currentUser.id);
-    if (data) data.forEach(r => likes.add(r.event_id));
-  } catch(e) {}
-}
-
-async function toggleLike(eventId) {
-  if (!currentUser) { showToast('いいねにはログインが必要です'); return; }
-
-  if (likes.has(eventId)) {
-    likes.delete(eventId);
-    try {
-      await supabase.from('likes').delete()
-        .eq('user_id', currentUser.id).eq('event_id', eventId);
-    } catch(e) {}
-    showToast('いいねを取り消しました');
+// PARTICIPATION
+function openPartM(evId){
+  const ev=EVS.find(e=>e.id===evId);if(!ev)return;
+  partEvId=evId;
+  document.getElementById('partm-ev').textContent=ev.title;
+  if(ev.fixed&&fixedVisited.has(evId)){
+    document.getElementById('partm-s').textContent='固定掲載店舗（生涯1回のみポイント付与）';
+    document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 訪問済みです</div><button class="part-submit" onclick="closePartM()">閉じる</button>';
   } else {
-    likes.add(eventId);
-    try {
-      await supabase.from('likes').insert({ user_id: currentUser.id, event_id: eventId });
-    } catch(e) {}
-    showToast('❤️ いいねしました！');
+    document.getElementById('partm-s').textContent=ev.fixed?'📍 固定掲載店舗 → 訪問証明（生涯1回のみ +30pt）':'🎉 イベント参加証明（1イベント1回のみ +50pt）';
+    document.getElementById('partm-content').innerHTML=`<div class="qr-area" onclick="simQR()"><div style="font-size:40px;margin-bottom:8px;">📷</div><div style="font-size:13px;font-weight:700;">QRコードをスキャン</div><div style="font-size:11px;color:var(--dim);margin-top:4px;">会場・店頭のQRにかざす</div></div><div style="text-align:center;font-size:11px;color:var(--dim);margin:8px 0;">または</div><input class="code-input" id="part-code" type="text" maxlength="6" placeholder="コードを入力" oninput="this.value=this.value.toUpperCase()"><button class="part-submit" onclick="submitPart()">参加証明する → +${ev.fixed?30:50}pt</button>`;
   }
-
-  // Update UI
-  const btn = document.getElementById(`like-btn-${eventId}`);
-  if (btn) {
-    btn.classList.toggle('liked', likes.has(eventId));
-    btn.querySelector('.slide-action-circle').textContent = likes.has(eventId) ? '❤️' : '🤍';
-  }
-  updateStatsDisplay();
+  document.getElementById('partm').classList.add('on');
 }
-
-// ===== FEED =====
-function getFilteredEvents() {
-  let result = sampleEvents.filter(e => e.is_feed);
-  if (currentGenre !== 'all') result = result.filter(e => e.genre === currentGenre);
-  return result;
-}
-
-function renderFeed() {
-  filteredEvents = getFilteredEvents();
-  currentEventIndex = 0;
-  const stack = document.getElementById('video-stack');
-  stack.innerHTML = '';
-
-  if (filteredEvents.length === 0) {
-    stack.innerHTML = `<div class="empty-state" style="position:absolute;inset:0;display:flex;">
-      <div class="empty-state-icon">🔍</div>
-      <div class="empty-state-text">この条件のイベントはありません</div>
-    </div>`;
-    return;
-  }
-
-  filteredEvents.forEach((ev, i) => {
-    stack.appendChild(createSlide(ev, i));
-  });
-  updateSlidePositions();
-}
-
-function createSlide(ev, idx) {
-  const slide = document.createElement('div');
-  slide.className = 'video-slide below';
-  slide.dataset.idx = idx;
-
-  const isLiked = likes.has(ev.id);
-  const accentColor = ev.accentColor;
-
-  let genreTagStyle = '';
-  if (ev.genre === 'event') genreTagStyle = `background:rgba(255,61,90,0.15);border-color:rgba(255,61,90,0.4);color:#ff8fa0;`;
-  else if (ev.genre === 'volunteer') genreTagStyle = `background:rgba(0,229,160,0.15);border-color:rgba(0,229,160,0.4);color:#00e5a0;`;
-  else genreTagStyle = `background:rgba(255,190,0,0.15);border-color:rgba(255,190,0,0.4);color:#ffbe00;`;
-
-  slide.innerHTML = `
-    <div class="video-bg">
-      <div class="video-placeholder-bg" style="background:${ev.bg};">
-        <div class="video-placeholder-emoji">${ev.emoji}</div>
-        ${ev.video_id ? `
-        <div class="video-iframe-wrap">
-          <iframe src="https://www.youtube.com/embed/${ev.video_id}?autoplay=1&mute=1&loop=1&playlist=${ev.video_id}&controls=0&showinfo=0&rel=0&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>` : ''}
-      </div>
-      <div class="video-overlay"></div>
-    </div>
-
-    <div class="slide-right">
-      <button class="slide-action-btn ${isLiked ? 'liked' : ''}" id="like-btn-${ev.id}" onclick="toggleLike('${ev.id}')">
-        <div class="slide-action-circle">${isLiked ? '❤️' : '🤍'}</div>
-        <div class="slide-action-label">いいね</div>
-      </button>
-      <button class="slide-action-btn" onclick="shareEvent('${ev.id}')">
-        <div class="slide-action-circle">📤</div>
-        <div class="slide-action-label">シェア</div>
-      </button>
-    </div>
-
-    <div class="slide-bottom">
-      <div class="event-genre-tag" style="${genreTagStyle}">${ev.genreEmoji} ${ev.genreLabel}</div>
-      <div class="event-title-big">${ev.title}</div>
-      <div class="event-meta-row">
-        <div class="event-meta-item">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}</div>
-        <div class="event-meta-item">📍 ${ev.location}</div>
-      </div>
-      <button class="detail-open-btn" onclick="openDrawer('${ev.id}')">📋 詳細情報</button>
-    </div>
-    <div class="swipe-hint">↑ スワイプで次へ</div>
-  `;
-  return slide;
-}
-
-function updateSlidePositions() {
-  document.querySelectorAll('.video-slide').forEach(slide => {
-    const idx = parseInt(slide.dataset.idx);
-    slide.classList.remove('current','above','below');
-    if (idx === currentEventIndex) slide.classList.add('current');
-    else if (idx < currentEventIndex) slide.classList.add('above');
-    else slide.classList.add('below');
-  });
-}
-
-function goNext() {
-  if (isTransitioning || currentEventIndex >= filteredEvents.length - 1) return;
-  isTransitioning = true;
-  currentEventIndex++;
-  updateSlidePositions();
-  setTimeout(() => isTransitioning = false, 420);
-}
-
-function goPrev() {
-  if (isTransitioning || currentEventIndex <= 0) return;
-  isTransitioning = true;
-  currentEventIndex--;
-  updateSlidePositions();
-  setTimeout(() => isTransitioning = false, 420);
-}
-
-function setupSwipe() {
-  const stack = document.getElementById('video-stack');
-  stack.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
-  stack.addEventListener('touchend', e => {
-    const diff = touchStartY - e.changedTouches[0].clientY;
-    if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); }
-  }, { passive: true });
-
-  let wheelTimer;
-  stack.addEventListener('wheel', e => {
-    clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(() => { e.deltaY > 30 ? goNext() : goPrev(); }, 80);
-  });
-}
-
-// ===== FILTER =====
-function openFilter() { document.getElementById('filter-modal').classList.add('open'); }
-function closeFilter() { document.getElementById('filter-modal').classList.remove('open'); }
-function openFlyerFilter() { openFilter(); }
-
-function selectGenre(el) {
-  document.querySelectorAll('.genre-opt').forEach(o => o.classList.remove('active'));
-  el.classList.add('active');
-  currentGenre = el.dataset.genre;
-
-  const icons = { all:'📍', event:'🎉', volunteer:'🤝', learn:'🚀' };
-  const labels = { all:'すべて', event:'イベント', volunteer:'ボランティア', learn:'学び・挑戦' };
-  document.getElementById('filter-icon').textContent = icons[currentGenre];
-  document.getElementById('filter-label').textContent = labels[currentGenre];
-
-  renderFeed();
-  closeFilter();
-}
-
-function selectDate(el, val) {
-  document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentDate = val;
-}
-
-// ===== DRAWER =====
-function openDrawer(eventId) {
-  const ev = sampleEvents.find(e => e.id === eventId);
-  if (!ev) return;
-  drawerEventId = eventId;
-
-  const isLiked = likes.has(ev.id);
-  let tagStyle = '';
-  if (ev.genre === 'event') tagStyle = `background:rgba(255,61,90,0.15);border-color:rgba(255,61,90,0.4);color:#ff8fa0;`;
-  else if (ev.genre === 'volunteer') tagStyle = `background:rgba(0,229,160,0.15);border-color:rgba(0,229,160,0.4);color:#00e5a0;`;
-  else tagStyle = `background:rgba(255,190,0,0.15);border-color:rgba(255,190,0,0.4);color:#ffbe00;`;
-
-  document.getElementById('drawer-body').innerHTML = `
-    <div class="drawer-event-title">${ev.title}</div>
-    <div class="drawer-tag" style="${tagStyle}">${ev.genreEmoji} ${ev.genreLabel}</div>
-
-    <div class="info-card">
-      <div class="info-card-label">📅 日程・時間</div>
-      <div class="info-card-value">${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}${ev.date_end && ev.date_end !== ev.date_start ? ' 〜 ' + ev.date_end.replace(/-/g,'/') : ''}　${ev.time_start}</div>
-    </div>
-    <div class="info-card">
-      <div class="info-card-label">📍 場所・住所</div>
-      <div class="info-card-value">${ev.location}<br><span style="font-size:12px;color:var(--text-dim);">${ev.address}</span></div>
-    </div>
-    <div class="info-card">
-      <div class="info-card-label">💴 参加費</div>
-      <div class="info-card-value">${ev.price}</div>
-    </div>
-
-    <p class="desc-text">${ev.description}</p>
-
-    <div class="cta-stack">
-      ${ev.has_reserve ? `<a class="cta-button cta-reserve" href="${ev.reserve_url}" target="_blank">✏️ 予約する</a>` : ''}
-      ${ev.instagram_url ? `<a class="cta-button cta-instagram" href="${ev.instagram_url}" target="_blank">📸 Instagramを見る</a>` : ''}
-      ${ev.homepage_url ? `<a class="cta-button cta-hp" href="${ev.homepage_url}" target="_blank">🌐 公式ホームページ</a>` : ''}
-    </div>
-  `;
-
-  document.getElementById('detail-drawer').classList.add('open');
-  document.getElementById('drawer-backdrop').classList.add('open');
-}
-
-function closeDrawer() {
-  document.getElementById('detail-drawer').classList.remove('open');
-  document.getElementById('drawer-backdrop').classList.remove('open');
-}
-
-// ===== FLYERS =====
-function setFlyerGenre(el) {
-  document.querySelectorAll('.genre-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  flyerGenre = el.dataset.genre;
-  renderFlyers();
-}
-
-function renderFlyers() {
-  const events = flyerGenre === 'all' ? sampleEvents : sampleEvents.filter(e => e.genre === flyerGenre);
-  const grid = document.getElementById('flyer-grid');
-
-  if (events.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
-      <div class="empty-state-icon">🔍</div>
-      <div class="empty-state-text">この条件のイベントはありません</div>
-    </div>`;
-    return;
-  }
-
-  let genreColor = { event: '#ff8fa0', volunteer: '#00e5a0', learn: '#ffbe00' };
-
-  grid.innerHTML = events.map(ev => `
-    <div class="flyer-card" onclick="openVideoOverlay('${ev.id}')">
-      <div class="flyer-thumb" style="background:${ev.bg};">
-        <span style="font-size:52px;opacity:0.25;">${ev.emoji}</span>
-        <div class="flyer-thumb-overlay"></div>
-        <div class="flyer-play-badge">▶</div>
-      </div>
-      <div class="flyer-card-info">
-        <div class="flyer-card-genre" style="color:${genreColor[ev.genre]}">${ev.genreEmoji} ${ev.genreLabel}</div>
-        <div class="flyer-card-title">${ev.title}</div>
-        <div class="flyer-card-date">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ===== VIDEO OVERLAY =====
-function openVideoOverlay(eventId) {
-  const ev = sampleEvents.find(e => e.id === eventId);
-  if (!ev) return;
-
-  document.getElementById('overlay-title').textContent = ev.title;
-
-  if (ev.video_id) {
-    document.getElementById('overlay-video').innerHTML = `
-      <iframe src="https://www.youtube.com/embed/${ev.video_id}?autoplay=1&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%;height:100%;"></iframe>
-    `;
+function closePartM(){document.getElementById('partm').classList.remove('on');partEvId=null;}
+function simQR(){const ev=EVS.find(e=>e.id===partEvId);if(ev){const ci=document.getElementById('part-code');if(ci)ci.value=ev.qr;showToast('📷 QRコードを読み込みました');}}
+function submitPart(){
+  const ci=document.getElementById('part-code');if(!ci)return;
+  const code=ci.value.trim().toUpperCase();
+  const ev=EVS.find(e=>e.id===partEvId);if(!ev)return;
+  if(code.length<4){showToast('コードを入力してください');return;}
+  if(code!==ev.qr){document.getElementById('partm-content').innerHTML='<div class="part-st ng">❌ コードが正しくありません</div><button class="part-submit" onclick="closePartM()">閉じる</button>';return;}
+  if(ev.fixed){
+    if(fixedVisited.has(partEvId)){document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 訪問済みです</div><button class="part-submit" onclick="closePartM()">閉じる</button>';return;}
+    fixedVisited.add(partEvId);addStamp(partEvId);addPt('QR参加証明（固定店舗）',30,false);showToast('🏪 訪問証明完了！ +30pt + スタンプ1個');
+    saveParticipation(partEvId);saveStamp(partEvId);
   } else {
-    document.getElementById('overlay-video').innerHTML = `
-      <div style="width:100%;height:100%;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:80px;opacity:0.3;">${ev.emoji}</div>
-    `;
+    participations[partEvId]='approved';stamps++;addStamp(partEvId);addPt('QR参加証明（イベント）',50,false);
+    saveParticipation(partEvId);saveStamp(partEvId);
+    if(firstPart){firstPart=false;addPt('初回参加ボーナス',30,true);showToast('🎉 初回参加！ +50pt +60pt（2倍）+ スタンプ');}
+    else showToast('✅ 参加証明完了！ +50pt + スタンプ1個');
+    updMis('m1');if(ev.g==='learn')updMis('m2');
   }
-
-  document.getElementById('overlay-detail').innerHTML = `
-    <div style="font-size:16px;font-weight:900;margin-bottom:8px;">${ev.title}</div>
-    <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''} &nbsp; 📍 ${ev.location}</div>
-    <div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.75);margin-bottom:16px;">${ev.description}</div>
-    <div style="display:flex;flex-direction:column;gap:8px;">
-      ${ev.has_reserve ? `<a class="cta-button cta-reserve" href="${ev.reserve_url}" target="_blank" style="font-size:14px;padding:12px;">✏️ 予約する</a>` : ''}
-      ${ev.instagram_url ? `<a class="cta-button cta-instagram" href="${ev.instagram_url}" target="_blank" style="font-size:14px;padding:12px;">📸 Instagram</a>` : ''}
-    </div>
-  `;
-
-  document.getElementById('video-overlay').classList.add('open');
+  document.getElementById('partm-content').innerHTML=`<div class="part-st ok">✅ 完了！スタンプ帳に記録されました。</div><div style="font-size:12px;color:var(--dim);text-align:center;margin-bottom:10px;">現在のスタンプ：${stampCnt}個</div><button class="part-submit" onclick="closePartM()">閉じる</button>`;
+  updStats();renderPtHero();populateRevSel();renderStampBook();
 }
 
-function closeVideoOverlay() {
-  document.getElementById('video-overlay').classList.remove('open');
-  document.getElementById('overlay-video').innerHTML = '';
+// STAMPS
+function addStamp(placeId){
+  if(!stampedPlaces.has(placeId)){
+    stampedPlaces.add(placeId);stampCnt++;updMis('m5');
+    if(stampCnt===5)showToast('🎉 スタンプ5個！缶バッジ購入権が解放されました');
+    if(stampCnt===10)showToast('🎉 スタンプ10個！アクキー購入権が解放されました');
+    if(stampCnt===20){showToast('🎉 スタンプ20個達成！Legend称号+ボーナス50pt');addPt('スタンプ20個達成',50,false);}
+  }
+}
+function renderStampBook(){
+  const el=document.getElementById('stamp-grid');if(!el)return;
+  let h='';for(let i=0;i<20;i++){const f=i<stampCnt;h+=`<div class="stamp-cell" style="background:${f?'rgba(255,190,0,0.15)':'rgba(255,255,255,0.04)'};border:1.5px solid ${f?'rgba(255,190,0,0.4)':'rgba(255,255,255,0.07)'};">${f?'🐾':''}</div>`;}
+  el.innerHTML=h;
+  const lbl=document.getElementById('stamp-lbl');if(lbl)lbl.textContent=stampCnt+' / 20';
 }
 
-// ===== MYPAGE =====
-function renderMyPage() {
-  if (currentUser) {
-    const meta = currentUser.user_metadata || {};
-    document.getElementById('user-name').textContent = meta.full_name || meta.name || 'ユーザー';
-    document.getElementById('user-email').textContent = currentUser.email || '';
+// POINTS
+function addPt(reason,amt,camp){
+  const a=camp?amt*CAMP:amt;pts+=a;ptsTotal+=a;ptsMonthly+=a;
+  phist.unshift({reason,amt:a,date:new Date().toLocaleDateString('ja-JP'),camp});
+  updStats();renderPtHero();renderPtHistory();
+  savePointHistory(reason,a,camp);saveProfile();
+}
+function usePt(amt,reason){
+  if(pts<amt)return false;pts-=amt;ptsUsed+=amt;
+  phist.unshift({reason,amt:-amt,date:new Date().toLocaleDateString('ja-JP'),camp:false});
+  updStats();renderPtHero();renderPtHistory();
+  savePointHistory(reason,-amt,false);saveProfile();
+  return true;
+}
+function updStats(){
+  const v=Math.floor(pts);
+  ['ph-val','mp-ptv','st-pt'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=v;});
+  const els=[document.getElementById('ph-month'),document.getElementById('ph-total'),document.getElementById('ph-used')];
+  const vals=[ptsMonthly,ptsTotal,ptsUsed];
+  els.forEach((el,i)=>{if(el)el.textContent=Math.floor(vals[i]);});
+  if(document.getElementById('st-lk'))document.getElementById('st-lk').textContent=likes.size;
+  if(document.getElementById('st-pa'))document.getElementById('st-pa').textContent=stamps;
+}
+function renderPtHero(){
+  const all=[...SHOP_GOODS,...SHOP_TITLE,...SHOP_CPN].sort((a,b)=>a.cost-b.cost);
+  const next=all.find(s=>s.cost>Math.floor(pts));
+  const nn=document.getElementById('pt-next');if(!nn)return;
+  if(next){const p=Math.floor(pts),need=next.cost-p,pct=Math.min(100,Math.round(p/next.cost*100));
+    nn.innerHTML=`<div class="pt-next-lbl">🎯 次の特典まで</div><div class="pt-next-row"><div style="font-size:22px;">${next.ic}</div><div style="flex:1;"><div class="pt-next-n">${next.name}</div><div class="pt-next-pt">あと <strong>${need}pt</strong> で交換可能</div></div></div><div class="pt-prog"><div class="pt-prog-bar" style="width:${pct}%"></div></div>`;}
+  else nn.innerHTML=`<div style="text-align:center;font-size:12px;font-weight:700;color:var(--yellow);">🎉 全ての特典が交換可能です！</div>`;
+  renderShopAll();
+}
+function renderEarnList(){
+  document.getElementById('earn-list').innerHTML=EARN_RULES.map(r=>`
+<div class="earn-item"><div class="earn-ic" style="background:${r.color};">${r.ic}</div>
+<div style="flex:1;"><div class="earn-name">${r.name}</div><div class="earn-sub">${r.sub}</div></div>
+<div style="text-align:right;"><div class="earn-pt">+${r.pt}pt</div>${r.camp?`<div class="earn-camp">×${CAMP}倍中</div>`:''}</div>
+</div>`).join('');
+}
+function renderShopAll(){
+  const v=Math.floor(pts);
+  function rItems(items,elId,tagCls){
+    const el=document.getElementById(elId);if(!el)return;
+    el.innerHTML=items.map(s=>{const av=v>=s.cost;return `<div class="shop-item ${av?'avail':''}" onclick="openEx('${s.id}')">
+<div class="shop-ic" style="background:${s.cat==='goods'?'rgba(255,190,0,0.1)':s.cat==='title'?'rgba(168,85,247,0.1)':'rgba(0,229,160,0.1)'};">${s.ic}</div>
+<div style="flex:1;"><div class="shop-name">${s.name}</div><div class="shop-desc">${s.desc}</div><span class="shop-tag ${s.cat}">${s.cat==='goods'?'出店グッズ':s.cat==='title'?'称号':'掲載店クーポン'}</span></div>
+<div><div class="shop-pt">${s.cost}</div><div class="shop-pt-u">pt</div><span class="shop-tag ${av?s.cat:'lk'}" style="display:block;text-align:center;margin-top:3px;">${av?'交換可':'pt不足'}</span></div>
+</div>`;}).join('');
+  }
+  rItems(SHOP_GOODS,'shop-goods','goods');rItems(SHOP_TITLE,'shop-title','title');rItems(SHOP_CPN,'shop-cpn','cpn');
+}
+function openEx(id){
+  exItem=[...SHOP_GOODS,...SHOP_TITLE,...SHOP_CPN].find(s=>s.id===id);if(!exItem)return;
+  const v=Math.floor(pts),can=v>=exItem.cost;
+  document.getElementById('exmbox').innerHTML=`<div class="exm-t">${exItem.ic} ${exItem.name}</div><div class="exm-s">${exItem.desc}</div><div class="exm-cost">${exItem.cost}pt</div><div style="font-size:12px;color:var(--dim);text-align:center;margin-bottom:12px;">現在 ${v}pt 保有</div>${can?`<button class="exm-ex" onclick="doEx()">この特典と交換する</button>`:`<div style="padding:10px;background:rgba(255,23,68,0.08);border-radius:9px;text-align:center;font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;">あと${exItem.cost-v}pt必要です</div>`}<button class="exm-cc" onclick="closeEx()">キャンセル</button>`;
+  document.getElementById('exm').classList.add('on');
+}
+function closeEx(){document.getElementById('exm').classList.remove('on');exItem=null;}
+function doEx(){
+  if(!exItem||!usePt(exItem.cost,exItem.name+'交換'))return;
+  closeEx();
+  if(exItem.cat==='title'){ownedTitles.add(exItem.id);showToast(`🏅 ${exItem.name}を取得しました！`);}
+  else if(exItem.cat==='goods'){ownedGoods.push(exItem.id);showToast(`🎁 ${exItem.name}を取得！Nexca出店時に提示してください`);}
+  else if(exItem.cat==='cpn'){ownedCpns.push({id:exItem.id,name:exItem.name,disc:exItem.disc,used:false,date:new Date().toLocaleDateString('ja-JP')});showToast(`🎟️ ${exItem.disc}円OFFクーポンを取得！掲載店で使用できます`);}
+  renderShopAll();renderMP();
+}
+function renderMissions(){
+  document.getElementById('mis-list').innerHTML=MISSIONS.map(m=>{const pct=Math.min(100,Math.round(m.progress/m.goal*100));return `<div class="mis-item ${m.done?'done':''}"><div class="mis-top"><div class="mis-name">${m.name}</div><div class="mis-pt">+${m.pt}pt</div></div><div class="mis-sub">${m.sub}</div><div class="mis-prog"><div class="mis-bar" style="width:${pct}%"></div></div><div class="mis-st ${m.done?'done':''}">${m.done?'✅ 達成済み':`${m.progress}/${m.goal} 達成中`}</div></div>`;}).join('');
+}
+function updMis(id){const m=MISSIONS.find(x=>x.id===id);if(!m||m.done)return;m.progress=Math.min(m.goal,m.progress+1);if(m.progress>=m.goal){m.done=true;addPt('ミッション達成',m.pt,false);showToast(`🏆 ミッション達成！+${m.pt}pt`);}renderMissions();}
+function renderPtHistory(){
+  const el=document.getElementById('phist-list');if(!el)return;
+  if(!phist.length){el.innerHTML='<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">まだ履歴がありません</div></div>';return;}
+  el.innerHTML=phist.slice(0,20).map(p=>`<div class="phi"><div class="phi-ic" style="background:${p.amt>0?'rgba(255,190,0,0.1)':'rgba(255,23,68,0.1)'};">${p.amt>0?'⭐':'🎟️'}</div><div style="flex:1;"><div class="phi-t">${p.reason}</div><div class="phi-d">${p.date}${p.camp?' · 2倍適用':''}</div></div><div class="phi-a" style="color:${p.amt>0?'var(--yellow)':'var(--red)'};">${p.amt>0?'+':''}${p.amt}pt</div></div>`).join('');
+}
+function setPTab(el,tab){
+  document.querySelectorAll('.pt-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  ['earn','shop','mis','hist'].forEach(t=>document.getElementById('pt-'+t).style.display=t===tab?'':'none');
+  if(tab==='hist')renderPtHistory();if(tab==='shop')renderShopAll();if(tab==='mis')renderMissions();
+}
 
-    if (meta.avatar_url || meta.picture) {
-      document.getElementById('user-avatar').innerHTML = `<img src="${meta.avatar_url || meta.picture}" alt="">`;
-    }
+// REVIEW
+function populateRevSel(){
+  const sel=document.getElementById('rev-ev');if(!sel)return;
+  const approved=EVS.filter(e=>participations[e.id]==='approved');
+  const done=reviews.map(r=>r.evId);
+  sel.innerHTML='<option value="">イベントを選択</option>'+approved.filter(e=>!done.includes(e.id)).map(e=>`<option value="${e.id}">${e.title}</option>`).join('');
+}
+function submitReview(){
+  const evid=document.getElementById('rev-ev').value;
+  const q1=document.getElementById('rev-q1').value;
+  const q2=document.getElementById('rev-q2').value;
+  const q3=document.getElementById('rev-q3').value;
+  if(!evid){showToast('イベントを選択してください');return;}
+  if(q1.length<10||q2.length<10||q3.length<10){showToast('各質問に10文字以上入力してください');return;}
+  if(participations[evid]!=='approved'){showToast('参加証明が必要です');return;}
+  reviews.push({evId:evid,q1,q2,q3,date:new Date().toLocaleDateString('ja-JP')});
+  saveReview(evid,q1,q2,q3);
+  addPt('振り返り完了',20,true);
+  if(q1.length>=15&&q2.length>=15&&q3.length>=15)addPt('学び達成ボーナス',10,false);
+  showToast('✍️ 振り返りを送りました！ +40pt');
+  updMis('m3');['rev-ev','rev-q1','rev-q2','rev-q3'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  populateRevSel();renderPtHistory();
+}
 
-    document.getElementById('mypage-login-btn').style.display = 'none';
-    document.getElementById('stats-row').style.display = 'grid';
-    document.getElementById('liked-section').style.display = 'block';
-    document.getElementById('logout-section').style.display = 'block';
+// AUTH
+async function doLogin(){
+  const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+  if(error) showToast('ログインに失敗しました: '+error.message);
+}
+async function doLogout(){
+  await sb.auth.signOut();
+  user=null;likes=new Set();pts=0;ptsUsed=0;ptsMonthly=0;ptsTotal=0;phist=[];reviews=[];stamps=0;stampCnt=0;stampedPlaces=new Set();fixedVisited=new Set();ownedTitles=new Set();ownedGoods=[];ownedCpns=[];participations={};firstPart=true;renderMP();updStats();renderPtHero();showToast('ログアウトしました');
+}
+function copyRef(){const c=document.getElementById('rcode').textContent;if(navigator.clipboard)navigator.clipboard.writeText(c).then(()=>showToast('📋 招待コードをコピーしました'));else showToast('📋 '+c);}
 
-    updateStatsDisplay();
-    renderLikedGrid();
+// MYPAGE
+function renderMP(){
+  const ic={'高校生':'🎒','大学生':'🎓','社会人':'💼'};
+  document.getElementById('mpage').textContent=(ic[age]||'🎒')+' '+age;
+  if(user){
+    const m=user.user_metadata||{};
+    document.getElementById('mpname').textContent=m.full_name||'ユーザー';
+    document.getElementById('mpemail').textContent=user.email||'';
+    if(m.picture)document.getElementById('mpav').innerHTML=`<img src="${m.picture}" alt="">`;
+    document.getElementById('gsec').style.display='none';
+    document.getElementById('lsec').style.display='block';
+    document.getElementById('rcode').textContent='NEXCA-'+(user.id||'').slice(0,4).toUpperCase();
+    updStats();populateRevSel();renderStampBook();
+    const cs=document.getElementById('cpn-sec');const cl=document.getElementById('cpn-list');
+    if(ownedCpns.length>0){if(cs)cs.style.display='';cl.innerHTML=ownedCpns.map((c,i)=>`<div class="cpn-item" style="background:${c.used?'var(--s2)':'rgba(0,229,160,0.07)'};border-color:${c.used?'rgba(255,255,255,0.05)':'rgba(0,229,160,0.2)'};">  <div style="font-size:22px;">🎟️</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:${c.used?'var(--dim)':'var(--green)'};">${c.disc}円OFFクーポン</div><div style="font-size:10px;color:var(--dim);">Nexca掲載店限定・取得日: ${c.date}</div></div><div style="font-size:11px;font-weight:700;color:${c.used?'var(--dim)':'var(--green)'};">${c.used?'使用済み':'使用可能'}</div></div>`).join('');}
+    else{if(cs)cs.style.display='none';}
+    const lg=document.getElementById('lgrid');const lev=EVS.filter(e=>likes.has(e.id));
+    if(!lev.length){lg.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🤍</div><div class="empty-t">まだいいねがありません</div></div>';return;}
+    lg.innerHTML=lev.map(ev=>`<div class="fc" onclick="openVOV('${ev.id}')"><div class="fct" style="background:${ev.bg};"><div class="fct-em">${ev.em}</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fcg" style="color:${GC[ev.g]}">${ev.ge}</div><div class="fct-t">${ev.title}</div></div></div>`).join('');
+  }else{
+    document.getElementById('mpname').textContent='ゲスト';
+    document.getElementById('mpemail').textContent='ログインしていません';
+    document.getElementById('mpav').innerHTML='👤';
+    document.getElementById('gsec').style.display='block';
+    document.getElementById('lsec').style.display='none';
+  }
+}
+
+// DIAGNOSIS
+function startDiag(){dScores={e:0,a:0,c:0,r:0};dAnswers={};cQ=0;q2a=null;q3a=null;q5a=null;document.getElementById('diag-start').style.display='none';document.getElementById('diag-q').style.display='flex';renderQ();}
+function renderQ(){
+  const q=QS[cQ];document.getElementById('q-prog-fill').style.width=Math.round((cQ/14)*100)+'%';
+  document.getElementById('q-step-lbl').textContent=q.step;document.getElementById('q-num-lbl').textContent=(cQ+1)+' / 14';
+  document.getElementById('q-step').textContent=q.step;document.getElementById('q-text').textContent=q.text;
+  const nb=document.getElementById('q-next-btn');nb.classList.remove('show');
+  let h='';
+  if(q.type==='p'){h=`<div class="q-pref-grid">${PREFS.map(p=>`<div class="q-pref" onclick="selPref(this,'${p}')">${p}</div>`).join('')}</div>`;nb.classList.add('show');}
+  else if(q.type==='m'){h=`<div class="q-opts">${q.opts.map((o,i)=>`<div class="q-opt" onclick="togMulti(this,${i})"><div class="q-chk-row"><div class="q-chk-box" id="chk-${i}"></div>${o.l}</div></div>`).join('')}</div>`;nb.classList.add('show');}
+  else{h=`<div class="q-opts">${q.opts.map((o,i)=>`<div class="q-opt" onclick="selSingle(${i})">${o.l}</div>`).join('')}</div>`;}
+  document.getElementById('q-opts-wrap').innerHTML=h;
+}
+function selSingle(oi){
+  const q=QS[cQ];const o=q.opts[oi];
+  if(!q.dataOnly&&o.s)Object.entries(o.s).forEach(([k,v])=>{dScores[k]=(dScores[k]||0)+v;});
+  dAnswers[cQ]=oi;if(cQ===1)q2a=oi;if(cQ===2)q3a=oi;if(cQ===4)q5a=oi;
+  document.querySelectorAll('.q-opt').forEach((el,i)=>el.classList.toggle('sel',i===oi));
+  setTimeout(()=>diagNext(),350);
+}
+function togMulti(el,i){el.classList.toggle('sel');const chk=document.getElementById('chk-'+i);if(chk)chk.textContent=el.classList.contains('sel')?'✓':'';}
+function selPref(el){document.querySelectorAll('.q-pref').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');}
+function diagNext(){cQ++;if(cQ>=QS.length){showDiagResult();return;}renderQ();}
+function diagBack(){if(cQ<=0){document.getElementById('diag-q').style.display='none';document.getElementById('diag-start').style.display='flex';return;}cQ--;renderQ();}
+function calcResult(){
+  const eTotal=dScores.e||0;
+  let isWai=eTotal>=5?true:eTotal<=-5?false:(q2a!==null&&q2a<=1);
+  const a=dScores.a||0,c=dScores.c||0,r=dScores.r||0;
+  const maxV=Math.max(a,c,r);
+  const tops=[a===maxV?'a':null,c===maxV?'c':null,r===maxV?'r':null].filter(Boolean);
+  let trigger;
+  if(tops.length===1){trigger=tops[0];}
+  else if(q3a!==null){trigger=q3a===0?'a':(q3a===1||q3a===3?'c':'r');}
+  else if(q5a!==null){trigger=q5a===0?'a':(q5a===1?'c':'r');}
+  else trigger='r';
+  return {true:{a:'アガル',c:'ツムギ',r:'ヌクミ'},false:{a:'テクル',c:'コネル',r:'フワリ'}}[isWai][trigger];
+}
+function showDiagResult(){
+  document.getElementById('diag-q').style.display='none';
+  document.getElementById('diag-load').style.display='flex';
+  document.getElementById('load-mascot').innerHTML=cSVG('ネクスケ',90,90);
+  setTimeout(()=>{document.getElementById('diag-load').style.display='none';const type=calcResult();renderResult(type);document.getElementById('diag-result').style.display='block';},2500);
+}
+function renderResult(type){
+  const d=CD[type];if(!d)return;
+  const compatD=CD[d.compat];
+  const recEvs=EVS.filter(e=>d.evIds.includes(e.id));
+  const allGrid=ALL_CHARS.map(c=>`<div class="res-all-item ${c===type?'':'dim'}"><div class="res-all-char">${cSVG(c,60,60)}</div><div class="res-all-name" style="color:${c===type?CD[c].color:'var(--dim)'};">${c}</div></div>`).join('')+`<div class="res-all-item dim"><div class="res-all-char">${cSVG('カゲ',60,60)}</div><div class="res-all-name" style="color:var(--dim);">カゲ</div></div>`;
+  document.getElementById('res-wrap').innerHTML=`
+<div class="res-label">DIAGNOSIS RESULT</div>
+<div class="res-char">${cSVG(type,140,140)}</div>
+<div class="res-you">あなたは</div>
+<div class="res-name" style="color:${d.color};">${type}</div>
+<div class="res-type">${d.type}</div>
+<div class="res-kuchi">${d.kuchi}</div>
+<div class="res-catch" style="background:${d.color}18;color:${d.color};">${d.catch}</div>
+<div class="res-card"><div class="res-card-t">💡 性格</div><div class="res-card-v">${d.pers}</div></div>
+<div class="res-card"><div class="res-card-t">⚡ 弱点</div><div class="res-card-v">${d.weak}</div></div>
+<div class="res-card"><div class="res-card-t">💞 相性キャラ</div><div class="res-compat"><div class="res-compat-char">${cSVG(d.compat,56,56)}</div><div><div class="res-compat-name" style="color:${compatD?compatD.color:'var(--txt)'};">${d.compat}</div><div class="res-compat-desc">${d.cd}</div></div></div></div>
+${recEvs.length?`<div class="res-card"><div class="res-card-t">🎯 おすすめイベント</div>${recEvs.map(ev=>`<div class="res-evitem" onclick="goTab('flyer',document.querySelectorAll('.nb')[1]);closeDiagR();"><div style="font-size:22px;">${ev.em}</div><div><div style="font-size:12px;font-weight:700;">${ev.title}</div><div style="font-size:10px;color:${GC[ev.g]}">${ev.ge} ${ev.gl}</div></div></div>`).join('')}</div>`:''}
+<div class="res-card"><div class="res-card-t">📖 バックストーリー</div><div class="res-card-v">${d.bs}</div><div style="font-size:11px;color:var(--dim);font-style:italic;margin-top:8px;">🔒 続きはスタンプを集めると読めるようになります</div></div>
+<div class="res-btns">
+  <button class="res-main-btn" style="background:${d.color};" onclick="goTab('flyer',document.querySelectorAll('.nb')[1])">おすすめイベントを見る</button>
+  <button class="res-share-btn" onclick="shareDiag('${type}')">📤 結果をシェアする</button>
+</div>
+<div class="res-retry" onclick="retryDiag()">もう一度診断する</div>
+<div style="font-size:14px;font-weight:900;margin-bottom:10px;">全キャラ一覧</div>
+<div class="res-all-grid">${allGrid}</div>
+<div style="font-size:10px;color:var(--dim);text-align:center;margin-top:10px;line-height:1.8;">カゲは通常の診断では出現しません。<br>特定の条件でのみ姿を現すと言われています。</div>`;
+}
+function closeDiagR(){document.getElementById('diag-result').style.display='none';document.getElementById('diag-start').style.display='flex';}
+function retryDiag(){document.getElementById('diag-result').style.display='none';document.getElementById('diag-start').style.display='flex';}
+function shareDiag(type){const txt=`Nexca診断で「${type}」タイプでした！${CD[type]?.catch}`;if(navigator.share)navigator.share({title:'Nexca診断結果',text:txt,url:location.href});else showToast('URLをコピーしてシェアしてください');}
+
+// TABS
+function goTab(tab,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(tab).classList.add('on');
+  if(btn)btn.classList.add('on');
+  if(tab==='mypage')renderMP();
+  if(tab==='flyer')renderFlyer();
+  if(tab==='points'){renderPtHero();renderEarnList();}
+  if(tab==='diag'){if(document.getElementById('diag-result').style.display!=='block'&&document.getElementById('diag-load').style.display!=='flex'){document.getElementById('diag-start').style.display='flex';document.getElementById('diag-q').style.display='none';}}
+}
+
+// LIKES
+function toggleLike(id){
+  if(likes.has(id)){likes.delete(id);showToast('いいねを取り消しました');saveLike(id,false);}
+  else{likes.add(id);showToast('❤️ いいねしました');saveLike(id,true);}
+  const b=document.getElementById('lb-'+id);
+  if(b){b.classList.toggle('lk',likes.has(id));b.querySelector('.sact-c').textContent=likes.has(id)?'❤️':'🤍';}
+  updStats();
+}
+function shareEv(id){
+  const ev=EVS.find(e=>e.id===id);if(!ev)return;
+  const shareData={
+    title:ev.title,
+    text:`【${ev.title}】\n📅 ${(ev.ds||ev.ts||'').replace(/-/g,'/')}　📍 ${ev.loc}\n💡 ${ev.price}\n\nNexcaで見つけた！`,
+    url:location.href
+  };
+  if(navigator.share&&navigator.canShare&&navigator.canShare(shareData)){
+    navigator.share(shareData).catch(()=>{});
+  } else if(navigator.share){
+    navigator.share({title:shareData.title,url:shareData.url}).catch(()=>fallbackCopy(shareData.text+'\n'+shareData.url));
   } else {
-    document.getElementById('user-name').textContent = 'ゲスト';
-    document.getElementById('user-email').textContent = 'ログインしていません';
-    document.getElementById('user-avatar').innerHTML = '👤';
-    document.getElementById('mypage-login-btn').style.display = 'flex';
-    document.getElementById('stats-row').style.display = 'none';
-    document.getElementById('liked-section').style.display = 'none';
-    document.getElementById('logout-section').style.display = 'none';
+    fallbackCopy(shareData.text+'\n'+shareData.url);
   }
 }
-
-function updateStatsDisplay() {
-  document.getElementById('stat-likes').textContent = likes.size;
+function fallbackCopy(txt){
+  const el=document.createElement('textarea');el.value=txt;el.style.cssText='position:fixed;opacity:0;top:0;left:0;';
+  document.body.appendChild(el);el.focus();el.select();
+  try{document.execCommand('copy');showToast('📋 コピーしました！LINEなどで貼り付けてね');}
+  catch(e){showToast('長押しでコピーしてシェアしてください');}
+  document.body.removeChild(el);
 }
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800);}
 
-function renderLikedGrid() {
-  const likedEvents = sampleEvents.filter(e => likes.has(e.id));
-  const grid = document.getElementById('liked-grid');
-
-  if (likedEvents.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
-      <div class="empty-state-icon">🤍</div>
-      <div class="empty-state-text">いいねしたイベントはまだありません</div>
-    </div>`;
-    return;
-  }
-
-  const genreColor = { event: '#ff8fa0', volunteer: '#00e5a0', learn: '#ffbe00' };
-  grid.innerHTML = likedEvents.map(ev => `
-    <div class="flyer-card" onclick="openVideoOverlay('${ev.id}')">
-      <div class="flyer-thumb" style="background:${ev.bg};">
-        <span style="font-size:52px;opacity:0.25;">${ev.emoji}</span>
-        <div class="flyer-thumb-overlay"></div>
-        <div class="flyer-play-badge">▶</div>
-      </div>
-      <div class="flyer-card-info">
-        <div class="flyer-card-genre" style="color:${genreColor[ev.genre]}">${ev.genreEmoji}</div>
-        <div class="flyer-card-title">${ev.title}</div>
-        <div class="flyer-card-date">📅 ${ev.date_start ? ev.date_start.replace(/-/g,'/') : ''}</div>
-      </div>
-    </div>
-  `).join('');
+// ORGANIZER PAGE
+function openOrgPage(evId){
+  const ev=EVS.find(e=>e.id===evId);if(!ev)return;
+  const mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);
+  document.getElementById('org-ov-body').innerHTML=`
+<div style="width:100%;height:90px;border-radius:13px;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:14px;">${ev.em}</div>
+<div style="font-size:17px;font-weight:900;margin-bottom:2px;">主催者</div>
+<div style="font-size:12px;color:var(--dim);margin-bottom:12px;">地域のイベントを通じて、人と人をつなぐ活動をしています。</div>
+<div style="display:flex;gap:16px;margin-bottom:16px;">
+  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--green);">312</div><div style="font-size:9px;color:var(--dim);font-weight:700;">いいね</div></div>
+  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--yellow);">127</div><div style="font-size:9px;color:var(--dim);font-weight:700;">参加証明</div></div>
+  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--blue);">43</div><div style="font-size:9px;color:var(--dim);font-weight:700;">振り返り</div></div>
+</div>
+<div style="display:flex;gap:7px;margin-bottom:20px;">
+  ${ev.ig?`<a href="${ev.ig}" target="_blank" style="flex:1;padding:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);border-radius:10px;text-align:center;font-size:12px;font-weight:700;color:white;text-decoration:none;">📸 Instagram</a>`:''}
+  ${ev.hp?`<a href="${ev.hp}" target="_blank" style="flex:1;padding:10px;background:var(--s2);border-radius:10px;text-align:center;font-size:12px;font-weight:700;color:var(--txt);text-decoration:none;border:1.5px solid rgba(255,255,255,0.08);">🌐 ホームページ</a>`:''}
+</div>
+<div style="font-size:13px;font-weight:900;margin-bottom:10px;">📌 過去のイベント</div>
+<div style="display:flex;align-items:center;gap:10px;padding:11px;background:var(--s2);border-radius:11px;margin-bottom:8px;">
+  <div style="width:44px;height:58px;border-radius:8px;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${ev.em}</div>
+  <div style="flex:1;"><div style="font-size:12px;font-weight:700;">${ev.title}</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">${ev.ds?ev.ds.replace(/-/g,'/'):ev.ts}</div><div style="font-size:10px;color:var(--blue);margin-top:3px;">参加証明127件 · いいね312件</div></div>
+</div>
+<div style="font-size:13px;font-weight:900;margin-bottom:10px;margin-top:16px;">✍️ 参加者の声</div>
+<div style="padding:12px;background:var(--s2);border-radius:11px;margin-bottom:8px;">
+  <div style="font-size:10px;color:var(--dim);margin-bottom:5px;">${ev.ge} ${ev.title} · 高校生</div>
+  <div style="font-size:13px;line-height:1.8;color:rgba(255,255,255,0.78);">参加して本当に良かった。知らなかった地元の魅力を発見できた。またイベントがあれば絶対来たい。</div>
+</div>
+<div style="padding:12px;background:var(--s2);border-radius:11px;margin-bottom:24px;">
+  <div style="font-size:10px;color:var(--dim);margin-bottom:5px;">${ev.ge} ${ev.title} · 大学生</div>
+  <div style="font-size:13px;line-height:1.8;color:rgba(255,255,255,0.78);">友達と一緒に参加して、地元の良さを再発見できた。こういう場所をもっと知りたい。</div>
+</div>`;
+  document.getElementById('org-ov').style.display='flex';
 }
+function closeOrgPage(){document.getElementById('org-ov').style.display='none';}
 
-// ===== TABS =====
-function switchTab(tab, btn) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(tab + '-screen').classList.add('active');
-  btn.classList.add('active');
-
-  if (tab === 'mypage') renderMyPage();
-  if (tab === 'flyer') renderFlyers();
-}
-
-// ===== UTILS =====
-function shareEvent(eventId) {
-  const ev = sampleEvents.find(e => e.id === eventId);
-  if (!ev) return;
-  if (navigator.share) {
-    navigator.share({ title: ev.title, text: `${ev.date_start} ${ev.location}`, url: location.href });
-  } else {
-    showToast('URLをコピーしてシェアしてください');
-  }
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-// ===== START =====
-init();
+// INIT
+setupSwipe();
+renderPtHero();renderEarnList();renderShopAll();renderMissions();
 </script>
 </body>
 </html>
