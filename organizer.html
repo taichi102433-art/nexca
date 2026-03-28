@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<title>Nexca 主催者ダッシュボード</title>
+<style>
+:root{--bg:#0a0a0f;--bg2:#12121a;--s1:#111119;--s2:#1a1a26;--s3:#22222f;
+  --red:#FF1744;--green:#00e5a0;--yellow:#ffbe00;--blue:#4d9fff;--purple:#a855f7;
+  --txt:#f0f0f8;--dim:#7070a0;--pill:100px;--nav:60px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:'Hiragino Sans','Noto Sans JP',sans-serif;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;z-index:9000;background:linear-gradient(180deg,var(--bg),var(--bg2));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;text-align:center;}
+#login-screen.hide{display:none;}
+.ls-logo{font-weight:700;font-size:32px;letter-spacing:-2px;margin-bottom:4px;}
+.ls-logo span{color:var(--red);}
+.ls-sub{font-size:13px;color:var(--dim);margin-bottom:8px;}
+.ls-badge{display:inline-block;font-size:11px;font-weight:700;padding:4px 12px;background:rgba(255,23,68,0.12);color:var(--red);border-radius:var(--pill);border:1px solid rgba(255,23,68,0.3);margin-bottom:32px;}
+.ls-card{width:100%;max-width:300px;background:var(--s2);border-radius:16px;padding:22px;border:1.5px solid rgba(255,255,255,0.06);}
+.ls-label{font-size:11px;font-weight:700;color:var(--dim);margin-bottom:6px;text-align:left;}
+.ls-input{width:100%;padding:11px 13px;background:var(--s3);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--txt);font-size:14px;font-family:inherit;margin-bottom:12px;}
+.ls-input:focus{outline:none;border-color:var(--red);}
+.ls-btn{width:100%;padding:13px;background:var(--red);border:none;border-radius:11px;font-size:15px;font-weight:700;color:white;cursor:pointer;font-family:inherit;margin-top:4px;}
+
+/* LAYOUT */
+#app{display:none;height:100%;flex-direction:column;}
+#app.on{display:flex;}
+
+/* TOP BAR */
+#topbar{padding:46px 14px 10px;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.tb-logo{font-weight:700;font-size:16px;letter-spacing:-0.5px;}
+.tb-logo span{color:var(--red);}
+.tb-badge{font-size:10px;font-weight:700;padding:2px 8px;background:rgba(255,23,68,0.1);color:var(--red);border-radius:var(--pill);border:1px solid rgba(255,23,68,0.25);}
+.tb-name{font-size:12px;color:var(--dim);margin-left:auto;}
+.tb-logout{font-size:11px;font-weight:700;color:var(--dim);padding:4px 10px;background:var(--s2);border-radius:var(--pill);cursor:pointer;border:none;color:var(--txt);font-family:inherit;}
+
+/* NAV TABS */
+#tabs{display:flex;gap:0;padding:0;background:var(--s1);border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+#tabs::-webkit-scrollbar{display:none;}
+.tab{flex:0 0 auto;padding:12px 16px;font-size:12px;font-weight:700;color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab.on{color:var(--txt);border-bottom-color:var(--red);}
+
+/* CONTENT */
+#content{flex:1;overflow-y:auto;}
+.page{display:none;padding:16px;}
+.page.on{display:block;}
+
+/* SECTION */
+.sec-title{font-size:16px;font-weight:900;margin-bottom:12px;}
+.card{background:var(--s2);border-radius:13px;padding:14px;margin-bottom:10px;border:1.5px solid rgba(255,255,255,0.05);}
+.card-t{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.stat-c{background:var(--s2);border-radius:12px;padding:13px 8px;text-align:center;border:1.5px solid rgba(255,255,255,0.05);}
+.stat-n{font-size:26px;font-weight:900;margin-bottom:2px;}
+.stat-l{font-size:10px;color:var(--dim);font-weight:700;}
+
+/* EVENT CARD */
+.ev-card{background:var(--s2);border-radius:13px;overflow:hidden;margin-bottom:10px;border:1.5px solid rgba(255,255,255,0.05);}
+.ev-card-top{display:flex;align-items:center;gap:10px;padding:12px 13px;}
+.ev-em{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ev-title{font-size:13px;font-weight:700;}
+.ev-date{font-size:11px;color:var(--dim);margin-top:2px;}
+.ev-status{margin-left:auto;font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--pill);}
+.ev-status.active{background:rgba(0,229,160,0.12);color:var(--green);}
+.ev-status.archive{background:rgba(255,255,255,0.06);color:var(--dim);}
+.ev-actions{display:flex;gap:6px;padding:0 13px 12px;}
+.ev-act{flex:1;padding:8px 6px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;}
+.ev-act.qr{background:rgba(255,190,0,0.12);color:var(--yellow);}
+.ev-act.rev{background:rgba(77,159,255,0.1);color:var(--blue);}
+.ev-act.edit{background:var(--s3);color:var(--dim);}
+
+/* REVIEWS */
+.rev-item{padding:12px;background:var(--s2);border-radius:12px;margin-bottom:8px;border:1.5px solid rgba(255,255,255,0.05);}
+.rev-ev{font-size:10px;font-weight:700;color:var(--red);margin-bottom:6px;}
+.rev-q{font-size:10px;font-weight:700;color:var(--dim);margin-bottom:3px;margin-top:7px;}
+.rev-a{font-size:13px;line-height:1.7;color:rgba(255,255,255,0.8);}
+.rev-date{font-size:10px;color:var(--dim);margin-top:6px;}
+
+/* UPLOAD */
+.upload-area{border:2px dashed rgba(255,255,255,0.15);border-radius:13px;padding:28px;text-align:center;cursor:pointer;transition:border-color 0.15s;margin-bottom:10px;}
+.upload-area:hover{border-color:var(--red);}
+.upload-area-ic{font-size:36px;margin-bottom:8px;}
+.upload-area-t{font-size:14px;font-weight:700;margin-bottom:4px;}
+.upload-area-s{font-size:11px;color:var(--dim);}
+.form-label{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;margin-top:12px;display:block;}
+.form-input{width:100%;padding:11px 13px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--txt);font-size:13px;font-family:inherit;margin-bottom:4px;}
+.form-input:focus{outline:none;border-color:var(--red);}
+.form-select{width:100%;padding:11px 13px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--txt);font-size:13px;font-family:inherit;appearance:none;}
+.form-textarea{width:100%;padding:11px 13px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--txt);font-size:13px;font-family:inherit;resize:none;height:90px;}
+.form-textarea:focus{outline:none;border-color:var(--red);}
+.submit-btn{width:100%;padding:13px;background:var(--red);border:none;border-radius:11px;font-size:15px;font-weight:700;color:white;cursor:pointer;font-family:inherit;margin-top:12px;}
+.save-btn{width:100%;padding:12px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.1);border-radius:11px;font-size:13px;font-weight:700;color:var(--txt);cursor:pointer;font-family:inherit;margin-top:8px;}
+
+/* QR MODAL */
+#qrm{position:fixed;inset:0;z-index:800;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);}
+#qrm.on{display:flex;}
+.qrm-box{background:var(--s1);border-radius:16px;padding:20px;width:100%;max-width:300px;text-align:center;border:1.5px solid rgba(255,255,255,0.08);}
+.qrm-t{font-size:15px;font-weight:900;margin-bottom:4px;}
+.qrm-s{font-size:11px;color:var(--dim);margin-bottom:16px;}
+.qrm-code{background:white;border-radius:12px;padding:20px;margin:0 auto 16px;width:180px;height:180px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;font-weight:700;}
+.qrm-str{font-size:20px;font-weight:900;letter-spacing:4px;color:var(--yellow);background:rgba(255,190,0,0.08);border-radius:9px;padding:10px;margin-bottom:14px;}
+.qrm-dl{width:100%;padding:11px;background:var(--yellow);border:none;border-radius:10px;font-size:13px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;margin-bottom:7px;}
+.qrm-cc{width:100%;padding:11px;background:var(--s2);border:none;border-radius:10px;font-size:13px;font-weight:700;color:var(--dim);cursor:pointer;font-family:inherit;}
+
+/* LINK SETTINGS */
+.link-row{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--s2);border-radius:11px;margin-bottom:7px;border:1.5px solid rgba(255,255,255,0.05);}
+.link-ic{font-size:20px;flex-shrink:0;}
+.link-info{flex:1;}
+.link-name{font-size:12px;font-weight:700;}
+.link-url{font-size:10px;color:var(--dim);margin-top:2px;word-break:break-all;}
+.link-edit{font-size:11px;font-weight:700;color:var(--blue);cursor:pointer;flex-shrink:0;}
+
+/* PUBLIC PAGE PREVIEW */
+.pub-prev{background:linear-gradient(135deg,var(--s2),var(--s3));border-radius:13px;padding:16px;margin-bottom:10px;border:1.5px solid rgba(255,255,255,0.06);}
+.pub-banner{width:100%;height:80px;border-radius:10px;background:linear-gradient(135deg,#1a0a35,#4a1a80);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:10px;}
+.pub-org-name{font-size:15px;font-weight:900;margin-bottom:2px;}
+.pub-org-sub{font-size:11px;color:var(--dim);margin-bottom:10px;}
+.pub-stats{display:flex;gap:14px;margin-bottom:10px;}
+.pub-stat{text-align:center;}
+.pub-stat-n{font-size:16px;font-weight:900;}
+.pub-stat-l{font-size:9px;color:var(--dim);font-weight:700;}
+.pub-links{display:flex;gap:7px;}
+.pub-link{flex:1;padding:8px;background:rgba(255,255,255,0.06);border-radius:9px;text-align:center;font-size:11px;font-weight:700;cursor:pointer;}
+
+/* ARCHIVE CARD */
+.arc-card{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--s2);border-radius:11px;margin-bottom:7px;border:1.5px solid rgba(255,255,255,0.05);}
+.arc-thumb{width:50px;height:66px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--s3);}
+.arc-title{font-size:12px;font-weight:700;}
+.arc-date{font-size:10px;color:var(--dim);margin-top:2px;}
+.arc-stats{font-size:10px;color:var(--blue);margin-top:4px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(18,18,28,0.97);border:1px solid rgba(255,255,255,0.09);border-radius:var(--pill);padding:8px 16px;font-size:12px;font-weight:700;white-space:nowrap;z-index:3000;opacity:0;transition:opacity 0.3s,transform 0.3s;backdrop-filter:blur(10px);}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="ls-logo">Nex<span>ca</span></div>
+  <div class="ls-sub">主催者・掲載店舗向け</div>
+  <div class="ls-badge">主催者ダッシュボード</div>
+  <div class="ls-card">
+    <div class="ls-label">メールアドレス</div>
+    <input class="ls-input" type="email" id="login-email" placeholder="organizer@example.com">
+    <div class="ls-label">パスワード</div>
+    <input class="ls-input" type="password" id="login-pw" placeholder="••••••••">
+    <button class="ls-btn" onclick="doLogin()">ログイン</button>
+    <div style="font-size:11px;color:var(--dim);text-align:center;margin-top:12px;">掲載申込済みの方のみログインできます</div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div id="qrm">
+  <div class="qrm-box">
+    <div class="qrm-t">📱 参加証明QRコード</div>
+    <div class="qrm-s" id="qrm-ev-name">イベント名</div>
+    <div class="qrm-code">
+      <!-- 実際にはQRライブラリで生成 -->
+      <div style="text-align:center;">
+        <div style="font-size:36px;margin-bottom:4px;">⬛</div>
+        <div>QRコード</div>
+        <div style="font-size:9px;color:#666;margin-top:2px;">※ 本番環境で生成</div>
+      </div>
+    </div>
+    <div class="qrm-str" id="qrm-code-str">XXXX00</div>
+    <button class="qrm-dl" onclick="downloadQR()">⬇️ QRコードをダウンロード</button>
+    <button class="qrm-cc" onclick="closeQRM()">閉じる</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div>
+      <div class="tb-logo">Nex<span>ca</span></div>
+    </div>
+    <div class="tb-badge">主催者</div>
+    <div class="tb-name" id="tb-name">広島フードフェス実行委員会</div>
+    <button class="tb-logout" onclick="doLogout()">ログアウト</button>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <div class="tab on" onclick="switchTab(this,'home')">🏠 ホーム</div>
+    <div class="tab" onclick="switchTab(this,'reviews')">✍️ 振り返り</div>
+    <div class="tab" onclick="switchTab(this,'upload')">📤 イベント登録</div>
+    <div class="tab" onclick="switchTab(this,'settings')">⚙️ 設定</div>
+    <div class="tab" onclick="switchTab(this,'archive')">🗂️ アーカイブ</div>
+    <div class="tab" onclick="switchTab(this,'pubpage')">👁️ 公開ページ</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- HOME -->
+    <div class="page on" id="page-home">
+      <div class="sec-title">ダッシュボード</div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-c">
+          <div class="stat-n" style="color:var(--green);">127</div>
+          <div class="stat-l">参加証明数</div>
+        </div>
+        <div class="stat-c">
+          <div class="stat-n" style="color:var(--yellow);">43</div>
+          <div class="stat-l">振り返り数</div>
+        </div>
+        <div class="stat-c">
+          <div class="stat-n" style="color:var(--red);">312</div>
+          <div class="stat-l">いいね数</div>
+        </div>
+      </div>
+
+      <!-- Active events -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-t">🔥 掲載中イベント</div>
+
+        <div class="ev-card">
+          <div class="ev-card-top">
+            <div class="ev-em" style="background:linear-gradient(135deg,#1a0805,#c05020);">🍜</div>
+            <div>
+              <div class="ev-title">広島フードフェスティバル2026</div>
+              <div class="ev-date">3/15〜3/16　📍 広島市中央公園</div>
+            </div>
+            <div class="ev-status active">掲載中</div>
+          </div>
+          <div class="ev-actions">
+            <button class="ev-act qr" onclick="openQRM('広島フードフェスティバル2026','FOOD01')">📱 QRコード</button>
+            <button class="ev-act rev" onclick="switchTab(document.querySelector('[onclick*=reviews]'),'reviews')">✍️ 振り返り</button>
+            <button class="ev-act edit" onclick="switchTab(document.querySelector('[onclick*=upload]'),'upload')">✏️ 編集</button>
+          </div>
+        </div>
+
+        <div class="ev-card">
+          <div class="ev-card-top">
+            <div class="ev-em" style="background:linear-gradient(135deg,#0a0515,#7a208a);">🌸</div>
+            <div>
+              <div class="ev-title">平和公園 夜桜ライトアップ</div>
+              <div class="ev-date">3/28〜4/6　📍 広島平和記念公園</div>
+            </div>
+            <div class="ev-status active">掲載中</div>
+          </div>
+          <div class="ev-actions">
+            <button class="ev-act qr" onclick="openQRM('平和公園 夜桜ライトアップ','SAKUR1')">📱 QRコード</button>
+            <button class="ev-act rev" onclick="switchTab(document.querySelector('[onclick*=reviews]'),'reviews')">✍️ 振り返り</button>
+            <button class="ev-act edit">✏️ 編集</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick tips -->
+      <div class="card" style="background:rgba(255,190,0,0.05);border-color:rgba(255,190,0,0.18);">
+        <div class="card-t" style="color:var(--yellow);">💡 Nexcaからのヒント</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.8;">
+          振り返りが<strong style="color:var(--txt);">43件</strong>集まっています。<br>
+          ユーザーの声を次回イベントに活かしましょう。<br>
+          <span style="color:var(--yellow);">✍️ 振り返りタブ</span>から全件確認できます。
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="page" id="page-reviews">
+      <div class="sec-title">✍️ 振り返り一覧</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.6;">ユーザーが参加後に書いた感想です。匿名で表示されます。</div>
+
+      <!-- Filter -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;">
+        <div style="padding:6px 12px;background:var(--red);border-radius:var(--pill);font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;">すべて</div>
+        <div style="padding:6px 12px;background:var(--s2);border-radius:var(--pill);font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;color:var(--dim);">🍜 フードフェス</div>
+        <div style="padding:6px 12px;background:var(--s2);border-radius:var(--pill);font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;color:var(--dim);">🌸 夜桜</div>
+      </div>
+
+      <div class="rev-item">
+        <div class="rev-ev">🍜 広島フードフェスティバル2026</div>
+        <div class="rev-q">① 今日一番印象に残ったことは？</div>
+        <div class="rev-a">広島の地元食材を使ったスープが最高だった。こんなに種類があるとは知らなかった。</div>
+        <div class="rev-q">② 新しく知ったこと・学んだことは？</div>
+        <div class="rev-a">農家さんと直接話せて、食材の産地や育て方を初めてちゃんと理解できた。</div>
+        <div class="rev-q">③ この経験を次にどう活かしたい？</div>
+        <div class="rev-a">地元の朝市にも行ってみたい。意識して広島産を選ぶようにしたい。</div>
+        <div class="rev-date">2026/3/16 　高校生</div>
+      </div>
+
+      <div class="rev-item">
+        <div class="rev-ev">🍜 広島フードフェスティバル2026</div>
+        <div class="rev-q">① 今日一番印象に残ったことは？</div>
+        <div class="rev-a">友達と一緒に来て、知らないお店でカキ料理を食べたのが最高だった。</div>
+        <div class="rev-q">② 新しく知ったこと・学んだことは？</div>
+        <div class="rev-a">広島のカキの生産量が日本一ということを初めて知った。</div>
+        <div class="rev-q">③ この経験を次にどう活かしたい？</div>
+        <div class="rev-a">地元の食文化をもっと友達に広めたい。</div>
+        <div class="rev-date">2026/3/15 　大学生</div>
+      </div>
+
+      <div class="rev-item">
+        <div class="rev-ev">🌸 平和公園 夜桜ライトアップ</div>
+        <div class="rev-q">① 今日一番印象に残ったことは？</div>
+        <div class="rev-a">原爆ドームと桜のコラボが想像以上に美しくて、言葉がなかった。</div>
+        <div class="rev-q">② 新しく知ったこと・学んだことは？</div>
+        <div class="rev-a">平和公園の桜の本数や歴史を初めてちゃんと知った。</div>
+        <div class="rev-q">③ この経験を次にどう活かしたい？</div>
+        <div class="rev-a">広島に来る友達を連れてきたい。</div>
+        <div class="rev-date">2026/3/29 　高校生</div>
+      </div>
+
+      <div style="text-align:center;padding:16px 0;font-size:12px;color:var(--dim);">全43件中 3件表示</div>
+    </div>
+
+    <!-- UPLOAD / EVENT REGISTER -->
+    <div class="page" id="page-upload">
+      <div class="sec-title">📤 イベント登録</div>
+
+      <!-- Video upload -->
+      <div class="card">
+        <div class="card-t">📹 動画アップロード</div>
+        <div class="upload-area" onclick="showToast('※ 実際の画面ではここから動画を選択できます')">
+          <div class="upload-area-ic">🎬</div>
+          <div class="upload-area-t">動画をアップロード</div>
+          <div class="upload-area-s">MP4 / MOV・最大500MB<br>縦型（9:16）推奨</div>
+        </div>
+        <div style="font-size:11px;color:var(--dim);margin-bottom:8px;">またはYouTube動画のURLを入力</div>
+        <input class="form-input" type="url" placeholder="https://youtube.com/watch?v=...">
+      </div>
+
+      <!-- Flyer upload -->
+      <div class="card">
+        <div class="card-t">🖼️ チラシ画像</div>
+        <div class="upload-area" onclick="showToast('※ 実際の画面ではここから画像を選択できます')">
+          <div class="upload-area-ic">🖼️</div>
+          <div class="upload-area-t">チラシ画像をアップロード</div>
+          <div class="upload-area-s">PNG / JPG・縦型（3:4）推奨</div>
+        </div>
+      </div>
+
+      <!-- Event info -->
+      <div class="card">
+        <div class="card-t">📋 イベント情報</div>
+
+        <label class="form-label">イベント名 *</label>
+        <input class="form-input" type="text" placeholder="例：広島フードフェスティバル2026">
+
+        <label class="form-label">ジャンル *</label>
+        <select class="form-select" style="margin-bottom:4px;">
+          <option>🎉 イベント・おでかけ</option>
+          <option>🚀 学び・挑戦</option>
+          <option>🤝 ボランティア</option>
+        </select>
+
+        <label class="form-label">開催日程 *</label>
+        <div style="display:flex;gap:8px;margin-bottom:4px;">
+          <input class="form-input" type="date" style="flex:1;margin-bottom:0;">
+          <input class="form-input" type="date" style="flex:1;margin-bottom:0;">
+        </div>
+
+        <label class="form-label">開催時間 *</label>
+        <input class="form-input" type="text" placeholder="例：10:00〜18:00">
+
+        <label class="form-label">会場名 *</label>
+        <input class="form-input" type="text" placeholder="例：広島市中央公園">
+
+        <label class="form-label">住所 *</label>
+        <input class="form-input" type="text" placeholder="例：広島市中区基町15">
+
+        <label class="form-label">参加費 *</label>
+        <input class="form-input" type="text" placeholder="例：入場無料 / 500円〜">
+
+        <label class="form-label">イベント説明 *</label>
+        <textarea class="form-textarea" placeholder="ユーザーに伝えたいことを書いてください（200文字程度）"></textarea>
+
+        <label class="form-label">対象年齢層</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
+          <div style="padding:6px 12px;background:rgba(255,23,68,0.12);border:1.5px solid rgba(255,23,68,0.35);border-radius:var(--pill);font-size:11px;font-weight:700;cursor:pointer;">📚 中学生</div>
+          <div style="padding:6px 12px;background:rgba(255,23,68,0.12);border:1.5px solid rgba(255,23,68,0.35);border-radius:var(--pill);font-size:11px;font-weight:700;cursor:pointer;">🎒 高校生</div>
+          <div style="padding:6px 12px;background:rgba(255,23,68,0.12);border:1.5px solid rgba(255,23,68,0.35);border-radius:var(--pill);font-size:11px;font-weight:700;cursor:pointer;">🎓 大学生</div>
+          <div style="padding:6px 12px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--pill);font-size:11px;font-weight:700;cursor:pointer;color:var(--dim);">💼 社会人</div>
+        </div>
+
+        <label class="form-label">タグ（最大5個）</label>
+        <input class="form-input" type="text" placeholder="例：無料、1人OK、初心者OK">
+
+        <label class="form-label">おすすめ掲載期間</label>
+        <div style="display:flex;gap:8px;margin-bottom:4px;">
+          <input class="form-input" type="date" style="flex:1;margin-bottom:0;">
+          <input class="form-input" type="date" style="flex:1;margin-bottom:0;">
+        </div>
+        <div style="font-size:11px;color:var(--dim);">期間終了後はアーカイブページに移動します</div>
+      </div>
+
+      <!-- QR settings -->
+      <div class="card">
+        <div class="card-t">📱 参加証明コード</div>
+        <div style="font-size:12px;color:var(--dim);margin-bottom:10px;line-height:1.6;">当日会場に設置するQRコードのコードです。Nexcaが発行・管理します。</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--s3);border-radius:10px;">
+          <div style="font-size:20px;font-weight:900;letter-spacing:3px;color:var(--yellow);">AUTO</div>
+          <div style="font-size:11px;color:var(--dim);">登録後に自動発行されます</div>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="showToast('✅ イベントを申請しました！審査後に掲載されます')">申請する →</button>
+      <div style="font-size:11px;color:var(--dim);text-align:center;margin-top:8px;padding-bottom:24px;">掲載にはNexca運営の審査があります（通常2〜3営業日）</div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="sec-title">⚙️ 設定</div>
+
+      <!-- Profile -->
+      <div class="card">
+        <div class="card-t">🏢 主催者プロフィール</div>
+        <label class="form-label">主催者名 / 団体名</label>
+        <input class="form-input" type="text" value="広島フードフェス実行委員会">
+        <label class="form-label">ひとこと紹介</label>
+        <textarea class="form-textarea" style="height:70px;">毎年恒例の広島最大のフードフェスを主催しています。地元の食と人をつなぐイベントを目指しています。</textarea>
+      </div>
+
+      <!-- Links -->
+      <div class="card">
+        <div class="card-t">🔗 リンク設定</div>
+        <div style="font-size:12px;color:var(--dim);margin-bottom:10px;">ユーザーの詳細画面に表示されます</div>
+
+        <label class="form-label">Instagram</label>
+        <input class="form-input" type="url" placeholder="https://instagram.com/your_account" value="https://instagram.com/hiroshima_food_fest">
+
+        <label class="form-label">公式ホームページ</label>
+        <input class="form-input" type="url" placeholder="https://example.com" value="https://hiroshima-food.jp">
+
+        <label class="form-label">申込・予約ページ（任意）</label>
+        <input class="form-input" type="url" placeholder="https://peatix.com/...">
+
+        <button class="save-btn" onclick="showToast('✅ リンクを保存しました')">💾 保存する</button>
+      </div>
+
+      <!-- Point coupon settings -->
+      <div class="card">
+        <div class="card-t">🎟️ ポイント割引クーポン設定</div>
+        <div style="font-size:12px;color:var(--dim);margin-bottom:12px;line-height:1.6;">Nexcaポイントを保有するユーザーが割引クーポンを使用できるようにします。</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--s3);border-radius:10px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:13px;font-weight:700;">ポイント連携を有効にする</div>
+            <div style="font-size:10px;color:var(--dim);margin-top:2px;">有効にするとポイント交換所に表示されます</div>
+          </div>
+          <div id="toggle-cpn" onclick="toggleCpn()" style="width:44px;height:24px;background:var(--green);border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s;">
+            <div style="position:absolute;right:2px;top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:right 0.2s;"></div>
+          </div>
+        </div>
+        <label class="form-label">割引額の設定</label>
+        <select class="form-select" style="margin-bottom:4px;">
+          <option>100円OFF（50pt）</option>
+          <option>200円OFF（100pt）</option>
+          <option selected>350円OFF（200pt）</option>
+        </select>
+        <button class="save-btn" onclick="showToast('✅ クーポン設定を保存しました')">💾 保存する</button>
+      </div>
+    </div>
+
+    <!-- ARCHIVE -->
+    <div class="page" id="page-archive">
+      <div class="sec-title">🗂️ アーカイブ</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.6;">おすすめ掲載期間が終了したイベントです。ユーザーの主催者ページからも閲覧できます。</div>
+
+      <div class="arc-card">
+        <div class="arc-thumb" style="background:linear-gradient(135deg,#1a0805,#c05020);">🍜</div>
+        <div style="flex:1;">
+          <div class="arc-title">広島フードフェスティバル2025</div>
+          <div class="arc-date">2025/3/15〜3/16</div>
+          <div class="arc-stats">参加証明 89件 · 振り返り 31件 · いいね 241件</div>
+        </div>
+        <div style="font-size:14px;color:var(--dim);">›</div>
+      </div>
+
+      <div class="arc-card">
+        <div class="arc-thumb" style="background:linear-gradient(135deg,#0a0515,#7a208a);">🌸</div>
+        <div style="flex:1;">
+          <div class="arc-title">平和公園 夜桜ライトアップ 2025</div>
+          <div class="arc-date">2025/3/28〜4/6</div>
+          <div class="arc-stats">参加証明 156件 · 振り返り 52件 · いいね 398件</div>
+        </div>
+        <div style="font-size:14px;color:var(--dim);">›</div>
+      </div>
+
+      <div class="arc-card">
+        <div class="arc-thumb" style="background:linear-gradient(135deg,#011a10,#0e9040);">🌊</div>
+        <div style="flex:1;">
+          <div class="arc-title">宮島清掃ボランティア 2025秋</div>
+          <div class="arc-date">2025/10/22</div>
+          <div class="arc-stats">参加証明 34件 · 振り返り 28件 · いいね 87件</div>
+        </div>
+        <div style="font-size:14px;color:var(--dim);">›</div>
+      </div>
+    </div>
+
+    <!-- PUBLIC PAGE PREVIEW -->
+    <div class="page" id="page-pubpage">
+      <div class="sec-title">👁️ 公開ページプレビュー</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.6;">ユーザーがNexcaアプリから見る「主催者ページ」のプレビューです。</div>
+
+      <div class="pub-prev">
+        <!-- Banner -->
+        <div class="pub-banner">🍜</div>
+        <div class="pub-org-name">広島フードフェス実行委員会</div>
+        <div class="pub-org-s" style="font-size:11px;color:var(--dim);margin-bottom:10px;">毎年恒例の広島最大のフードフェスを主催しています。</div>
+        <!-- Stats -->
+        <div class="pub-stats">
+          <div class="pub-stat"><div class="pub-stat-n">312</div><div class="pub-stat-l">いいね</div></div>
+          <div class="pub-stat"><div class="pub-stat-n">127</div><div class="pub-stat-l">参加証明</div></div>
+          <div class="pub-stat"><div class="pub-stat-n">43</div><div class="pub-stat-l">振り返り</div></div>
+        </div>
+        <!-- Links -->
+        <div class="pub-links" style="margin-bottom:14px;">
+          <div class="pub-link">📸 Instagram</div>
+          <div class="pub-link">🌐 ホームページ</div>
+        </div>
+        <!-- Past events -->
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px;">📌 過去のイベント</div>
+        <div class="arc-card" style="background:rgba(255,255,255,0.04);">
+          <div class="arc-thumb" style="background:linear-gradient(135deg,#1a0805,#c05020);">🍜</div>
+          <div style="flex:1;">
+            <div class="arc-title">広島フードフェスティバル2025</div>
+            <div class="arc-date">2025/3/15〜3/16</div>
+            <div class="arc-stats">参加証明89件 · いいね241件</div>
+          </div>
+        </div>
+        <!-- User reviews public -->
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px;margin-top:12px;">✍️ 参加者の声</div>
+        <div style="padding:11px;background:rgba(255,255,255,0.04);border-radius:10px;margin-bottom:6px;">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:3px;">🍜 フードフェスティバル2025 · 高校生</div>
+          <div style="font-size:12px;line-height:1.7;color:rgba(255,255,255,0.78);">広島の地元食材を使ったスープが最高だった。農家さんと直接話せて、食材への見方が変わった。</div>
+        </div>
+        <div style="padding:11px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:3px;">🍜 フードフェスティバル2025 · 大学生</div>
+          <div style="font-size:12px;line-height:1.7;color:rgba(255,255,255,0.78);">地元の食文化をもっと友達に広めたい。毎年来ようと思った。</div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;color:var(--dim);text-align:center;padding-bottom:24px;">
+        このページはNexcaアプリ内でユーザーに公開されます<br>
+        設定から情報を更新できます
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// LOGIN
+function doLogin(){
+  const em=document.getElementById('login-email').value;
+  const pw=document.getElementById('login-pw').value;
+  if(!em||!pw){showToast('メールアドレスとパスワードを入力してください');return;}
+  // デモ：どんな入力でもログイン可
+  document.getElementById('login-screen').classList.add('hide');
+  document.getElementById('app').classList.add('on');
+  showToast('✅ ログインしました');
+}
+function doLogout(){
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('login-screen').classList.remove('hide');
+  document.getElementById('login-email').value='';
+  document.getElementById('login-pw').value='';
+}
+
+// TABS
+function switchTab(el,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  if(el&&el.classList)el.classList.add('on');
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('on');
+}
+
+// QR MODAL
+function openQRM(name,code){
+  document.getElementById('qrm-ev-name').textContent=name;
+  document.getElementById('qrm-code-str').textContent=code;
+  document.getElementById('qrm').classList.add('on');
+}
+function closeQRM(){document.getElementById('qrm').classList.remove('on');}
+function downloadQR(){showToast('⬇️ QRコードをダウンロードしました（デモ）');}
+
+// COUPON TOGGLE
+let cpnOn=true;
+function toggleCpn(){
+  cpnOn=!cpnOn;
+  const t=document.getElementById('toggle-cpn');
+  t.style.background=cpnOn?'var(--green)':'var(--s3)';
+  t.querySelector('div').style.right=cpnOn?'2px':'auto';
+  t.querySelector('div').style.left=cpnOn?'auto':'2px';
+  showToast(cpnOn?'ポイント連携を有効にしました':'ポイント連携を無効にしました');
+}
+
+// TOAST
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),2800);
+}
+
+// Enter key login
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>
