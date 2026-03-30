@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>プライバシーポリシー | Nexca</title>
+<style>
+body{background:#0a0a0f;color:#f0f0f8;font-family:'Hiragino Sans','Noto Sans JP',sans-serif;padding:20px;max-width:640px;margin:0 auto;line-height:1.9;font-size:14px;}
+h1{font-size:20px;margin-bottom:4px;}
+h2{font-size:16px;margin-top:24px;color:#FF1744;}
+.sub{font-size:12px;color:#7070a0;margin-bottom:20px;}
+a{color:#4d9fff;}
+</style>
+</head>
+<body>
+<h1>Nexca プライバシーポリシー</h1>
+<div class="sub">最終更新日：2026年4月1日</div>
+
+<h2>1. 収集する情報</h2>
+<p>本サービスでは以下の情報を収集します。<br>
+（1）Googleアカウント情報（表示名、メールアドレス、プロフィール画像）<br>
+（2）ユーザーが入力した情報（年齢層、地域、診断回答）<br>
+（3）サービス利用データ（動画視聴履歴、いいね、リンククリック、ポイント履歴）</p>
+
+<h2>2. 利用目的</h2>
+<p>収集した情報は以下の目的で使用します。<br>
+（1）サービスの提供・運営・改善<br>
+（2）ユーザーに適した情報の表示（地域・年齢に基づく最適化）<br>
+（3）主催者への集計データの提供（個人を特定しない統計情報のみ）<br>
+（4）お問い合わせへの対応</p>
+
+<h2>3. 第三者提供</h2>
+<p>収集した個人情報は、法令に基づく場合を除き、ユーザーの同意なく第三者に提供しません。主催者に提供するデータは、個人を特定できない集計データ（総視聴数・いいね数・遷移数等）のみです。</p>
+
+<h2>4. データの保管</h2>
+<p>データはSupabase（AWS東京リージョン）の暗号化されたデータベースに保管されます。適切なセキュリティ措置を講じ、不正アクセス・紛失・改ざんの防止に努めます。</p>
+
+<h2>5. データの削除</h2>
+<p>ユーザーはアカウントの削除を運営に申請できます。削除申請後、合理的な期間内にすべての個人データを削除します。連絡先：taichi102433@gmail.com</p>
+
+<h2>6. Cookie等</h2>
+<p>本サービスはGoogleログインのためにCookieおよびローカルストレージを使用します。ブラウザの設定によりCookieを無効化できますが、一部機能が利用できなくなる場合があります。</p>
+
+<h2>7. ポリシーの変更</h2>
+<p>本ポリシーは必要に応じて変更することがあります。重要な変更がある場合はサービス内でお知らせします。</p>
+
+<h2>8. お問い合わせ</h2>
+<p>個人情報の取扱いに関するお問い合わせ：<br>
+運営者：鈴木太智<br>
+メール：taichi102433@gmail.com</p>
+</body>
+</html>
