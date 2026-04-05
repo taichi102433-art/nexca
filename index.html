@@ -10,9 +10,11 @@
 <title>Nexca</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root{--bg:#0a0a0f;--bg2:#12121a;--s1:#111119;--s2:#1a1a26;--s3:#22222f;--red:#FF1744;--green:#00e5a0;--yellow:#ffbe00;--blue:#4d9fff;--txt:#f0f0f8;--dim:#7070a0;--r:14px;--pill:100px;--nav:60px;}
+:root{--bg:#0a0a0f;--bg2:#12121a;--s1:#111119;--s2:#1a1a26;--s3:#22222f;--red:#FF1744;--green:#00e5a0;--yellow:#ffbe00;--blue:#4d9fff;--purple:#9c27b0;--txt:#f0f0f8;--dim:#7070a0;--r:14px;--pill:100px;--nav:60px;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:'Hiragino Sans','Noto Sans JP',sans-serif;}
+
+/* ONBOARDING */
 #ob{position:fixed;inset:0;z-index:9000;background:linear-gradient(180deg,var(--bg),var(--bg2));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;}
 #ob.hide{display:none;}
 .ob-logo{font-weight:700;font-size:36px;letter-spacing:-2px;margin-bottom:5px;}
@@ -22,24 +24,43 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .ob-list{display:flex;flex-direction:column;gap:9px;width:100%;max-width:290px;}
 .ob-item{padding:14px 16px;background:var(--s2);border:2px solid rgba(255,255,255,0.07);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all 0.2s;}
 .ob-item.sel{border-color:var(--red);background:rgba(255,23,68,0.1);}
-.ob-badge{margin-left:auto;font-size:10px;padding:2px 7px;border-radius:var(--pill);background:rgba(255,255,255,0.08);color:var(--dim);}
 .ob-btn{width:100%;max-width:290px;padding:14px;background:var(--red);border:none;border-radius:12px;font-size:15px;font-weight:700;color:white;cursor:pointer;margin-top:18px;font-family:inherit;opacity:0.35;pointer-events:none;}
 .ob-btn.on{opacity:1;pointer-events:all;}
+
+/* SCREENS */
 .screen{position:fixed;top:0;left:0;right:0;bottom:var(--nav);display:none;flex-direction:column;overflow:hidden;}
 .screen.on{display:flex;}
+
+/* NAV */
 #nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-around;z-index:1000;}
 .nb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;cursor:pointer;opacity:0.3;border:none;background:none;color:var(--txt);font-family:inherit;}
 .nb.on{opacity:1;}
 .nb-ic{font-size:18px;}
 .nb-lb{font-size:9px;font-weight:700;}
+
+/* AGE BADGE */
 #ab{position:fixed;top:78px;left:14px;z-index:500;display:none;align-items:center;gap:5px;background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--pill);padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+
+/* FEED */
 #feed{background:var(--bg);}
 #stack{position:absolute;inset:0;}
-#fhd{position:absolute;top:0;left:0;right:0;z-index:100;display:flex;align-items:flex-start;justify-content:flex-end;padding:46px 14px 10px;background:linear-gradient(to bottom,rgba(10,10,15,0.85),transparent);pointer-events:none;}
+#fhd{position:absolute;top:0;left:0;right:0;z-index:100;display:flex;align-items:flex-start;padding:46px 14px 10px;background:linear-gradient(to bottom,rgba(10,10,15,0.85),transparent);pointer-events:none;}
 #fhd>*{pointer-events:all;}
 .logo{font-weight:700;font-size:20px;letter-spacing:-1px;position:absolute;left:14px;top:44px;}
 .logo span{color:var(--red);}
-#fbtn{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--pill);padding:5px 12px;color:var(--txt);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(10px);}
+
+/* FEED TABS */
+#feed-tabs{position:absolute;top:88px;left:50%;transform:translateX(-50%);z-index:100;display:flex;gap:6px;background:rgba(10,10,15,0.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:var(--pill);padding:4px;}
+.feed-tab{padding:5px 14px;border-radius:var(--pill);font-size:11px;font-weight:700;cursor:pointer;color:var(--dim);border:none;background:none;font-family:inherit;transition:all 0.2s;}
+.feed-tab.on{background:var(--red);color:white;}
+
+/* FILTER BTN */
+#fbtn{position:absolute;right:14px;top:44px;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--pill);padding:5px 12px;color:var(--txt);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(10px);}
+
+/* SEARCH BTN */
+#search-btn{position:absolute;right:14px;top:44px;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--pill);padding:5px 12px;color:var(--txt);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(10px);}
+
+/* SLIDES */
 .slide{position:absolute;inset:0;transition:transform 0.38s cubic-bezier(0.4,0,0.2,1),opacity 0.38s;will-change:transform;}
 .slide.cur{transform:translateY(0);opacity:1;z-index:10;}
 .slide.up{transform:translateY(-100%);opacity:0;z-index:5;}
@@ -54,6 +75,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .sact:active .sact-c{transform:scale(0.86);}
 .sact-l{font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);}
 .sact.lk .sact-c{background:rgba(255,23,68,0.22);border-color:rgba(255,23,68,0.5);}
+.sact.wnt .sact-c{background:rgba(255,190,0,0.22);border-color:rgba(255,190,0,0.5);}
 .sbot{position:absolute;left:0;right:56px;bottom:0;padding:0 13px 16px;z-index:20;}
 .sgtag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:var(--pill);font-size:10px;font-weight:700;margin-bottom:5px;border:1px solid;}
 .stitle{font-size:17px;font-weight:900;line-height:1.3;margin-bottom:4px;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
@@ -62,6 +84,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .sdbtn{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.11);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,0.18);border-radius:var(--pill);padding:7px 14px;font-size:11px;font-weight:700;color:white;cursor:pointer;font-family:inherit;}
 .shint{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0.18);pointer-events:none;animation:bup 2s infinite;}
 @keyframes bup{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(-3px)}}
+
+/* FILTER MODAL */
 #fm{position:fixed;inset:0;z-index:600;display:none;align-items:flex-end;padding-bottom:var(--nav);}
 #fm.on{display:flex;}
 .fmbg{position:absolute;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);}
@@ -83,6 +107,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .fm-dateopts{display:flex;flex-direction:column;gap:5px;padding:4px 14px 10px;}
 .fm-dateopt{padding:10px 14px;background:var(--s2);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--dim);border:2px solid transparent;transition:all 0.15s;}
 .fm-dateopt.on{color:var(--txt);border-color:var(--red);background:rgba(255,23,68,0.08);}
+
+/* SEARCH MODAL */
+#search-modal{position:fixed;inset:0;z-index:700;display:none;flex-direction:column;background:var(--bg);}
+#search-modal.on{display:flex;}
+.search-hd{padding:46px 14px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.search-input{flex:1;padding:10px 14px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--pill);color:var(--txt);font-size:14px;font-family:inherit;}
+.search-input:focus{outline:none;border-color:var(--red);}
+.search-cancel{padding:8px 12px;color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;font-family:inherit;}
+.search-results{overflow-y:auto;flex:1;padding:12px 14px;}
+.search-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--s2);border-radius:12px;margin-bottom:8px;cursor:pointer;}
+.search-item-em{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.search-item-t{font-size:13px;font-weight:700;}
+.search-item-s{font-size:10px;color:var(--dim);margin-top:2px;}
+
+/* DRAWER */
 #drw{position:fixed;left:0;right:0;bottom:calc(-100% - var(--nav));z-index:400;background:var(--s1);border-radius:20px 20px 0 0;border-top:1.5px solid rgba(255,255,255,0.07);max-height:90dvh;display:flex;flex-direction:column;transition:bottom 0.36s cubic-bezier(0.4,0,0.2,1);}
 #drw.on{bottom:var(--nav);}
 #drwbg{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:390;display:none;backdrop-filter:blur(2px);}
@@ -100,16 +139,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .ic-v{font-size:13px;line-height:1.6;}
 .gmapbtn{display:flex;align-items:center;gap:6px;margin-top:8px;padding:9px 12px;background:#1a2a4a;border-radius:9px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none;}
 .desc{font-size:13px;line-height:1.8;color:rgba(255,255,255,0.7);margin-bottom:16px;}
-.part-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--yellow),#f0a000);border:none;border-radius:12px;font-size:14px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
 .ctas{display:flex;flex-direction:column;gap:7px;}
 .cta{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border:none;text-decoration:none;color:white;}
 .cta-a{background:var(--red);}
 .cta-m{background:linear-gradient(135deg,#1a73e8,#4285f4);}
 .cta-i{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);}
 .cta-h{background:var(--s2);border:1.5px solid rgba(255,255,255,0.09);}
-.part-st{padding:12px;border-radius:10px;text-align:center;font-size:13px;font-weight:700;margin-bottom:10px;}
-.part-st.ok{background:rgba(0,229,160,0.1);color:var(--green);}
-.part-st.ng{background:rgba(255,23,68,0.1);color:var(--red);}
+.back-to-feed{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:11px;font-size:13px;font-weight:700;color:var(--dim);cursor:pointer;margin-bottom:8px;font-family:inherit;}
+
+/* RECOMMEND */
+.recommend-section{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);}
+.recommend-title{font-size:12px;font-weight:700;color:var(--dim);margin-bottom:10px;}
+.recommend-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--s2);border-radius:10px;margin-bottom:7px;cursor:pointer;}
+.recommend-em{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+
+/* FLYER */
 #flyer{background:var(--bg);}
 .fl-hd{padding:48px 14px 9px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
 .fl-title{font-size:18px;font-weight:900;}
@@ -134,11 +178,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .fcd{font-size:10px;color:var(--dim);}
 .fctags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap;}
 .fctag{font-size:8px;padding:2px 5px;background:var(--s3);border-radius:var(--pill);color:var(--dim);font-weight:700;}
+
+/* MAP VIEW */
 #mapview{display:none;flex:1;flex-direction:column;}
 #mapview.on{display:flex;}
 .mphold{flex:1;background:var(--s2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;}
 .mplist{padding:9px;overflow-y:auto;}
 .mpitem{display:flex;align-items:center;gap:9px;padding:10px;background:var(--s2);border-radius:10px;margin-bottom:6px;cursor:pointer;text-decoration:none;color:var(--txt);}
+
+/* VIDEO OVERLAY (Flyer) */
+#vov{position:fixed;inset:0;background:#000;z-index:800;display:none;flex-direction:column;}
+#vov.on{display:flex;}
+.vov-hd{position:absolute;top:0;left:0;right:0;padding:46px 14px 12px;display:flex;align-items:center;gap:9px;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);z-index:10;}
+.vov-bk{width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:none;color:white;}
+.vov-video{flex:1;position:relative;min-height:50vh;}
+.vov-video iframe{position:absolute;inset:0;width:100%;height:100%;}
+.vov-dt{padding:12px 14px 26px;background:var(--s1);overflow-y:auto;max-height:45vh;}
+
+/* DIAGNOSIS */
 #diag{background:linear-gradient(180deg,var(--bg),var(--bg2));overflow:hidden;}
 #diag-start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;text-align:center;}
 .d-logo{font-weight:700;font-size:24px;letter-spacing:-1px;margin-bottom:4px;}
@@ -161,14 +218,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .q-opts{display:flex;flex-direction:column;gap:9px;}
 .q-opt{padding:14px 16px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.06);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:left;color:var(--txt);}
 .q-opt.sel{background:rgba(255,23,68,0.12);border-color:rgba(255,23,68,0.4);}
-.q-chk-row{display:flex;align-items:center;gap:10px;}
-.q-chk-box{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,0.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
-.q-opt.sel .q-chk-box{background:var(--red);border-color:var(--red);}
 .q-next-btn{margin:14px 16px 8px;padding:13px;background:var(--red);border:none;border-radius:11px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:inherit;display:none;}
 .q-next-btn.show{display:block;}
-.q-pref-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding-bottom:8px;}
-.q-pref{padding:9px 4px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.06);border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;color:var(--dim);transition:all 0.15s;}
-.q-pref.sel{background:rgba(255,23,68,0.12);border-color:rgba(255,23,68,0.4);color:var(--txt);}
 #diag-load{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
 .load-mascot{width:90px;height:90px;animation:bounce 0.6s ease-in-out infinite alternate;}
 @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-18px)}}
@@ -203,13 +254,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .res-all-char{width:60px;height:60px;margin:0 auto 4px;}
 .res-all-name{font-size:10px;font-weight:700;}
 .res-all-item.dim{opacity:0.25;filter:grayscale(1);}
-#vov{position:fixed;inset:0;background:#000;z-index:800;display:none;flex-direction:column;}
-#vov.on{display:flex;}
-.vov-hd{position:absolute;top:0;left:0;right:0;padding:46px 14px 12px;display:flex;align-items:center;gap:9px;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);z-index:10;}
-.vov-bk{width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:none;color:white;}
-.vov-ct{flex:1;position:relative;}
-.vov-ct iframe{position:absolute;inset:0;width:100%;height:100%;}
-.vov-dt{padding:12px 14px 26px;background:var(--s1);max-height:38vh;overflow-y:auto;}
+
+/* POINTS */
 #points{background:var(--bg);overflow-y:auto;}
 .pt-hero{margin:14px;background:linear-gradient(135deg,#1a1508,#2a1e08);border:1.5px solid rgba(255,190,0,0.28);border-radius:16px;padding:18px;}
 .pt-hero-lbl{font-size:10px;font-weight:700;color:rgba(255,190,0,0.6);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
@@ -235,7 +281,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .earn-sub{font-size:10px;color:var(--dim);margin-top:1px;}
 .earn-pt{font-size:14px;font-weight:900;color:var(--yellow);}
 .earn-camp{font-size:9px;color:var(--red);font-weight:700;background:rgba(255,23,68,0.1);padding:1px 6px;border-radius:var(--pill);}
-.shop-cat{padding:0 14px 6px;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
 .shop-item{display:flex;align-items:center;gap:12px;padding:13px;background:var(--s2);border-radius:12px;cursor:pointer;margin-bottom:8px;border:1.5px solid transparent;}
 .shop-item.avail{border-color:rgba(255,190,0,0.2);}
 .shop-ic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
@@ -245,8 +290,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .shop-pt-u{font-size:10px;color:var(--dim);text-align:right;}
 .shop-tag{font-size:9px;padding:2px 6px;border-radius:var(--pill);font-weight:700;display:inline-block;margin-top:3px;}
 .shop-tag.goods{background:rgba(255,190,0,0.12);color:var(--yellow);}
-.shop-tag.title{background:rgba(168,85,247,0.15);color:#c084fc;}
-.shop-tag.cpn{background:rgba(0,229,160,0.12);color:var(--green);}
 .shop-tag.lk{background:rgba(255,255,255,0.06);color:var(--dim);}
 .mis-item{background:var(--s2);border-radius:12px;padding:12px;margin-bottom:8px;border:1.5px solid rgba(255,255,255,0.05);}
 .mis-item.done{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.05);}
@@ -263,30 +306,46 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .phi-t{font-size:12px;font-weight:700;}
 .phi-d{font-size:9px;color:var(--dim);}
 .phi-a{font-size:13px;font-weight:900;}
+
+/* RANKING */
+.rank-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--s2);border-radius:10px;margin-bottom:6px;}
+.rank-num{font-size:16px;font-weight:900;width:28px;text-align:center;flex-shrink:0;}
+.rank-num.gold{color:var(--yellow);}
+.rank-num.silver{color:#b0b0b0;}
+.rank-num.bronze{color:#cd7f32;}
+.rank-name{font-size:13px;font-weight:700;flex:1;}
+.rank-pt{font-size:14px;font-weight:900;color:var(--yellow);}
+.rank-me{border:1.5px solid rgba(255,190,0,0.3);background:rgba(255,190,0,0.05);}
+
+/* MYPAGE */
 #mypage{background:var(--bg);overflow-y:auto;}
 .mp-top{padding:48px 14px 16px;text-align:center;}
 .mp-av{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 9px;overflow:hidden;}
 .mp-av img{width:100%;height:100%;object-fit:cover;}
 .mp-name{font-size:17px;font-weight:900;margin-bottom:2px;}
+.mp-char{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;}
+.mp-char-img{width:36px;height:36px;}
+.mp-char-name{font-size:13px;font-weight:700;}
+.mp-title{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--pill);font-size:11px;font-weight:700;background:rgba(168,85,247,0.15);color:#c084fc;margin-bottom:4px;}
+.mp-lv{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;}
+.mp-lv-badge{font-size:12px;font-weight:900;color:var(--yellow);background:rgba(255,190,0,0.12);padding:3px 10px;border-radius:var(--pill);}
+.mp-lv-bar-wrap{flex:1;max-width:120px;}
+.mp-lv-bar{height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;}
+.mp-lv-bar-fill{height:100%;background:linear-gradient(90deg,var(--yellow),#ff8c00);border-radius:3px;transition:width 0.5s;}
+.mp-lv-label{font-size:9px;color:var(--dim);margin-top:2px;text-align:center;}
 .mp-age{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:var(--pill);font-size:10px;font-weight:700;background:rgba(255,23,68,0.1);color:var(--red);margin-bottom:2px;}
 .mp-email{font-size:11px;color:var(--dim);margin-bottom:12px;}
 .mp-ptcard{margin:0 14px 16px;background:linear-gradient(135deg,#1a1508,#2a1e08);border:1.5px solid rgba(255,190,0,0.25);border-radius:13px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
 .mp-ptcard-val{font-size:28px;font-weight:900;color:var(--yellow);}
 .mp-ptcard-lbl{font-size:10px;color:rgba(255,190,0,0.6);font-weight:700;}
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:0 14px 18px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:0 14px 18px;}
 .sc{background:var(--s2);border-radius:11px;padding:11px 7px;text-align:center;border:1.5px solid rgba(255,255,255,0.05);}
-.sc-n{font-size:20px;font-weight:900;margin-bottom:1px;}
-.sc-l{font-size:9px;color:var(--dim);font-weight:700;}
+.sc-n{font-size:18px;font-weight:900;margin-bottom:1px;}
+.sc-l{font-size:8px;color:var(--dim);font-weight:700;}
 .sec{font-size:14px;font-weight:900;padding:0 14px;margin-bottom:9px;}
 .stamp-wrap{margin:0 14px 16px;background:var(--s2);border-radius:12px;padding:14px;}
 .stamp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px;}
 .stamp-cell{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;}
-.cpn-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:11px;margin-bottom:7px;border:1.5px solid;}
-.rev-card{margin:0 14px 16px;background:var(--s2);border-radius:12px;padding:14px;}
-.rev-q{font-size:12px;font-weight:700;margin-bottom:5px;color:rgba(255,255,255,0.8);}
-.rev-ta{width:100%;padding:9px;background:var(--s3);border:1.5px solid rgba(255,255,255,0.07);border-radius:8px;color:var(--txt);font-size:12px;font-family:inherit;resize:none;height:65px;margin-bottom:7px;}
-.rev-sel{width:100%;padding:9px;background:var(--s3);border:1.5px solid rgba(255,255,255,0.07);border-radius:8px;color:var(--txt);font-size:12px;font-weight:700;font-family:inherit;margin-bottom:7px;appearance:none;}
-.rev-submit{width:100%;padding:11px;background:var(--green);border:none;border-radius:9px;font-size:13px;font-weight:700;color:#0a1a12;cursor:pointer;font-family:inherit;}
 .refcard{margin:0 14px 16px;background:linear-gradient(135deg,rgba(77,159,255,0.1),rgba(77,159,255,0.03));border:1.5px solid rgba(77,159,255,0.22);border-radius:12px;padding:13px;}
 .refcard-t{font-size:13px;font-weight:900;color:var(--blue);margin-bottom:2px;}
 .refcard-s{font-size:11px;color:var(--dim);margin-bottom:9px;}
@@ -294,15 +353,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .lc{margin:0 14px 16px;background:var(--s2);border-radius:14px;padding:18px;text-align:center;}
 .gbtn{display:flex;align-items:center;justify-content:center;gap:9px;background:white;color:#1a1a1a;border:none;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;margin-top:12px;}
 .logoutbtn{width:calc(100% - 28px);margin:0 14px 24px;padding:12px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.08);border-radius:11px;color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
-#agem,#partm,#exm{position:fixed;inset:0;z-index:700;display:none;}
-#agem.on,#partm.on,#exm.on{display:flex;}
-#agem{align-items:flex-end;padding-bottom:var(--nav);}
+
+/* REVIEW */
+.rev-card{margin:0 14px 16px;background:var(--s2);border-radius:12px;padding:14px;}
+.rev-q{font-size:12px;font-weight:700;margin-bottom:5px;color:rgba(255,255,255,0.8);}
+.rev-ta{width:100%;padding:9px;background:var(--s3);border:1.5px solid rgba(255,255,255,0.07);border-radius:8px;color:var(--txt);font-size:12px;font-family:inherit;resize:none;height:65px;margin-bottom:7px;}
+.rev-sel{width:100%;padding:9px;background:var(--s3);border:1.5px solid rgba(255,255,255,0.07);border-radius:8px;color:var(--txt);font-size:12px;font-weight:700;font-family:inherit;margin-bottom:7px;appearance:none;}
+.rev-submit{width:100%;padding:11px;background:var(--green);border:none;border-radius:9px;font-size:13px;font-weight:700;color:#0a1a12;cursor:pointer;font-family:inherit;}
+
+/* MODALS */
+#agem{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav);}
+#agem.on{display:flex;}
 .agem-bg{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);}
 .agem-box{position:relative;width:100%;background:var(--s1);border-radius:20px 20px 0 0;border-top:1.5px solid rgba(255,255,255,0.07);padding:13px 14px 26px;}
 .agem-t{font-size:14px;font-weight:900;margin-bottom:12px;text-align:center;}
 .agem-item{padding:12px 14px;background:var(--s2);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid transparent;display:flex;align-items:center;gap:8px;margin-bottom:7px;transition:all 0.15s;}
 .agem-item.on{border-color:var(--red);}
-#partm{align-items:flex-end;padding-bottom:var(--nav);}
+
+#partm{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav);}
+#partm.on{display:flex;}
 .partm-bg{position:absolute;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);}
 .partm-box{position:relative;width:100%;background:var(--s1);border-radius:20px 20px 0 0;border-top:1.5px solid rgba(255,255,255,0.07);padding:14px 16px 28px;}
 .partm-t{font-size:16px;font-weight:900;margin-bottom:4px;}
@@ -312,30 +381,68 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .code-input{width:100%;padding:14px;background:var(--s2);border:2px solid rgba(255,255,255,0.1);border-radius:11px;color:var(--txt);font-size:20px;font-weight:900;text-align:center;letter-spacing:4px;margin-bottom:10px;}
 .code-input:focus{outline:none;border-color:var(--yellow);}
 .part-submit{width:100%;padding:13px;background:var(--yellow);border:none;border-radius:11px;font-size:14px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;}
-#exm{align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);}
+.part-st{padding:12px;border-radius:10px;text-align:center;font-size:13px;font-weight:700;margin-bottom:10px;}
+.part-st.ok{background:rgba(0,229,160,0.1);color:var(--green);}
+.part-st.ng{background:rgba(255,23,68,0.1);color:var(--red);}
+
+#exm{position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,0.72);backdrop-filter:blur(8px);}
+#exm.on{display:flex;}
 .exmbox{background:var(--s1);border-radius:16px;padding:18px;width:100%;max-width:300px;border:1.5px solid rgba(255,255,255,0.09);}
 .exm-t{font-size:16px;font-weight:900;margin-bottom:3px;}
 .exm-s{font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.6;}
 .exm-cost{font-size:24px;font-weight:900;color:var(--yellow);text-align:center;padding:12px;background:rgba(255,190,0,0.08);border-radius:10px;margin-bottom:14px;}
 .exm-ex{width:100%;padding:12px;background:var(--yellow);border:none;border-radius:10px;font-size:14px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;margin-bottom:7px;}
 .exm-cc{width:100%;padding:12px;background:var(--s2);border:none;border-radius:10px;color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* LEVEL UP OVERLAY */
+#lvup{position:fixed;inset:0;z-index:5000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);}
+#lvup.on{display:flex;}
+.lvup-box{text-align:center;padding:28px 22px;}
+.lvup-glow{width:120px;height:120px;margin:0 auto 16px;animation:lvpulse 0.6s ease-in-out infinite alternate;}
+@keyframes lvpulse{from{transform:scale(1);}to{transform:scale(1.08);}}
+.lvup-title{font-size:12px;font-weight:700;letter-spacing:3px;color:var(--yellow);text-transform:uppercase;margin-bottom:8px;}
+.lvup-lv{font-size:52px;font-weight:900;color:var(--yellow);line-height:1;margin-bottom:4px;}
+.lvup-name{font-size:18px;font-weight:900;margin-bottom:6px;}
+.lvup-title-name{font-size:14px;color:var(--dim);margin-bottom:24px;}
+.lvup-close{padding:12px 32px;background:var(--yellow);border:none;border-radius:12px;font-size:15px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;}
+
+/* PRE REGISTRATION */
+#prereg-modal{position:fixed;inset:0;z-index:8000;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);padding:20px;}
+#prereg-modal.on{display:flex;}
+.prereg-box{background:var(--s1);border-radius:20px;padding:24px;width:100%;max-width:320px;border:1.5px solid rgba(255,255,255,0.08);}
+.prereg-t{font-size:18px;font-weight:900;margin-bottom:4px;text-align:center;}
+.prereg-s{font-size:12px;color:var(--dim);margin-bottom:16px;text-align:center;line-height:1.6;}
+.prereg-bonus{display:flex;align-items:center;gap:8px;background:rgba(255,190,0,0.08);border:1px solid rgba(255,190,0,0.2);border-radius:10px;padding:10px;margin-bottom:16px;}
+.prereg-input{width:100%;padding:12px;background:var(--s2);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--txt);font-size:14px;font-family:inherit;margin-bottom:10px;}
+.prereg-input:focus{outline:none;border-color:var(--red);}
+.prereg-submit{width:100%;padding:13px;background:var(--red);border:none;border-radius:10px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.prereg-skip{width:100%;padding:10px;background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* ORGANIZER PAGE */
+#org-ov{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;background:var(--bg);}
+.org-hd{padding:46px 14px 12px;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.org-back{width:34px;height:34px;background:var(--s2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:none;color:var(--txt);}
+
+/* TOAST */
 #toast{position:fixed;bottom:calc(var(--nav)+12px);left:50%;transform:translateX(-50%) translateY(16px);background:rgba(18,18,28,0.97);border:1px solid rgba(255,255,255,0.09);border-radius:var(--pill);padding:8px 16px;font-size:12px;font-weight:700;white-space:nowrap;z-index:3000;opacity:0;transition:opacity 0.3s,transform 0.3s;backdrop-filter:blur(10px);}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* EMPTY */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 18px;text-align:center;gap:8px;}
 .empty-ic{font-size:40px;opacity:0.22;}
 .empty-t{font-size:13px;color:var(--dim);font-weight:700;}
 </style>
 </head>
 <body>
+
 <!-- ONBOARDING -->
 <div id="ob">
   <div class="ob-logo">Nex<span>ca</span></div>
   <div class="ob-sub">まだ知らない体験が、次の自分を連れてくる。</div>
-
-  <!-- STEP1: 年齢層 -->
   <div id="ob-step1" style="width:100%;max-width:290px;">
     <div class="ob-lbl">STEP 1 / 2　あなたはどれ？</div>
     <div class="ob-list">
+      <div class="ob-item" onclick="pickAge(this,'小学生の保護者')">👨‍👩‍👧‍👦 小学生の保護者</div>
       <div class="ob-item" onclick="pickAge(this,'中学生')">📚 中学生</div>
       <div class="ob-item" onclick="pickAge(this,'高校生')">🎒 高校生</div>
       <div class="ob-item" onclick="pickAge(this,'大学生')">🎓 大学生</div>
@@ -343,8 +450,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
     </div>
     <button class="ob-btn" id="ob-btn1" onclick="goObStep2()">次へ →</button>
   </div>
-
-  <!-- STEP2: 地域選択 -->
   <div id="ob-step2" style="width:100%;max-width:290px;display:none;">
     <div class="ob-lbl">STEP 2 / 2　お住まいの地域は？</div>
     <div style="font-size:11px;color:var(--dim);margin-bottom:10px;text-align:center;">※ あなたに合った情報を優先表示します</div>
@@ -373,11 +478,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
     <button class="ob-btn" id="ob-btn2" onclick="startApp()">はじめる →</button>
   </div>
 </div>
+
+<!-- AGE BADGE -->
 <div id="ab" onclick="openAgeMod()"><span id="ab-ic">🎒</span><span id="ab-lb">高校生</span> <span style="font-size:9px;opacity:0.4;">▼</span></div>
+
+<!-- AGE MODAL -->
 <div id="agem">
   <div class="agem-bg" onclick="closeAgeMod()"></div>
   <div class="agem-box">
     <div class="agem-t">年齢層を変更</div>
+    <div class="agem-item" onclick="swAge(this,'小学生の保護者')">👨‍👩‍👧‍👦 小学生の保護者</div>
     <div class="agem-item" onclick="swAge(this,'中学生')">📚 中学生</div>
     <div class="agem-item" onclick="swAge(this,'高校生')">🎒 高校生</div>
     <div class="agem-item" onclick="swAge(this,'大学生')">🎓 大学生</div>
@@ -385,30 +495,59 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
   </div>
 </div>
 
+<!-- EXCHANGE MODAL -->
 <div id="exm"><div class="exmbox" id="exmbox"></div></div>
+
+<!-- LEVEL UP OVERLAY -->
+<div id="lvup">
+  <div class="lvup-box">
+    <div class="lvup-glow" id="lvup-char"></div>
+    <div class="lvup-title">LEVEL UP!</div>
+    <div class="lvup-lv" id="lvup-lv">Lv2</div>
+    <div class="lvup-name" id="lvup-name">冒険者</div>
+    <div class="lvup-title-name" id="lvup-tname">称号が変わりました</div>
+    <button class="lvup-close" onclick="closeLvUp()">やったー！</button>
+  </div>
+</div>
+
+<!-- PRE REGISTRATION MODAL -->
+<div id="prereg-modal">
+  <div class="prereg-box">
+    <div class="prereg-t">🎉 事前登録</div>
+    <div class="prereg-s">Nexcaは2026年6月にサービス開始予定です。<br>事前登録でボーナスポイントをゲット！</div>
+    <div class="prereg-bonus">
+      <div style="font-size:24px;">⭐</div>
+      <div><div style="font-size:13px;font-weight:700;color:var(--yellow);">事前登録ボーナス 500pt</div><div style="font-size:10px;color:var(--dim);">サービス開始時に付与</div></div>
+    </div>
+    <input class="prereg-input" id="prereg-email" type="email" placeholder="メールアドレス">
+    <button class="prereg-submit" onclick="submitPreReg()">事前登録する → +500pt</button>
+    <button class="prereg-skip" onclick="skipPreReg()">スキップ</button>
+  </div>
+</div>
+
 <!-- FEED -->
 <div id="feed" class="screen on">
   <div id="fhd">
     <div class="logo">Nex<span>ca</span></div>
+    <div id="feed-tabs">
+      <button class="feed-tab on" onclick="setFeedTab('recommend',this)">おすすめ</button>
+      <button class="feed-tab" onclick="setFeedTab('official',this)">運営</button>
+    </div>
     <button id="fbtn" onclick="openFM()"><span id="fi">📍</span><span id="fl">すべて</span> <span style="font-size:9px;opacity:0.4;">▼</span></button>
   </div>
   <div id="stack"></div>
 </div>
+
 <!-- FLYER -->
 <div id="flyer" class="screen">
   <div class="fl-hd">
     <div class="fl-title">チラシ一覧</div>
     <div class="fl-btns">
+      <button class="flbtn" onclick="openSearchModal()">🔍 検索</button>
       <button class="flbtn" onclick="toggleMap()" id="mpbtn">🗺️ 地図</button>
-      <button class="flbtn" onclick="openFM()">🔍 絞込</button>
     </div>
   </div>
-  <div class="ftabs">
-    <div class="ftab on" data-g="all" onclick="setFG(this)">📍 すべて</div>
-    <div class="ftab" data-g="event" onclick="setFG(this)">🎉 イベント</div>
-    <div class="ftab" data-g="learn" onclick="setFG(this)">🚀 学び</div>
-    <div class="ftab" data-g="volunteer" onclick="setFG(this)">🤝 ボランティア</div>
-  </div>
+  <div class="ftabs" id="ftabs-wrap"></div>
   <div class="fl-scr" id="flscr"><div class="fl-grid" id="flgrid"></div></div>
   <div id="mapview">
     <div class="mphold">
@@ -419,13 +558,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
     <div class="mplist" id="mplist"></div>
   </div>
 </div>
+
 <!-- DIAGNOSIS -->
 <div id="diag" class="screen">
   <div id="diag-start">
     <div class="d-mascot" id="d-mascot"></div>
     <div class="d-logo">Nex<span>ca</span></div>
     <div class="d-label">STYLE DIAGNOSIS</div>
-    <div class="d-catch">次の自分に出会う、<br>14の質問</div>
+    <div class="d-catch">次の自分に出会う、<br>15の質問</div>
     <div class="d-sub">行動パターンから診断。<br>あなたにピッタリのイベント＆キャラが見つかる。</div>
     <button class="d-btn" onclick="startDiag()">診断スタート</button>
     <div class="d-note">所要時間：約2分</div>
@@ -434,7 +574,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
     <button class="q-back" onclick="diagBack()">←</button>
     <div class="q-prog-wrap">
       <div class="q-prog-bar"><div class="q-prog-fill" id="q-prog-fill" style="width:0%"></div></div>
-      <div class="q-prog-lbl"><span id="q-step-lbl">STEP 1</span><span id="q-num-lbl">1 / 14</span></div>
+      <div class="q-prog-lbl"><span id="q-step-lbl">STEP 1</span><span id="q-num-lbl">1 / 15</span></div>
     </div>
     <div class="q-content">
       <div class="q-step" id="q-step"></div>
@@ -450,6 +590,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
   </div>
   <div id="diag-result"><div class="res-wrap" id="res-wrap"></div></div>
 </div>
+
 <!-- POINTS -->
 <div id="points" class="screen">
   <div style="padding:48px 14px 14px;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;"><div style="font-size:18px;font-weight:900;">⭐ ポイント</div></div>
@@ -469,28 +610,48 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
       <div class="pt-tab on" onclick="setPTab(this,'earn')">貯め方</div>
       <div class="pt-tab" onclick="setPTab(this,'shop')">交換所</div>
       <div class="pt-tab" onclick="setPTab(this,'mis')">ミッション</div>
+      <div class="pt-tab" onclick="setPTab(this,'rank')">ランキング</div>
       <div class="pt-tab" onclick="setPTab(this,'hist')">履歴</div>
     </div>
     <div id="pt-earn"><div style="padding:0 14px 14px;" id="earn-list"></div></div>
     <div id="pt-shop" style="display:none;">
-      <div style="padding:0 14px 8px;font-size:12px;color:var(--dim);line-height:1.6;">参加・学び・応援の証をNexca特典や掲載店の特典に。</div>
-      <div class="shop-cat" style="margin-top:6px;">🎪 Nexca出店グッズ購入権</div>
+      <div style="padding:0 14px 8px;font-size:12px;color:var(--dim);line-height:1.6;">Nexca出店時に現地でグッズを購入できる権利です。</div>
       <div style="padding:0 14px;" id="shop-goods"></div>
-      <div class="shop-cat" style="margin-top:4px;">🏅 デジタル称号</div>
-      <div style="padding:0 14px;" id="shop-title"></div>
-      <div class="shop-cat" style="margin-top:4px;">🎟️ 掲載店割引クーポン</div>
-      <div style="padding:0 14px;font-size:11px;color:var(--dim);margin-bottom:8px;">Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。</div>
-      <div style="padding:0 14px;" id="shop-cpn"></div>
     </div>
     <div id="pt-mis" style="display:none;"><div style="padding:0 14px;" id="mis-list"></div></div>
+    <div id="pt-rank" style="display:none;">
+      <div style="padding:0 14px 8px;">
+        <div style="display:flex;gap:6px;margin-bottom:12px;">
+          <button style="flex:1;padding:8px;background:var(--s2);border:none;border-radius:8px;font-size:11px;font-weight:700;color:var(--txt);cursor:pointer;font-family:inherit;" onclick="setRankTab('week',this)" id="rank-tab-week" class="rank-tab-btn on-rank">週間</button>
+          <button style="flex:1;padding:8px;background:var(--s2);border:none;border-radius:8px;font-size:11px;font-weight:700;color:var(--dim);cursor:pointer;font-family:inherit;" onclick="setRankTab('month',this)" id="rank-tab-month" class="rank-tab-btn">月間</button>
+        </div>
+        <div id="rank-list"></div>
+        <div id="my-rank" style="margin-top:10px;"></div>
+      </div>
+    </div>
     <div id="pt-hist" style="display:none;"><div style="padding:0 14px 14px;" id="phist-list"></div></div>
   </div>
 </div>
+
 <!-- MYPAGE -->
 <div id="mypage" class="screen">
   <div class="mp-top">
     <div class="mp-av" id="mpav">👤</div>
     <div class="mp-name" id="mpname">ゲスト</div>
+    <div id="mp-char-wrap" style="display:none;" class="mp-char">
+      <div class="mp-char-img" id="mp-char-img"></div>
+      <div>
+        <div class="mp-char-name" id="mp-char-name"></div>
+        <div class="mp-title" id="mp-title-badge">たんけんしゃ</div>
+      </div>
+    </div>
+    <div id="mp-lv-wrap" style="display:none;" class="mp-lv">
+      <div class="mp-lv-badge" id="mp-lv-badge">Lv1</div>
+      <div class="mp-lv-bar-wrap">
+        <div class="mp-lv-bar"><div class="mp-lv-bar-fill" id="mp-lv-bar" style="width:0%"></div></div>
+        <div class="mp-lv-label" id="mp-lv-label">0 / 300pt</div>
+      </div>
+    </div>
     <div class="mp-age" id="mpage">🎒 高校生</div>
     <div class="mp-email" id="mpemail">ログインしていません</div>
   </div>
@@ -512,6 +673,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
     </div>
     <div class="stats">
       <div class="sc"><div class="sc-n" id="st-lk">0</div><div class="sc-l">いいね</div></div>
+      <div class="sc"><div class="sc-n" id="st-wnt">0</div><div class="sc-l">行きたい</div></div>
       <div class="sc"><div class="sc-n" id="st-vi">0</div><div class="sc-l">視聴数</div></div>
       <div class="sc"><div class="sc-n" style="color:var(--yellow);" id="st-pt">0</div><div class="sc-l">合計pt</div></div>
     </div>
@@ -529,24 +691,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
         <button style="width:100%;padding:10px;background:var(--yellow);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#1a1508;cursor:pointer;font-family:inherit;" onclick="collectChar(document.getElementById('char-code-input').value.trim())">獲得する</button>
       </div>
     </div>
-    <div id="cpn-sec" style="display:none;">
-      <div class="sec">🎟️ 保有クーポン</div>
-      <div style="padding:0 14px 16px;" id="cpn-list"></div>
-    </div>
-
+    <div class="sec">❤️ いいねしたイベント</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 11px 8px;" id="lgrid"></div>
+    <div class="sec">⭐ 行きたいイベント</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 11px 16px;" id="wgrid"></div>
     <div class="sec">👥 友達紹介 (+40pt)</div>
     <div class="refcard">
       <div class="refcard-t">友達を招待してポイントゲット</div>
       <div class="refcard-s">友達が登録してログインするとお互いに20ptもらえる！</div>
       <div class="ref-code" onclick="copyRef()" id="rcode">NEXCA-????</div>
     </div>
-    <div class="sec">❤️ いいねしたイベント</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 11px 16px;" id="lgrid"></div>
     <button class="logoutbtn" onclick="doLogout()">ログアウト</button>
   </div>
 </div>
+
 <!-- NAV -->
-<div style="position:fixed;bottom:calc(var(--nav) + 4px);right:10px;z-index:50;display:flex;gap:8px;"><a href="terms.html" style="font-size:9px;color:var(--dim);text-decoration:none;">利用規約</a><a href="privacy.html" style="font-size:9px;color:var(--dim);text-decoration:none;">プライバシーポリシー</a></div>
+<div style="position:fixed;bottom:calc(var(--nav) + 4px);right:10px;z-index:50;display:flex;gap:8px;">
+  <a href="terms.html" style="font-size:9px;color:var(--dim);text-decoration:none;">利用規約</a>
+  <a href="privacy.html" style="font-size:9px;color:var(--dim);text-decoration:none;">プライバシーポリシー</a>
+</div>
 <nav id="nav">
   <button class="nb on" onclick="goTab('feed',this)"><span class="nb-ic">▶️</span><span class="nb-lb">動画</span></button>
   <button class="nb" onclick="goTab('flyer',this)"><span class="nb-ic">🗂️</span><span class="nb-lb">チラシ</span></button>
@@ -554,18 +717,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
   <button class="nb" onclick="goTab('points',this)"><span class="nb-ic">⭐</span><span class="nb-lb">ポイント</span></button>
   <button class="nb" onclick="goTab('mypage',this)"><span class="nb-ic">👤</span><span class="nb-lb">マイページ</span></button>
 </nav>
-<!-- FILTER -->
+
+<!-- FILTER MODAL -->
 <div id="fm">
   <div class="fmbg" onclick="closeFM()"></div>
   <div class="fmbox">
     <div class="fm-bar"></div>
     <div class="fm-sec">大ジャンル</div>
-    <div class="fm-gopts">
-      <div class="fm-gopt on" data-g="all" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(255,255,255,0.07);">📍</div><div><div class="fm-gopt-n">すべて</div><div class="fm-gopt-s">全ジャンル表示</div></div><div class="fm-gopt-chk">✓</div></div>
-      <div class="fm-gopt" data-g="event" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(255,61,90,0.1);">🎉</div><div><div class="fm-gopt-n">イベント・おでかけ</div><div class="fm-gopt-s">お祭り・カフェ・スポット・古着</div></div><div class="fm-gopt-chk">✓</div></div>
-      <div class="fm-gopt" data-g="learn" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(255,190,0,0.1);">🚀</div><div><div class="fm-gopt-n">学び・挑戦</div><div class="fm-gopt-s">ワークショップ・就活・コンテスト</div></div><div class="fm-gopt-chk">✓</div></div>
-      <div class="fm-gopt" data-g="volunteer" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:rgba(0,229,160,0.1);">🤝</div><div><div class="fm-gopt-n">ボランティア</div><div class="fm-gopt-s">地域貢献・社会活動</div></div><div class="fm-gopt-chk">✓</div></div>
-    </div>
+    <div class="fm-gopts" id="fm-gopts"></div>
     <div class="fm-div"></div>
     <div class="fm-sec">小ジャンル</div>
     <div class="fm-subopts" id="fm-subs"></div>
@@ -580,419 +739,822 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
     </div>
   </div>
 </div>
+
+<!-- SEARCH MODAL -->
+<div id="search-modal">
+  <div class="search-hd">
+    <input class="search-input" id="search-input" type="text" placeholder="イベント・場所を検索..." oninput="doSearch(this.value)">
+    <button class="search-cancel" onclick="closeSearchModal()">キャンセル</button>
+  </div>
+  <div class="search-results" id="search-results">
+    <div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">キーワードを入力して検索</div></div>
+  </div>
+</div>
+
 <!-- DRAWER -->
 <div id="drwbg" onclick="closeDrw()"></div>
 <div id="drw"><div class="drw-bar"></div><div class="drw-body" id="drwbody"></div></div>
-<!-- VIDEO OVERLAY -->
+
+<!-- VIDEO OVERLAY (Flyer) -->
 <div id="vov">
-  <div class="vov-hd"><button class="vov-bk" onclick="closeVOV()">←</button><div style="font-size:14px;font-weight:700;flex:1;" id="vov-t"></div></div>
-  <div class="vov-ct" id="vov-c"></div>
+  <div class="vov-hd">
+    <button class="vov-bk" onclick="closeVOV()">←</button>
+    <div style="font-size:14px;font-weight:700;flex:1;" id="vov-t"></div>
+  </div>
+  <div class="vov-video" id="vov-c"></div>
   <div class="vov-dt" id="vov-d"></div>
 </div>
-<!-- ORGANIZER PAGE OVERLAY -->
-<div id="org-ov" style="position:fixed;inset:0;z-index:600;display:none;flex-direction:column;background:var(--bg);">
-  <div style="padding:46px 14px 12px;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;flex-shrink:0;">
-    <button onclick="closeOrgPage()" style="width:34px;height:34px;background:var(--s2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:none;color:var(--txt);">←</button>
+
+<!-- PARTICIPATION MODAL -->
+<div id="partm">
+  <div class="partm-bg" onclick="closePartM()"></div>
+  <div class="partm-box">
+    <div class="partm-t">参加証明</div>
+    <div class="partm-s" id="partm-s"></div>
+    <div class="partm-ev" id="partm-ev"></div>
+    <div id="partm-content"></div>
+  </div>
+</div>
+
+<!-- ORGANIZER PAGE -->
+<div id="org-ov" style="display:none;flex-direction:column;">
+  <div class="org-hd">
+    <button class="org-back" onclick="closeOrgPage()">←</button>
     <div style="font-size:15px;font-weight:900;">主催者ページ</div>
   </div>
   <div style="overflow-y:auto;flex:1;padding:16px;" id="org-ov-body"></div>
 </div>
+
 <div id="toast"></div>
+
 <script>
-// SUPABASE INIT
+// =============================================
+// SUPABASE
+// =============================================
 const SUPABASE_URL = 'https://umbscalpmmofbzfpmhhr.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtYnNjYWxwbW1vZmJ6ZnBtaGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTIwNDMsImV4cCI6MjA5MDI4ODA0M30.lgI836TkVP8EqxgIVH8FHCz8iQ87cJZikkw9S9W49Ic';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+// =============================================
+// GENRE CONFIG PER AGE
+// =============================================
+const GENRE_CONFIG = {
+  '小学生の保護者': [
+    {g:'event', label:'イベント・おでかけ', emoji:'🎉', desc:'娯楽イベント・学びイベント・スポット',
+     subs:['娯楽イベント','学びイベント','スポット']},
+    {g:'kids', label:'習い事・体験', emoji:'🎨', desc:'スポーツ・芸術・学習・体験',
+     subs:['スポーツ','芸術','学習','体験']},
+  ],
+  '中学生': [
+    {g:'event', label:'イベント・おでかけ', emoji:'🎉', desc:'イベント・古着・カフェ・スポット',
+     subs:['イベント','古着','カフェ','スポット']},
+    {g:'learn', label:'学び・挑戦', emoji:'🚀', desc:'ワークショップ・コンテスト',
+     subs:['ワークショップ','コンテスト']},
+    {g:'volunteer', label:'ボランティア', emoji:'🤝', desc:'地域貢献・社会活動', subs:[]},
+  ],
+  '高校生': [
+    {g:'event', label:'イベント・おでかけ', emoji:'🎉', desc:'イベント・古着・カフェ・スポット',
+     subs:['イベント','古着','カフェ','スポット']},
+    {g:'learn', label:'学び・挑戦', emoji:'🚀', desc:'ワークショップ・コンテスト',
+     subs:['ワークショップ','コンテスト']},
+    {g:'volunteer', label:'ボランティア', emoji:'🤝', desc:'地域貢献・社会活動', subs:[]},
+  ],
+  '大学生': [
+    {g:'event', label:'イベント・おでかけ', emoji:'🎉', desc:'イベント・古着・カフェ・スポット',
+     subs:['イベント','古着','カフェ','スポット']},
+    {g:'learn', label:'学び・挑戦', emoji:'🚀', desc:'ワークショップ・コンテスト・インターン・就活イベント',
+     subs:['ワークショップ','コンテスト','インターン・就活イベント']},
+    {g:'volunteer', label:'ボランティア', emoji:'🤝', desc:'地域貢献・社会活動', subs:[]},
+  ],
+  '社会人': [
+    {g:'event', label:'イベント・おでかけ', emoji:'🎉', desc:'イベント・古着・カフェ・スポット',
+     subs:['イベント','古着','カフェ','スポット']},
+    {g:'skill', label:'スキルアップ', emoji:'📈', desc:'ビジネス・交流・学び', subs:[]},
+    {g:'volunteer', label:'ボランティア', emoji:'🤝', desc:'地域貢献・社会活動', subs:[]},
+  ],
+};
+
+const GS={
+  event:{bg:'rgba(255,61,90,0.13)',bd:'rgba(255,61,90,0.35)',c:'#ff8fa0'},
+  kids:{bg:'rgba(255,152,0,0.13)',bd:'rgba(255,152,0,0.35)',c:'#ffb74d'},
+  learn:{bg:'rgba(255,190,0,0.13)',bd:'rgba(255,190,0,0.35)',c:'#ffbe00'},
+  volunteer:{bg:'rgba(0,229,160,0.13)',bd:'rgba(0,229,160,0.35)',c:'#00e5a0'},
+  skill:{bg:'rgba(77,159,255,0.13)',bd:'rgba(77,159,255,0.35)',c:'#4d9fff'},
+};
+const GC={event:'#ff8fa0',kids:'#ffb74d',learn:'#ffbe00',volunteer:'#00e5a0',skill:'#4d9fff'};
 
 // =============================================
-// TRACKING MODULE
+// LEVEL SYSTEM
 // =============================================
-const viewedToday = new Set();
-let viewPtsToday = 0;
+const LV_CONFIG = [
+  {lv:1, name:'たんけんしゃ', pt:0, nextPt:300},
+  {lv:2, name:'冒険者', pt:300, nextPt:800},
+  {lv:3, name:'地域の使者', pt:800, nextPt:2000},
+  {lv:4, name:'Nexcaの翼', pt:2000, nextPt:5000},
+  {lv:5, name:'伝説の開拓者', pt:5000, nextPt:10000},
+];
 
-async function trackView(eventId) {
-  if (!user || viewedToday.has(eventId)) return;
-  viewedToday.add(eventId);
-  try {
-    await sb.from('event_views').insert({ event_id: eventId, user_id: user.id });
-  } catch(e) {}
-  if (viewPtsToday < 10) { viewPtsToday++; addPt('動画視聴', 1, false); updMis('m1'); }
+function calcLevel(totalPts) {
+  let lv = LV_CONFIG[0];
+  for (const l of LV_CONFIG) {
+    if (totalPts >= l.pt) lv = l;
+    else break;
+  }
+  return lv;
 }
 
-async function trackClick(eventId, clickType) {
-  if (!user) return;
-  try {
-    await sb.from('event_link_clicks').insert({ event_id: eventId, user_id: user.id, click_type: clickType });
-  } catch(e) {}
-}
-
-// =============================================
-// CHARACTER COLLECTION (QR図鑑)
-// =============================================
-let collectedChars = new Set();
-
-async function loadCollection() {
-  if (!user) return;
-  const {data} = await sb.from('owned_items').select('item_id').eq('user_id', user.id).like('item_id', 'char_%');
-  if (data) collectedChars = new Set(data.map(r => r.item_id));
-}
-
-async function collectChar(charCode) {
-  if (!user) { showToast('ログインしてからQRを読み込んでください'); return; }
-  const charMap = {
-    'CHAR_AGARU': 'アガル', 'CHAR_TSUMUGI': 'ツムギ', 'CHAR_NUKUMI': 'ヌクミ',
-    'CHAR_TEKURU': 'テクル', 'CHAR_KONERU': 'コネル', 'CHAR_FUWARI': 'フワリ',
-    'CHAR_NEXKE': 'ネクスケ', 'CHAR_KAGE': 'カゲ'
-  };
-  const charName = charMap[charCode];
-  if (!charName) { showToast('無効なコードです'); return; }
-  const itemId = 'char_' + charCode;
-  if (collectedChars.has(itemId)) { showToast(charName + 'は既に獲得済みです'); return; }
-  collectedChars.add(itemId);
-  await sb.from('owned_items').upsert({ user_id: user.id, item_id: itemId, is_used: false });
-  addPt('キャラ獲得：' + charName, 10, false);
-  showToast('🎉 ' + charName + 'を獲得しました！ +10pt');
-  renderCollection();
-  renderMP();
-}
-
-function renderCollection() {
-  const el = document.getElementById('char-collection');
-  if (!el) return;
-  const chars = ['アガル','ツムギ','ヌクミ','テクル','コネル','フワリ','ネクスケ','カゲ'];
-  const codes = ['CHAR_AGARU','CHAR_TSUMUGI','CHAR_NUKUMI','CHAR_TEKURU','CHAR_KONERU','CHAR_FUWARI','CHAR_NEXKE','CHAR_KAGE'];
-  const count = chars.filter((c,i) => collectedChars.has('char_' + codes[i])).length;
-  document.getElementById('char-count').textContent = count + ' / 8';
-  el.innerHTML = chars.map((c,i) => {
-    const has = collectedChars.has('char_' + codes[i]);
-    return '<div style="text-align:center;' + (has ? '' : 'opacity:0.2;filter:grayscale(1);') + '">' +
-      '<div style="width:52px;height:52px;margin:0 auto 4px;">' + (CSVG[c] || '') + '</div>' +
-      '<div style="font-size:9px;font-weight:700;color:' + (has ? (CD[c]?.color || 'var(--txt)') : 'var(--dim)') + ';">' + (has ? c : '???') + '</div>' +
-    '</div>';
-  }).join('');
-  // グッズ交換権の解放状態
-  const rewards = document.getElementById('char-rewards');
-  if (rewards) {
-    rewards.innerHTML = '<div style="font-size:10px;color:var(--dim);margin-top:8px;">' +
-      '🎯 3体 → ステッカー交換権 ' + (count >= 3 ? '<span style="color:var(--green);">✅ 解放済</span>' : '') + '<br>' +
-      '🎯 5体 → 缶バッジ交換権 ' + (count >= 5 ? '<span style="color:var(--green);">✅ 解放済</span>' : '') + '<br>' +
-      '🎯 8体 → 限定グッズ交換権 ' + (count >= 8 ? '<span style="color:var(--green);">✅ 解放済</span>' : '') +
-    '</div>';
+function checkLevelUp(oldTotal, newTotal) {
+  const oldLv = calcLevel(oldTotal);
+  const newLv = calcLevel(newTotal);
+  if (newLv.lv > oldLv.lv) {
+    showLvUp(newLv);
   }
 }
 
-// DB HELPERS
-async function loadProfile(){
-  if(!user) return;
-  const {data}=await sb.from('profiles').select('*').eq('id',user.id).single();
-  if(data){pts=data.points||0;ptsTotal=data.points_total||0;ptsUsed=data.points_used||0;ptsMonthly=data.points_monthly||0;stampCnt=data.stamp_count||0;age=data.age_group||'高校生';userCity=data.prefecture||'広島県';}
+function showLvUp(lvData) {
+  document.getElementById('lvup-char').innerHTML = cSVG('ネクスケ', 120, 120);
+  document.getElementById('lvup-lv').textContent = 'Lv' + lvData.lv;
+  document.getElementById('lvup-name').textContent = lvData.name;
+  document.getElementById('lvup-tname').textContent = '称号「' + lvData.name + '」を獲得！';
+  document.getElementById('lvup').classList.add('on');
+  // 画面をフラッシュ
+  document.body.style.background = 'rgba(255,190,0,0.15)';
+  setTimeout(() => { document.body.style.background = ''; }, 600);
 }
-async function saveProfile(){
-  if(!user) return;
-  await sb.from('profiles').update({points:Math.floor(pts),points_total:Math.floor(ptsTotal),points_used:Math.floor(ptsUsed),points_monthly:Math.floor(ptsMonthly),stamp_count:stampCnt,age_group:age,prefecture:userCity}).eq('id',user.id);
-}
-async function loadLikes(){
-  if(!user) return;
-  const {data}=await sb.from('likes').select('event_id').eq('user_id',user.id);
-  if(data) likes=new Set(data.map(r=>r.event_id));
-}
-async function saveLike(evId,isLiked){
-  if(!user) return;
-  if(isLiked) await sb.from('likes').upsert({user_id:user.id,event_id:evId});
-  else await sb.from('likes').delete().eq('user_id',user.id).eq('event_id',evId);
-}
-async function loadParticipations(){
-  if(!user) return;
-  const {data}=await sb.from('participations').select('event_id,status').eq('user_id',user.id);
-  if(data) data.forEach(r=>participations[r.event_id]=r.status);
-}
-async function saveParticipation(evId){
-  if(!user) return;
-  await sb.from('participations').upsert({user_id:user.id,event_id:evId,status:'approved'});
-}
-async function loadStamps(){
-  if(!user) return;
-  const {data}=await sb.from('stamps').select('event_id').eq('user_id',user.id);
-  if(data){stampedPlaces=new Set(data.map(r=>r.event_id));stampCnt=stampedPlaces.size;}
-}
-async function saveStamp(evId){
-  if(!user) return;
-  await sb.from('stamps').upsert({user_id:user.id,event_id:evId});
-}
-async function savePointHistory(reason,amt,camp){
-  if(!user) return;
-  await sb.from('point_history').insert({user_id:user.id,reason,amount:amt,is_campaign:camp});
-}
-async function loadPointHistory(){
-  if(!user) return;
-  const {data}=await sb.from('point_history').select('*').eq('user_id',user.id).order('created_at',{ascending:false}).limit(50);
-  if(data) phist=data.map(r=>({reason:r.reason,amt:r.amount,date:new Date(r.created_at).toLocaleDateString('ja-JP'),camp:r.is_campaign}));
-}
-async function saveReview(evId,q1,q2,q3){
-  if(!user) return;
-  await sb.from('reviews').upsert({user_id:user.id,event_id:evId,q1,q2,q3});
-}
-async function loadReviews(){
-  if(!user) return;
-  const {data}=await sb.from('reviews').select('event_id').eq('user_id',user.id);
-  if(data) reviews=data.map(r=>({evId:r.event_id}));
-}
-async function loadAllUserData(){
-  await loadEvents();await loadProfile();await loadLikes();await loadPointHistory();await loadCollection();
-  updStats();renderPtHero();renderEarnList();renderShopAll();renderMissions();renderMP();renderFeed();renderFlyer();renderCollection();
+function closeLvUp() { document.getElementById('lvup').classList.remove('on'); }
+
+function renderLvBar() {
+  const lv = calcLevel(ptsTotal);
+  const next = LV_CONFIG.find(l => l.lv === lv.lv + 1);
+  const pct = next ? Math.min(100, Math.round((ptsTotal - lv.pt) / (next.pt - lv.pt) * 100)) : 100;
+
+  const badge = document.getElementById('mp-lv-badge');
+  const bar = document.getElementById('mp-lv-bar');
+  const label = document.getElementById('mp-lv-label');
+  const titleBadge = document.getElementById('mp-title-badge');
+  const lvWrap = document.getElementById('mp-lv-wrap');
+  const charWrap = document.getElementById('mp-char-wrap');
+
+  if (badge) badge.textContent = 'Lv' + lv.lv;
+  if (bar) bar.style.width = pct + '%';
+  if (label) label.textContent = next ? (ptsTotal - lv.pt) + ' / ' + (next.pt - lv.pt) + 'pt' : 'MAX';
+  if (titleBadge) titleBadge.textContent = lv.name;
+  if (lvWrap && user) lvWrap.style.display = 'flex';
 }
 
-// AUTH STATE LISTENER
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user){
-    user=session.user;
-    await loadAllUserData();
-    renderMP();
-    if(event==='SIGNED_IN') showToast('🎉 ログインしました！');
-  } else {
-    user=null;renderMP();
-  }
-});
-// Check existing session on load
-sb.auth.getSession().then(({data:{session}})=>{
-  if(session?.user){user=session.user;loadAllUserData();}
-});
-
+// =============================================
 // CHARACTER SVGs
+// =============================================
 const CSVG={
 'アガル':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><ellipse cx="38" cy="36" rx="8" ry="18" fill="#FF8C42" transform="rotate(-15,38,36)"/><ellipse cx="50" cy="28" rx="8" ry="22" fill="#FFD700"/><ellipse cx="62" cy="36" rx="8" ry="18" fill="#FF8C42" transform="rotate(15,62,36)"/><circle cx="50" cy="72" r="28" fill="#FF4D4D" stroke="#000" stroke-width="3"/><circle cx="21" cy="62" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/><circle cx="79" cy="62" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/><circle cx="40" cy="67" r="8" fill="white" stroke="#000" stroke-width="2"/><circle cx="60" cy="67" r="8" fill="white" stroke="#000" stroke-width="2"/><circle cx="42" cy="68" r="4" fill="#222"/><circle cx="62" cy="68" r="4" fill="#222"/><circle cx="43.5" cy="66.5" r="1.5" fill="white"/><circle cx="63.5" cy="66.5" r="1.5" fill="white"/><circle cx="32" cy="74" r="5" fill="#ffb3c1" opacity="0.7"/><circle cx="68" cy="74" r="5" fill="#ffb3c1" opacity="0.7"/><path d="M40 77 Q50 87 60 77" stroke="#000" stroke-width="2.5" fill="#ff6b8a" stroke-linecap="round"/><circle cx="42" cy="98" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="98" r="9" fill="#FF4D4D" stroke="#000" stroke-width="2.5"/></svg>',
-'ツムギ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="14" x2="44" y2="28" stroke="#000" stroke-width="3"/><line x1="50" y1="14" x2="56" y2="28" stroke="#000" stroke-width="3"/><circle cx="44" cy="13" r="5" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="56" cy="13" r="5" fill="#FFD700" stroke="#000" stroke-width="2.5"/><rect x="20" y="28" width="60" height="72" rx="18" fill="#FFD700" stroke="#000" stroke-width="3"/><line x1="20" y1="52" x2="80" y2="52" stroke="#8B6914" stroke-width="2.5"/><line x1="20" y1="66" x2="80" y2="66" stroke="#8B6914" stroke-width="2.5"/><circle cx="38" cy="39" r="1.5" fill="#000"/><circle cx="62" cy="39" r="1.5" fill="#000"/><path d="M42 47 Q50 54 58 47" stroke="#000" stroke-width="2" fill="none"/><circle cx="22" cy="70" r="8" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="78" cy="70" r="8" fill="#FFD700" stroke="#000" stroke-width="2.5"/><path d="M78 70 Q90 60 95 65" stroke="#FFD700" stroke-width="2" fill="none" stroke-dasharray="3,2"/><circle cx="42" cy="100" r="9" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="100" r="9" fill="#FFD700" stroke="#000" stroke-width="2.5"/></svg>',
-'ヌクミ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="12" rx="7" ry="10" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="12" rx="4" ry="7" fill="#81C784"/><circle cx="50" cy="72" r="33" fill="#4CAF50" stroke="#000" stroke-width="3"/><circle cx="21" cy="72" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><circle cx="79" cy="72" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><ellipse cx="40" cy="67" rx="7" ry="5" fill="white" stroke="#000" stroke-width="2"/><ellipse cx="60" cy="67" rx="7" ry="5" fill="white" stroke="#000" stroke-width="2"/><ellipse cx="40" cy="68" rx="4" ry="3" fill="#2E7D32"/><ellipse cx="60" cy="68" rx="4" ry="3" fill="#2E7D32"/><circle cx="32" cy="76" r="5" fill="#A8E6CF" opacity="0.7"/><circle cx="68" cy="76" r="5" fill="#A8E6CF" opacity="0.7"/><path d="M42 78 Q50 84 58 78" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/><polygon points="79,62 71,78 87,78" fill="white" stroke="#000" stroke-width="2"/><rect x="72" y="72" width="14" height="5" fill="#222"/><circle cx="42" cy="102" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="102" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/></svg>',
-'テクル':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="24" width="56" height="14" rx="7" fill="#78909C" stroke="#000" stroke-width="2"/><circle cx="38" cy="31" r="7" fill="#80DEEA" stroke="#000" stroke-width="1.5" opacity="0.8"/><circle cx="62" cy="31" r="7" fill="#80DEEA" stroke="#000" stroke-width="1.5" opacity="0.8"/><rect x="22" y="38" width="56" height="66" rx="14" fill="#1A237E" stroke="#000" stroke-width="3"/><polygon points="50,52 43,65 57,65" fill="#5C6BC0" opacity="0.7"/><line x1="65" y1="58" x2="72" y2="68" stroke="#7986CB" stroke-width="2" stroke-linecap="round"/><rect x="33" y="58" width="14" height="8" rx="4" fill="white" stroke="#000" stroke-width="1.5"/><rect x="53" y="58" width="14" height="8" rx="4" fill="white" stroke="#000" stroke-width="1.5"/><circle cx="40" cy="62" r="3.5" fill="#1A237E"/><circle cx="60" cy="62" r="3.5" fill="#1A237E"/><line x1="42" y1="76" x2="58" y2="76" stroke="#000" stroke-width="2.5" stroke-linecap="round"/><rect x="12" y="48" width="14" height="28" rx="7" fill="#1A237E" stroke="#000" stroke-width="2.5"/><rect x="74" y="48" width="14" height="28" rx="7" fill="#1A237E" stroke="#000" stroke-width="2.5"/><circle cx="38" cy="102" r="9" fill="#1A237E" stroke="#000" stroke-width="2.5"/><circle cx="62" cy="102" r="9" fill="#1A237E" stroke="#000" stroke-width="2.5"/></svg>',
-'コネル':'<svg viewBox="0 0 100 115" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="28" rx="26" ry="12" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="26" rx="20" ry="8" fill="#7B1FA2"/><circle cx="50" cy="20" r="6" fill="#CE93D8" stroke="#000" stroke-width="2"/><ellipse cx="50" cy="78" rx="26" ry="36" fill="#9C27B0" stroke="#000" stroke-width="3"/><circle cx="39" cy="68" r="10" fill="white" stroke="#000" stroke-width="2"/><circle cx="61" cy="68" r="10" fill="white" stroke="#000" stroke-width="2"/><circle cx="40" cy="69" r="6" fill="#6A1B9A"/><circle cx="62" cy="69" r="6" fill="#6A1B9A"/><circle cx="38" cy="66" r="2" fill="white"/><circle cx="60" cy="66" r="2" fill="white"/><circle cx="50" cy="82" r="3.5" fill="#000"/><circle cx="22" cy="80" r="8" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><circle cx="78" cy="78" r="8" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><rect x="82" y="72" width="5" height="18" rx="2" fill="#8D6E63"/><ellipse cx="84.5" cy="90" rx="4" ry="6" fill="#CE93D8"/><circle cx="40" cy="112" r="9" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><circle cx="60" cy="112" r="9" fill="#9C27B0" stroke="#000" stroke-width="2.5"/></svg>',
-'フワリ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="75" r="28" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="30" cy="62" r="18" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="70" cy="62" r="18" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="50" cy="55" r="20" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="65" rx="22" ry="18" fill="#E1F5FE" opacity="0.3"/><circle cx="40" cy="68" r="7" fill="white" stroke="#000" stroke-width="1.5"/><circle cx="60" cy="68" r="7" fill="white" stroke="#000" stroke-width="1.5"/><path d="M33 66 Q40 63 47 66" stroke="#000" stroke-width="2" fill="#29B6F6"/><path d="M53 66 Q60 63 67 66" stroke="#000" stroke-width="2" fill="#29B6F6"/><circle cx="40" cy="69" r="3.5" fill="#0277BD"/><circle cx="60" cy="69" r="3.5" fill="#0277BD"/><path d="M44 78 Q50 83 56 78" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="80" r="7" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="86" cy="80" r="7" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="38" cy="100" r="8" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="62" cy="100" r="8" fill="#29B6F6" stroke="#000" stroke-width="2"/></svg>',
+'ツムギ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="14" x2="44" y2="28" stroke="#000" stroke-width="3"/><line x1="50" y1="14" x2="56" y2="28" stroke="#000" stroke-width="3"/><circle cx="44" cy="13" r="5" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="56" cy="13" r="5" fill="#FFD700" stroke="#000" stroke-width="2.5"/><rect x="20" y="28" width="60" height="72" rx="18" fill="#FFD700" stroke="#000" stroke-width="3"/><line x1="20" y1="52" x2="80" y2="52" stroke="#8B6914" stroke-width="2.5"/><line x1="20" y1="66" x2="80" y2="66" stroke="#8B6914" stroke-width="2.5"/><circle cx="38" cy="39" r="1.5" fill="#000"/><circle cx="62" cy="39" r="1.5" fill="#000"/><path d="M42 47 Q50 54 58 47" stroke="#000" stroke-width="2" fill="none"/><circle cx="22" cy="70" r="8" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="78" cy="70" r="8" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="42" cy="100" r="9" fill="#FFD700" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="100" r="9" fill="#FFD700" stroke="#000" stroke-width="2.5"/></svg>',
+'ヌクミ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="12" rx="7" ry="10" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="12" rx="4" ry="7" fill="#81C784"/><circle cx="50" cy="72" r="33" fill="#4CAF50" stroke="#000" stroke-width="3"/><circle cx="21" cy="72" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><circle cx="79" cy="72" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><ellipse cx="40" cy="67" rx="7" ry="5" fill="white" stroke="#000" stroke-width="2"/><ellipse cx="60" cy="67" rx="7" ry="5" fill="white" stroke="#000" stroke-width="2"/><ellipse cx="40" cy="68" rx="4" ry="3" fill="#2E7D32"/><ellipse cx="60" cy="68" rx="4" ry="3" fill="#2E7D32"/><circle cx="32" cy="76" r="5" fill="#A8E6CF" opacity="0.7"/><circle cx="68" cy="76" r="5" fill="#A8E6CF" opacity="0.7"/><path d="M42 78 Q50 84 58 78" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="42" cy="102" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/><circle cx="58" cy="102" r="9" fill="#4CAF50" stroke="#000" stroke-width="2.5"/></svg>',
+'テクル':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="24" width="56" height="14" rx="7" fill="#78909C" stroke="#000" stroke-width="2"/><circle cx="38" cy="31" r="7" fill="#80DEEA" stroke="#000" stroke-width="1.5" opacity="0.8"/><circle cx="62" cy="31" r="7" fill="#80DEEA" stroke="#000" stroke-width="1.5" opacity="0.8"/><rect x="22" y="38" width="56" height="66" rx="14" fill="#1A237E" stroke="#000" stroke-width="3"/><polygon points="50,52 43,65 57,65" fill="#5C6BC0" opacity="0.7"/><rect x="33" y="58" width="14" height="8" rx="4" fill="white" stroke="#000" stroke-width="1.5"/><rect x="53" y="58" width="14" height="8" rx="4" fill="white" stroke="#000" stroke-width="1.5"/><circle cx="40" cy="62" r="3.5" fill="#1A237E"/><circle cx="60" cy="62" r="3.5" fill="#1A237E"/><line x1="42" y1="76" x2="58" y2="76" stroke="#000" stroke-width="2.5" stroke-linecap="round"/><rect x="12" y="48" width="14" height="28" rx="7" fill="#1A237E" stroke="#000" stroke-width="2.5"/><rect x="74" y="48" width="14" height="28" rx="7" fill="#1A237E" stroke="#000" stroke-width="2.5"/><circle cx="38" cy="102" r="9" fill="#1A237E" stroke="#000" stroke-width="2.5"/><circle cx="62" cy="102" r="9" fill="#1A237E" stroke="#000" stroke-width="2.5"/></svg>',
+'コネル':'<svg viewBox="0 0 100 115" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="28" rx="26" ry="12" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><ellipse cx="50" cy="26" rx="20" ry="8" fill="#7B1FA2"/><circle cx="50" cy="20" r="6" fill="#CE93D8" stroke="#000" stroke-width="2"/><ellipse cx="50" cy="78" rx="26" ry="36" fill="#9C27B0" stroke="#000" stroke-width="3"/><circle cx="39" cy="68" r="10" fill="white" stroke="#000" stroke-width="2"/><circle cx="61" cy="68" r="10" fill="white" stroke="#000" stroke-width="2"/><circle cx="40" cy="69" r="6" fill="#6A1B9A"/><circle cx="62" cy="69" r="6" fill="#6A1B9A"/><circle cx="38" cy="66" r="2" fill="white"/><circle cx="60" cy="66" r="2" fill="white"/><circle cx="50" cy="82" r="3.5" fill="#000"/><circle cx="22" cy="80" r="8" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><circle cx="78" cy="78" r="8" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><circle cx="40" cy="112" r="9" fill="#9C27B0" stroke="#000" stroke-width="2.5"/><circle cx="60" cy="112" r="9" fill="#9C27B0" stroke="#000" stroke-width="2.5"/></svg>',
+'フワリ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="75" r="28" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="30" cy="62" r="18" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="70" cy="62" r="18" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="50" cy="55" r="20" fill="#29B6F6" stroke="#000" stroke-width="2.5"/><circle cx="40" cy="68" r="7" fill="white" stroke="#000" stroke-width="1.5"/><circle cx="60" cy="68" r="7" fill="white" stroke="#000" stroke-width="1.5"/><circle cx="40" cy="69" r="3.5" fill="#0277BD"/><circle cx="60" cy="69" r="3.5" fill="#0277BD"/><path d="M44 78 Q50 83 56 78" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="80" r="7" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="86" cy="80" r="7" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="38" cy="100" r="8" fill="#29B6F6" stroke="#000" stroke-width="2"/><circle cx="62" cy="100" r="8" fill="#29B6F6" stroke="#000" stroke-width="2"/></svg>',
 'ネクスケ':'<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="34" cy="22" rx="10" ry="22" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/><ellipse cx="66" cy="22" rx="10" ry="22" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/><ellipse cx="34" cy="18" rx="5" ry="14" fill="#FF1744"/><ellipse cx="66" cy="18" rx="5" ry="14" fill="#FF1744"/><ellipse cx="50" cy="80" rx="32" ry="36" fill="#FAFAFA" stroke="#000" stroke-width="3"/><rect x="74" y="60" width="18" height="28" rx="6" fill="#FF1744" stroke="#000" stroke-width="2"/><circle cx="40" cy="74" r="9" fill="white" stroke="#000" stroke-width="2"/><circle cx="60" cy="74" r="9" fill="white" stroke="#000" stroke-width="2"/><circle cx="41" cy="75" r="5" fill="#111"/><circle cx="61" cy="75" r="5" fill="#111"/><circle cx="39.5" cy="73.5" r="2" fill="white"/><circle cx="59.5" cy="73.5" r="2" fill="white"/><path d="M38 86 Q50 98 62 86" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="8" y="78" width="18" height="14" rx="3" fill="#FFD700" stroke="#8B6914" stroke-width="2"/><circle cx="40" cy="114" r="9" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/><circle cx="60" cy="114" r="9" fill="#FAFAFA" stroke="#000" stroke-width="2.5"/></svg>',
-'カゲ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="70" r="30" fill="#212121"/><circle cx="28" cy="55" r="18" fill="#212121"/><circle cx="72" cy="55" r="18" fill="#212121"/><circle cx="50" cy="48" r="20" fill="#212121"/><ellipse cx="40" cy="66" rx="7" ry="5" fill="#FFD700" opacity="0.9"/><ellipse cx="60" cy="66" rx="7" ry="5" fill="#FFD700" opacity="0.9"/><ellipse cx="40" cy="66" rx="4" ry="3" fill="#FFF176"/><ellipse cx="60" cy="66" rx="4" ry="3" fill="#FFF176"/><circle cx="30" cy="42" r="3" fill="#FFD700" opacity="0.8"/><circle cx="70" cy="38" r="2.5" fill="#FFD700" opacity="0.7"/><circle cx="78" cy="58" r="2" fill="#FFD700" opacity="0.6"/></svg>'
+'カゲ':'<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="70" r="30" fill="#212121"/><circle cx="28" cy="55" r="18" fill="#212121"/><circle cx="72" cy="55" r="18" fill="#212121"/><circle cx="50" cy="48" r="20" fill="#212121"/><ellipse cx="40" cy="66" rx="7" ry="5" fill="#FFD700" opacity="0.9"/><ellipse cx="60" cy="66" rx="7" ry="5" fill="#FFD700" opacity="0.9"/><ellipse cx="40" cy="66" rx="4" ry="3" fill="#FFF176"/><ellipse cx="60" cy="66" rx="4" ry="3" fill="#FFF176"/></svg>'
 };
 function cSVG(t,w,h){return `<div style="width:${w}px;height:${h}px;">${CSVG[t]||CSVG['ネクスケ']}</div>`;}
 
-// DATA
-const SUBS={
-  event:{中学生:['イベント','スポット'],高校生:['イベント','古着','カフェ','スポット'],大学生:['イベント','古着','カフェ','スポット'],社会人:['イベント','古着','カフェ','スポット']},
-  learn:{中学生:['体験・ワークショップ'],高校生:['体験・ワークショップ','コンテスト・募集'],大学生:['体験・ワークショップ','就活・インターン','コンテスト・募集'],社会人:['体験・ワークショップ','コンテスト・募集']},
-  volunteer:{中学生:[],高校生:[],大学生:[],社会人:[]}
+// =============================================
+// DIAGNOSIS QUESTIONS PER AGE
+// =============================================
+const QS_MAP = {
+  '小学生の保護者': [
+    {n:1,step:'STEP 1',text:'子どもが転んで泥だらけになって帰ってきた。あなたの反応は？',type:'s',opts:[{l:'「楽しかった？」とまず笑う',s:{e:3}},{l:'「大丈夫？」と心配する',s:{e:1}},{l:'「何してたの？」と興味津々',s:{c:2}},{l:'「服が…」と少し困る',s:{e:-1}}]},
+    {n:2,step:'STEP 1',text:'子どもが「友達の家に泊まりたい」と言ってきた。どうする？',type:'s',opts:[{l:'「いいじゃん、行っておいで」',s:{e:2}},{l:'「相手の親と話してから」',s:{e:0}},{l:'「どんな子？どこの家？」と詳しく聞く',s:{c:1}},{l:'「今回は家にしとき」',s:{e:-1}}]},
+    {n:3,step:'STEP 1',text:'子どもに習い事をさせるなら何を優先する？',type:'s',opts:[{l:'子どもが「やりたい」と言ったもの',s:{a:1}},{l:'将来役立ちそうなもの',s:{c:2}},{l:'体を動かせるもの',s:{a:2}},{l:'友達と一緒にできるもの',s:{e:2}}]},
+    {n:4,step:'STEP 1',text:'家族でのおでかけ、計画はどうする？',type:'s',opts:[{l:'前日に「明日どこ行く？」から決める',s:{e:1}},{l:'1週間前にしっかり調べる',s:{c:2}},{l:'子どもに「どこ行きたい？」と聞いてから',s:{e:2}},{l:'毎回同じ定番スポットに行く',s:{r:2}}]},
+    {n:5,step:'STEP 1',text:'子どもが「やっぱりやめたい」と言ってきた。どうする？',type:'s',opts:[{l:'「自分で決めたんだから続けなさい」',s:{a:1}},{l:'「なんで？理由を聞かせて」',s:{c:1,e:1}},{l:'「無理しなくていいよ」',s:{r:2}},{l:'「もう少しだけ頑張ってみたら？」',s:{e:1}}]},
+    {n:6,step:'STEP 2',text:'子どもと外出する時、移動でどこまで行ける？',type:'s',dataOnly:true,opts:[{l:'歩いて行ける範囲',s:{}},{l:'自転車で30分以内',s:{}},{l:'電車・バスで1時間以内',s:{}},{l:'車でどこでも',s:{}}]},
+    {n:7,step:'STEP 2',text:'休日のおでかけ、子どもが一番喜ぶのは？',type:'s',opts:[{l:'体を思いっきり動かす',s:{a:2}},{l:'何かを作る・体験する',s:{c:2}},{l:'動物や自然と触れ合う',s:{r:2}},{l:'新しい場所を探検する',s:{e:2}}]},
+    {n:8,step:'STEP 2',text:'おでかけの参加費、現実的にどのくらいまでOK？',type:'s',dataOnly:true,opts:[{l:'無料がいい',s:{}},{l:'500円以内',s:{}},{l:'1000〜3000円',s:{}},{l:'内容が良ければいくらでも',s:{}}]},
+    {n:9,step:'STEP 2',text:'子どもと一緒に行くなら、どんな雰囲気が好き？',type:'s',opts:[{l:'にぎやかで楽しいイベント',s:{e:2}},{l:'少人数でじっくり体験',s:{c:2}},{l:'広い屋外で自由に動ける',s:{a:2}},{l:'屋内で雨でも安心',s:{r:2}}]},
+    {n:10,step:'STEP 2',text:'子どもと一緒にいる時、自分も楽しめてる？',type:'s',opts:[{l:'いつも一緒に全力で楽しんでる',s:{e:2}},{l:'子どもが楽しければそれでいい',s:{r:1}},{l:'正直少し疲れることもある',s:{e:-1}},{l:'自分も学べる体験が好き',s:{c:2}}]},
+    {n:11,step:'STEP 3',text:'子どものイベント情報、どうやって見つけてる？',type:'s',dataOnly:true,opts:[{l:'Instagramで検索',s:{}},{l:'学校や園からのプリント',s:{}},{l:'友達・知人の口コミ',s:{}},{l:'正直あまり見つけられていない',s:{}}]},
+    {n:12,step:'STEP 3',text:'「行きたいけど行けなかった」が起きる一番の理由は？',type:'s',dataOnly:true,opts:[{l:'知らなかった',s:{}},{l:'タイミングが合わなかった',s:{}},{l:'一人で連れて行くのが不安だった',s:{}},{l:'お金がかかりそうで躊躇した',s:{}}]},
+    {n:13,step:'STEP 3',text:'動画でイベントを探せるアプリがあったら？',type:'s',dataOnly:true,opts:[{l:'すぐ使いたい',s:{}},{l:'使ってみると思う',s:{}},{l:'どちらでもない',s:{}},{l:'必要を感じない',s:{}}]},
+    {n:14,step:'STEP 3',text:'子どもに将来経験させたいのは？',type:'s',opts:[{l:'自然・アウトドア',s:{a:1}},{l:'アート・音楽・表現',s:{c:2}},{l:'スポーツ・体を動かす',s:{a:2}},{l:'異文化・多様な人との出会い',s:{e:2}}]},
+    {n:15,step:'STEP 3',text:'子どもが地域のイベントに参加することで一番期待することは？',type:'s',opts:[{l:'友達が増える',s:{e:2}},{l:'新しいことに挑戦する',s:{a:2}},{l:'楽しい思い出を作る',s:{r:2}},{l:'将来につながる経験をする',s:{c:2}}]},
+  ],
+  '中学生': [
+    {n:1,step:'STEP 1',text:'休みの日、誰かから「明日ヒマ？」と連絡が来た。どうする？',type:'s',opts:[{l:'「行く！どこ？」と即返信',s:{e:3}},{l:'予定を確認してから返す',s:{e:1}},{l:'内容次第で決める',s:{e:0}},{l:'正直ちょっと面倒くさい',s:{e:-2}}]},
+    {n:2,step:'STEP 1',text:'グループ活動で一番しっくりくる自分の立ち位置は？',type:'s',opts:[{l:'みんなを引っ張るタイプ',s:{e:2,a:1}},{l:'アイデアを出すタイプ',s:{c:2}},{l:'場を和ませるタイプ',s:{e:1,r:1}},{l:'黙って支えるタイプ',s:{e:-1}}]},
+    {n:3,step:'STEP 1',text:'「めちゃくちゃ楽しそう！」と思うのはどれ？',type:'s',opts:[{l:'スポーツ・体を動かす体験',s:{a:3}},{l:'何かを自分の手で作る',s:{c:3}},{l:'おいしいもの・のんびり過ごす',s:{r:3}},{l:'新しい知識が身につく',s:{c:2}}]},
+    {n:4,step:'STEP 1',text:'初対面の人と話すとき、どんな感じ？',type:'s',opts:[{l:'自分から話しかけるのが好き',s:{e:3}},{l:'話しかけられたら普通に話せる',s:{e:1}},{l:'ちょっと緊張するけど大丈夫',s:{e:0}},{l:'かなり苦手',s:{e:-2}}]},
+    {n:5,step:'STEP 1',text:'何かに挑戦するとき、あなたは？',type:'s',opts:[{l:'考えるより先に動く',s:{e:2,a:1}},{l:'誰かを誘ってから動く',s:{e:2}},{l:'情報を集めてから慎重に',s:{c:2}},{l:'気分が乗ったときだけ',s:{r:1}}]},
+    {n:6,step:'STEP 2',text:'行動できる範囲はどのくらい？',type:'s',dataOnly:true,opts:[{l:'徒歩・自転車圏内',s:{}},{l:'電車で30分以内',s:{}},{l:'広島市内なら',s:{}},{l:'どこでも行ける',s:{}}]},
+    {n:7,step:'STEP 2',text:'どんなイベントなら一人でも行ける？',type:'s',opts:[{l:'スポーツ・体動かす系',s:{a:2}},{l:'ものづくり・ワークショップ',s:{c:2}},{l:'お祭り・にぎやかなイベント',s:{e:2}},{l:'正直一人では行けない',s:{e:-1}}]},
+    {n:8,step:'STEP 2',text:'参加費はどのくらいまでOK？',type:'s',dataOnly:true,opts:[{l:'無料のみ',s:{}},{l:'500円以内',s:{}},{l:'1000円以内',s:{}},{l:'良ければいくらでも',s:{}}]},
+    {n:9,step:'STEP 2',text:'SNSでついつい保存してしまう投稿は？',type:'s',opts:[{l:'絶景・旅・アウトドア動画',s:{a:2}},{l:'作り方・メイキング動画',s:{c:2}},{l:'カフェ・グルメ・おしゃれスポット',s:{r:2}},{l:'ライフハック・勉強系',s:{c:1}}]},
+    {n:10,step:'STEP 2',text:'理想の週末を一言で言うと？',type:'s',opts:[{l:'冒険と発見！',s:{e:1,a:2}},{l:'仲間と最高の時間！',s:{e:3}},{l:'何かを生み出す達成感！',s:{c:2}},{l:'最高にリラックスした時間',s:{r:3}}]},
+    {n:11,step:'STEP 3',text:'イベント情報、どこで見つける？',type:'s',dataOnly:true,opts:[{l:'Instagram',s:{}},{l:'TikTok',s:{}},{l:'友達の口コミ',s:{}},{l:'探せていない',s:{}}]},
+    {n:12,step:'STEP 3',text:'行きたいのに行けない一番の理由は？',type:'s',dataOnly:true,opts:[{l:'お金がない',s:{}},{l:'情報が少ない',s:{}},{l:'一緒に行く人がいない',s:{}},{l:'親の許可',s:{}}]},
+    {n:13,step:'STEP 3',text:'動画でイベントを知れたら使いたい？',type:'s',dataOnly:true,opts:[{l:'ぜひ使いたい',s:{}},{l:'使うと思う',s:{}},{l:'どちらでもない',s:{}},{l:'使わない',s:{}}]},
+    {n:14,step:'STEP 3',text:'将来やってみたい職業は？',type:'s',opts:[{l:'起業・ビジネス',s:{e:1,c:1}},{l:'クリエイター・表現系',s:{c:3}},{l:'人を助ける仕事',s:{e:1,r:1}},{l:'まだわからない',s:{}}]},
+    {n:15,step:'STEP 3',text:'地域のイベントに参加する一番の目的は？',type:'s',opts:[{l:'新しい人と出会う',s:{e:3}},{l:'スキルを身につける',s:{c:2}},{l:'楽しむ・リラックスする',s:{r:2}},{l:'社会の役に立つ',s:{e:1}}]},
+  ],
+  '高校生': [
+    {n:1,step:'STEP 1',text:'休みの日、まず最初にすることは？',type:'s',opts:[{l:'友達に連絡して予定を作る',s:{e:3}},{l:'SNSで面白そうな情報を探す',s:{e:1,c:1}},{l:'家で好きなことに没頭する',s:{c:2,e:-2}},{l:'特に決めず気分で動く',s:{r:1}}]},
+    {n:2,step:'STEP 1',text:'文化祭の準備、あなたはどのポジション？',type:'s',opts:[{l:'全体をまとめるリーダー',s:{e:3,a:1}},{l:'アイデアをどんどん出す人',s:{c:2}},{l:'みんなをサポートする縁の下の力持ち',s:{e:1,r:1}},{l:'黙々と自分の担当をこなす人',s:{e:-1,c:1}}]},
+    {n:3,step:'STEP 1',text:'「絶対楽しい！」と感じる体験は？',type:'s',opts:[{l:'体を使う・スポーツ・アウトドア',s:{a:3}},{l:'作る・表現する・クリエイティブ',s:{c:3}},{l:'のんびり・カフェ・グルメ',s:{r:3}},{l:'知識・スキルが身につく',s:{c:2}}]},
+    {n:4,step:'STEP 1',text:'将来の夢・目標について今どんな感じ？',type:'s',opts:[{l:'明確にある・すでに動いてる',s:{e:2,a:1}},{l:'なんとなくある・まだふわっと',s:{c:1}},{l:'まだない・これから考える',s:{r:1}},{l:'考えるのが楽しい段階',s:{c:2}}]},
+    {n:5,step:'STEP 1',text:'新しいことに挑戦するとき、あなたは？',type:'s',opts:[{l:'考えるより先に飛び込む',s:{e:2,a:2}},{l:'誰かと一緒なら動ける',s:{e:2}},{l:'情報を集めて慎重に判断',s:{c:2}},{l:'気分が乗ったときだけ動く',s:{r:1}}]},
+    {n:6,step:'STEP 2',text:'行動できる範囲は？',type:'s',dataOnly:true,opts:[{l:'徒歩・自転車圏内',s:{}},{l:'電車で30分以内',s:{}},{l:'広島市内なら',s:{}},{l:'どこでも',s:{}}]},
+    {n:7,step:'STEP 2',text:'参加したいイベントのタイプは？',type:'s',opts:[{l:'体を動かす・スポーツ系',s:{a:2}},{l:'ものづくり・ワークショップ',s:{c:2}},{l:'お祭り・マルシェ・にぎやか系',s:{e:2}},{l:'コンテスト・発表系',s:{c:1,e:1}}]},
+    {n:8,step:'STEP 2',text:'参加費はどのくらいまでOK？',type:'s',dataOnly:true,opts:[{l:'無料のみ',s:{}},{l:'500円以内',s:{}},{l:'1000円以内',s:{}},{l:'良ければいくらでも',s:{}}]},
+    {n:9,step:'STEP 2',text:'今一番したいことは？',type:'s',opts:[{l:'新しい人と出会う・交流する',s:{e:3}},{l:'スキルを身につける',s:{c:2}},{l:'思い切り楽しむ',s:{e:1,r:1}},{l:'社会に貢献する',s:{e:1}}]},
+    {n:10,step:'STEP 2',text:'理想の休日は？',type:'s',opts:[{l:'冒険・非日常・発見！',s:{e:1,a:2}},{l:'仲間と最高の思い出！',s:{e:3}},{l:'没頭して何かを生み出す',s:{c:3}},{l:'完全リラックス・充電',s:{r:3}}]},
+    {n:11,step:'STEP 3',text:'イベント情報をどこで探してる？',type:'s',dataOnly:true,opts:[{l:'Instagram',s:{}},{l:'TikTok',s:{}},{l:'X（旧Twitter）',s:{}},{l:'探せていない',s:{}}]},
+    {n:12,step:'STEP 3',text:'行きたいのに行けない理由は？',type:'s',dataOnly:true,opts:[{l:'お金',s:{}},{l:'情報が少ない',s:{}},{l:'一緒に行く人がいない',s:{}},{l:'時間がない',s:{}}]},
+    {n:13,step:'STEP 3',text:'動画でイベントを知れたら使いたい？',type:'s',dataOnly:true,opts:[{l:'ぜひ使いたい',s:{}},{l:'使うと思う',s:{}},{l:'どちらでもない',s:{}},{l:'使わない',s:{}}]},
+    {n:14,step:'STEP 3',text:'将来やりたいことは？',type:'s',opts:[{l:'起業・独立してやりたいことをやる',s:{e:2,a:1}},{l:'大企業でスキルを磨く',s:{c:2}},{l:'海外・グローバルに活躍',s:{e:1,a:1}},{l:'まだわからない・これから',s:{}}]},
+    {n:15,step:'STEP 3',text:'地域のイベントに参加する一番の目的は？',type:'s',opts:[{l:'新しい人と出会う・つながる',s:{e:3}},{l:'スキルを身につける・成長する',s:{c:2}},{l:'とにかく楽しむ',s:{r:2}},{l:'地域・社会に貢献する',s:{e:1}}]},
+  ],
+  '大学生': [
+    {n:1,step:'STEP 1',text:'休日の過ごし方、正直どれが一番近い？',type:'s',opts:[{l:'アクティブに外に出て動く',s:{e:2,a:1}},{l:'家でスキルアップ・勉強',s:{c:2}},{l:'友達とだらだら過ごす',s:{e:1,r:1}},{l:'バイト・副業で稼ぐ',s:{c:1}}]},
+    {n:2,step:'STEP 1',text:'将来のビジョンは？',type:'s',opts:[{l:'起業・独立して自分で事業を作る',s:{e:2,a:2}},{l:'大手企業でキャリアを積む',s:{c:2}},{l:'海外・グローバルな環境で活躍',s:{e:1,a:1}},{l:'まだ模索中・いろいろ試したい',s:{r:1}}]},
+    {n:3,step:'STEP 1',text:'大学生活で一番大切にしてることは？',type:'s',opts:[{l:'人脈・つながり',s:{e:3}},{l:'スキル・専門性',s:{c:3}},{l:'経験・体験・思い出',s:{a:2,r:1}},{l:'楽しさ・自由',s:{r:2}}]},
+    {n:4,step:'STEP 1',text:'新しいことを始めるとき、あなたは？',type:'s',opts:[{l:'とにかく動いてから考える',s:{e:2,a:2}},{l:'仲間を集めてから動く',s:{e:2}},{l:'リサーチして納得してから',s:{c:3}},{l:'流れに乗る感じで',s:{r:1}}]},
+    {n:5,step:'STEP 1',text:'「すごい！」と思う人のタイプは？',type:'s',opts:[{l:'行動力・決断力がある人',s:{e:1,a:2}},{l:'深い専門知識・技術を持つ人',s:{c:3}},{l:'人を惹きつける魅力がある人',s:{e:2}},{l:'安定していて信頼できる人',s:{r:2}}]},
+    {n:6,step:'STEP 2',text:'行動できる範囲は？',type:'s',dataOnly:true,opts:[{l:'広島市内',s:{}},{l:'広島県内',s:{}},{l:'中国地方',s:{}},{l:'どこでも',s:{}}]},
+    {n:7,step:'STEP 2',text:'参加したいイベントのタイプは？',type:'s',opts:[{l:'インターン・就活系',s:{c:2}},{l:'ワークショップ・学び系',s:{c:2}},{l:'お祭り・マルシェ・交流系',s:{e:2}},{l:'ボランティア・社会貢献系',s:{e:1}}]},
+    {n:8,step:'STEP 2',text:'参加費はどのくらいまでOK？',type:'s',dataOnly:true,opts:[{l:'無料のみ',s:{}},{l:'1000円以内',s:{}},{l:'3000円以内',s:{}},{l:'良ければいくらでも',s:{}}]},
+    {n:9,step:'STEP 2',text:'今一番したいことは？',type:'s',opts:[{l:'就活・キャリア準備',s:{c:2}},{l:'新しい人と出会う・人脈を広げる',s:{e:3}},{l:'思い切り楽しむ・学生生活を満喫',s:{r:2}},{l:'社会貢献・地域活動',s:{e:1}}]},
+    {n:10,step:'STEP 2',text:'理想の週末は？',type:'s',opts:[{l:'新しい挑戦・非日常体験',s:{e:1,a:2}},{l:'仲間と最高の時間',s:{e:3}},{l:'没頭・スキルアップ',s:{c:3}},{l:'完全リラックス・充電',s:{r:3}}]},
+    {n:11,step:'STEP 3',text:'イベント情報をどこで探してる？',type:'s',dataOnly:true,opts:[{l:'Instagram',s:{}},{l:'TikTok',s:{}},{l:'X（旧Twitter）',s:{}},{l:'探せていない',s:{}}]},
+    {n:12,step:'STEP 3',text:'行きたいのに行けない理由は？',type:'s',dataOnly:true,opts:[{l:'お金',s:{}},{l:'情報が少ない',s:{}},{l:'時間がない',s:{}},{l:'一緒に行く人がいない',s:{}}]},
+    {n:13,step:'STEP 3',text:'動画でイベントを知れたら使いたい？',type:'s',dataOnly:true,opts:[{l:'ぜひ使いたい',s:{}},{l:'使うと思う',s:{}},{l:'どちらでもない',s:{}},{l:'使わない',s:{}}]},
+    {n:14,step:'STEP 3',text:'卒業後のキャリアイメージは？',type:'s',opts:[{l:'起業・独立',s:{e:2,a:1}},{l:'大企業・安定志向',s:{c:2}},{l:'海外・グローバル',s:{e:1,a:1}},{l:'まだわからない',s:{}}]},
+    {n:15,step:'STEP 3',text:'地域のイベントに参加する一番の目的は？',type:'s',opts:[{l:'人脈を広げる・出会いを作る',s:{e:3}},{l:'スキル・経験を積む',s:{c:2}},{l:'楽しむ・学生生活を充実させる',s:{r:2}},{l:'社会貢献・地域活性化',s:{e:1}}]},
+  ],
+  '社会人': [
+    {n:1,step:'STEP 1',text:'休日の過ごし方、一番近いのは？',type:'s',opts:[{l:'アクティブに外出・新しいことに挑戦',s:{e:2,a:2}},{l:'家でゆっくりリフレッシュ',s:{r:3}},{l:'家族・友人との時間を大切に',s:{e:2}},{l:'スキルアップ・副業・勉強',s:{c:2}}]},
+    {n:2,step:'STEP 1',text:'仕事以外で一番大切にしていることは？',type:'s',opts:[{l:'趣味・楽しみ・自分の時間',s:{r:2,c:1}},{l:'家族・友人とのつながり',s:{e:2}},{l:'成長・学び・自己投資',s:{c:3}},{l:'地域・社会への貢献',s:{e:1}}]},
+    {n:3,step:'STEP 1',text:'新しいことを始めるとき、どうする？',type:'s',opts:[{l:'即決して飛び込む',s:{e:2,a:2}},{l:'慎重にリサーチしてから',s:{c:3}},{l:'誰かを誘ってから動く',s:{e:2}},{l:'気分が乗ったときだけ',s:{r:1}}]},
+    {n:4,step:'STEP 1',text:'理想の休日を一言で言うと？',type:'s',opts:[{l:'非日常・冒険・新発見',s:{e:1,a:2}},{l:'のんびり・最高にリラックス',s:{r:3}},{l:'人と交流・新しいつながり',s:{e:3}},{l:'学び・インプット・成長',s:{c:3}}]},
+    {n:5,step:'STEP 1',text:'職場で自分が一番近いと思うタイプは？',type:'s',opts:[{l:'率先して動くリーダータイプ',s:{e:2,a:1}},{l:'じっくり考える戦略家タイプ',s:{c:3}},{l:'人をつなぐコミュニケーター',s:{e:3}},{l:'黙々と結果を出す職人タイプ',s:{c:1,e:-1}}]},
+    {n:6,step:'STEP 2',text:'行動できる範囲は？',type:'s',dataOnly:true,opts:[{l:'広島市内',s:{}},{l:'広島県内',s:{}},{l:'どこでも',s:{}}]},
+    {n:7,step:'STEP 2',text:'参加したいイベントのタイプは？',type:'s',opts:[{l:'交流会・勉強会・ビジネス系',s:{e:2,c:1}},{l:'お祭り・マルシェ・文化系',s:{e:2}},{l:'ワークショップ・体験系',s:{c:2}},{l:'ボランティア・地域貢献系',s:{e:1}}]},
+    {n:8,step:'STEP 2',text:'参加費はどのくらいまでOK？',type:'s',dataOnly:true,opts:[{l:'無料のみ',s:{}},{l:'1000円以内',s:{}},{l:'3000円以内',s:{}},{l:'良ければいくらでも',s:{}}]},
+    {n:9,step:'STEP 2',text:'今一番したいことは？',type:'s',opts:[{l:'人脈を広げる・新しい出会い',s:{e:3}},{l:'スキルを磨く・成長する',s:{c:3}},{l:'楽しむ・リフレッシュする',s:{r:3}},{l:'地域・社会に貢献する',s:{e:1}}]},
+    {n:10,step:'STEP 2',text:'仕事終わりに一番やりたいことは？',type:'s',opts:[{l:'すぐ帰って休む',s:{r:2}},{l:'友達・同僚と飲みに行く',s:{e:3}},{l:'習い事・ジムに行く',s:{a:2,c:1}},{l:'家で好きなことをする',s:{c:2}}]},
+    {n:11,step:'STEP 3',text:'地域のイベント情報をどこで探してる？',type:'s',dataOnly:true,opts:[{l:'Instagram',s:{}},{l:'Google検索',s:{}},{l:'口コミ・知人から',s:{}},{l:'探せていない',s:{}}]},
+    {n:12,step:'STEP 3',text:'行きたいのに行けない理由は？',type:'s',dataOnly:true,opts:[{l:'情報が少ない',s:{}},{l:'時間がない',s:{}},{l:'お金',s:{}},{l:'一緒に行く人がいない',s:{}}]},
+    {n:13,step:'STEP 3',text:'動画でイベントを知れたら使いたい？',type:'s',dataOnly:true,opts:[{l:'ぜひ使いたい',s:{}},{l:'使うと思う',s:{}},{l:'どちらでもない',s:{}},{l:'使わない',s:{}}]},
+    {n:14,step:'STEP 3',text:'地域活動に参加したいと思う？',type:'s',opts:[{l:'すでに参加してる',s:{e:2}},{l:'参加したい・機会があれば',s:{e:1}},{l:'どちらでもない',s:{}},{l:'あまり興味がない',s:{e:-1}}]},
+    {n:15,step:'STEP 3',text:'地域のイベントに参加する一番の目的は？',type:'s',opts:[{l:'新しい人と出会う・人脈',s:{e:3}},{l:'スキル・知識を得る',s:{c:2}},{l:'楽しむ・リフレッシュ',s:{r:2}},{l:'地域・社会への貢献',s:{e:1}}]},
+  ],
 };
-const GS={event:{bg:'rgba(255,61,90,0.13)',bd:'rgba(255,61,90,0.35)',c:'#ff8fa0'},learn:{bg:'rgba(255,190,0,0.13)',bd:'rgba(255,190,0,0.35)',c:'#ffbe00'},volunteer:{bg:'rgba(0,229,160,0.13)',bd:'rgba(0,229,160,0.35)',c:'#00e5a0'}};
-const GC={event:'#ff8fa0',learn:'#ffbe00',volunteer:'#00e5a0'};
 
-let EVS = [];
-
-async function loadEvents() {
-  const { data, error } = await sb.from('events').select('*').order('created_at', { ascending: false });
-  if (error) { console.error('events load error:', error); return; }
-  EVS = (data || []).map(e => ({
-    id: e.id, g: e.genre || 'event', sub: e.sub_genre || '',
-    gl: e.genre_label || 'イベント・おでかけ', ge: e.genre_emoji || '🎉',
-    title: e.title || '', ds: e.date_start || '', de: e.date_end || '',
-    ts: e.time_info || '', loc: e.location || '', addr: e.address || '',
-    price: e.price || '', desc: e.description || '', vid: e.video_url || '',
-    ig: e.instagram_url || '', hp: e.homepage_url || '',
-    rev: e.reservation_url || '', hasRev: e.has_reservation || false,
-    feed: e.show_in_feed !== false, tags: e.tags || [],
-    bg: e.background || 'linear-gradient(135deg,#1a1a2e,#16213e)',
-    em: e.emoji || e.genre_emoji || '📍',
-    age: e.age_groups || ['高校生','大学生','社会人'],
-    fixed: e.is_fixed || false,
-  }));
-}
-
-
+// =============================================
+// SHOP / EARN / MISSIONS DATA
+// =============================================
 const SHOP_GOODS=[
-  {id:'g1',name:'ステッカー購入権',desc:'Nexca出店時に現地でステッカーを購入できる権利（別途購入代金必要）',cost:100,ic:'🎨',cat:'goods'},
-  {id:'g2',name:'缶バッジ購入権',desc:'Nexca出店時に現地で缶バッジを購入できる権利（別途購入代金必要）',cost:200,ic:'📛',cat:'goods'},
-  {id:'g3',name:'アクキー購入権',desc:'Nexca出店時に現地でアクキーを購入できる権利（別途購入代金必要）',cost:350,ic:'🎭',cat:'goods'},
-  {id:'g4',name:'限定Tシャツ購入権',desc:'Nexca出店時に限定Tシャツを購入できる権利（別途購入代金必要）',cost:500,ic:'👕',cat:'goods'},
+  {id:'g1',name:'ステッカー購入権',desc:'Nexca出店時に現地でステッカーを購入できる権利',cost:800,ic:'🎨'},
+  {id:'g2',name:'クリアファイル購入権',desc:'Nexca出店時に現地でクリアファイルを購入できる権利',cost:1000,ic:'📁'},
+  {id:'g3',name:'キャラアクキー購入権',desc:'Nexca出店時に現地でアクキーを購入できる権利',cost:1500,ic:'🎭'},
+  {id:'g4',name:'トートバッグ購入権',desc:'Nexca出店時に現地でトートバッグを購入できる権利',cost:2000,ic:'👜'},
+  {id:'g5',name:'限定キャラグッズ購入権',desc:'シーズン限定グッズを購入できる権利（出店時限定）',cost:3000,ic:'🌟'},
+  {id:'g6',name:'NexcaTシャツ購入権',desc:'Nexca出店時に現地でTシャツを購入できる権利',cost:8000,ic:'👕'},
+  {id:'g7',name:'Nexcaパーカー購入権',desc:'Nexca出店時に現地でパーカーを購入できる権利',cost:12000,ic:'🧥'},
 ];
-const SHOP_TITLE=[
-  {id:'t1',name:'称号「ネクスカー」',desc:'マイページに称号が表示される',cost:30,ic:'🏅',cat:'title'},
-  {id:'t2',name:'称号「Nexcaサポーター」',desc:'マイページに特別称号が表示される',cost:150,ic:'⭐',cat:'title'},
-  {id:'t3',name:'称号「Nexca Legend」',desc:'最高ランクの称号',cost:600,ic:'👑',cat:'title'},
+
+const EARN_RULES=[
+  {name:'初回登録',sub:'1アカウント1回のみ',pt:20,ic:'🎉',color:'rgba(255,61,90,0.12)',camp:false},
+  {name:'事前登録',sub:'サービス開始時に付与',pt:500,ic:'⭐',color:'rgba(255,190,0,0.12)',camp:false},
+  {name:'年齢層設定',sub:'初回設定時のみ',pt:5,ic:'🎒',color:'rgba(255,190,0,0.1)',camp:false},
+  {name:'地域設定',sub:'初回設定時のみ',pt:5,ic:'📍',color:'rgba(77,159,255,0.1)',camp:false},
+  {name:'ログイン',sub:'1日1回',pt:2,ic:'🔑',color:'rgba(255,255,255,0.06)',camp:false},
+  {name:'動画視聴',sub:'1動画につき1回（1日最大10pt）',pt:1,ic:'▶️',color:'rgba(77,159,255,0.1)',camp:false},
+  {name:'いいね',sub:'1イベントにつき1回',pt:2,ic:'❤️',color:'rgba(255,61,90,0.1)',camp:false},
+  {name:'行きたい登録',sub:'1イベントにつき1回',pt:2,ic:'⭐',color:'rgba(255,190,0,0.1)',camp:false},
+  {name:'診断完了',sub:'初回完了時のみ',pt:15,ic:'🎯',color:'rgba(168,85,247,0.1)',camp:false},
+  {name:'SNSシェア',sub:'診断結果やイベントをシェア',pt:5,ic:'📤',color:'rgba(0,229,160,0.1)',camp:false},
+  {name:'キャラQR獲得',sub:'1キャラにつき1回',pt:10,ic:'🐾',color:'rgba(255,190,0,0.1)',camp:false},
+  {name:'詳細情報を開く',sub:'1イベントにつき1回',pt:1,ic:'📋',color:'rgba(255,255,255,0.05)',camp:false},
+  {name:'振り返り完了',sub:'参加後の振り返り',pt:20,ic:'✍️',color:'rgba(0,229,160,0.1)',camp:false},
+  {name:'QR参加証明',sub:'イベント参加1回につき',pt:50,ic:'✅',color:'rgba(0,229,160,0.1)',camp:false},
 ];
-const SHOP_CPN=[
-  {id:'c1',name:'掲載店舗 100円OFFクーポン',desc:'Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。',cost:50,ic:'🎟️',cat:'cpn',disc:100},
-  {id:'c2',name:'掲載店舗 200円OFFクーポン',desc:'Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。',cost:100,ic:'🎟️',cat:'cpn',disc:200},
-  {id:'c3',name:'掲載店舗 350円OFFクーポン',desc:'Nexca掲載中の店舗・イベント限定。1店舗1回のみ使用可。',cost:200,ic:'🎟️',cat:'cpn',disc:350},
-];
+
 const MISSIONS=[
   {id:'m1',name:'動画を5本視聴する',sub:'フィードで5本の動画を見る',pt:10,progress:0,goal:5,done:false},
   {id:'m2',name:'3つのイベントにいいねする',sub:'気になるイベントにいいね',pt:10,progress:0,goal:3,done:false},
   {id:'m3',name:'診断を完了する',sub:'キャラ診断を1回完了する',pt:15,progress:0,goal:1,done:false},
   {id:'m4',name:'イベント情報をシェアする',sub:'友達にイベントをシェア',pt:10,progress:0,goal:1,done:false},
   {id:'m5',name:'キャラを3体集める',sub:'QRコードでキャラ図鑑を埋めよう',pt:20,progress:0,goal:3,done:false},
+  {id:'m6',name:'行きたいを5件登録する',sub:'気になるイベントに行きたい登録',pt:15,progress:0,goal:5,done:false},
 ];
 
-const EARN_RULES=[
-  {name:'初回登録',sub:'1アカウント1回のみ',pt:20,ic:'🎉',color:'rgba(255,61,90,0.12)',camp:false},
-  {name:'年齢層設定',sub:'初回設定時のみ',pt:5,ic:'🎒',color:'rgba(255,190,0,0.1)',camp:false},
-  {name:'地域設定',sub:'初回設定時のみ',pt:5,ic:'📍',color:'rgba(77,159,255,0.1)',camp:false},
-  {name:'ログイン',sub:'1日1回',pt:2,ic:'🔑',color:'rgba(255,255,255,0.06)',camp:false},
-  {name:'動画視聴',sub:'1動画につき1回（1日最大10pt）',pt:1,ic:'▶️',color:'rgba(77,159,255,0.1)',camp:false},
-  {name:'いいね',sub:'1イベントにつき1回',pt:2,ic:'❤️',color:'rgba(255,61,90,0.1)',camp:false},
-  {name:'診断完了',sub:'初回完了時のみ',pt:15,ic:'🎯',color:'rgba(168,85,247,0.1)',camp:false},
-  {name:'SNSシェア',sub:'診断結果やイベントをシェア',pt:5,ic:'📤',color:'rgba(0,229,160,0.1)',camp:false},
-  {name:'キャラQR獲得',sub:'1キャラにつき1回',pt:10,ic:'🐾',color:'rgba(255,190,0,0.1)',camp:false},
-  {name:'詳細情報を開く',sub:'1イベントにつき1回',pt:1,ic:'📋',color:'rgba(255,255,255,0.05)',camp:false},
-];
-
+// =============================================
+// CHARACTER DATA
+// =============================================
 const CD={
-  'アガル':{color:'#FF4D4D',type:'ワイワイ × アクション',catch:'考える前に、もう走ってる。',kuchi:'「やろやろ！絶対楽しいって！」',pers:'思い立ったら即行動。楽しそうなことには全力で飛びつくし、退屈な時間が一番の敵。誰かと一緒に盛り上がるのが最高に好きで、気づいたらみんなの中心にいる。',weak:'実は一人の夜が少し苦手。止まるのが怖い。',compat:'テクル',cd:'暴走するあなたを黙って支えてくれる存在。テクルと一緒なら、もっと遠くまで行ける。',bs:'アガルがネクストリートに来る前にいた場所は「灰色の平原」。何も起きない場所で、それでも毎日走っていた──。',evIds:['e1','e4']},
-  'ツムギ':{color:'#FFD700',type:'ワイワイ × クリエイション',catch:'一人じゃできないことを、みんなでやる天才。',kuchi:'「ねえ、一緒にやろうよ！絶対いけるって！」',pers:'人を巻き込むのが天才的に上手い。「一緒にやろう！」の一言で周りが動き出す。アイデアは止まらないし、面倒見もいい。',weak:'自分一人のために何かをした記憶がない。頼りにされていないと不安になる。',compat:'コネル',cd:'あなたが光を当てることで、コネルの才能が世界に届く。最高のパートナー。',bs:'ツムギがかつていた「賑やかな街」では、毎日お祭りのようだった。でもある日、自分がいなくても祭りは続くことに気づいてしまった──。',evIds:['e2','e3']},
-  'ヌクミ':{color:'#4CAF50',type:'ワイワイ × リラクゼーション',catch:'そこにいるだけで、場が温かくなる。',kuchi:'「おなかすいた。何食べたい？おごるよ！」',pers:'ゆるくて温かくて、場の空気を和ませる天才。おいしいものへのアンテナは誰よりも強い。争いごとが嫌いで、間におにぎりを差し出して解決する。',weak:'本気を出すのが怖い。「楽しければいい」は、実は自分を守るための壁。',compat:'アガル',cd:'アガルの勢いをあなたが和ませて、あなたの背中をアガルが押してくれる。',bs:'ヌクミはかつて「競争の街」にいた。料理コンテストに出て、本気で作った最高の一品。結果は──。',evIds:['e1','e4']},
-  'テクル':{color:'#5C6BC0',type:'マイペース × アクション',catch:'言葉は少ない。でも、行動が全てを語る。',kuchi:'「……（無言で手を差し伸べる）」',pers:'一人で黙々と動くのが性に合っている。寡黙だけど冷たくはない。困ってる人がいたら何も言わずに手伝って、お礼を言われる前にいなくなる。',weak:'人に頼れない。「弱さを見せたら終わり」と思っている。',compat:'フワリ',cd:'言葉がなくても通じ合える。静かに過ごす時間が、二人にとって一番大切。',bs:'テクルはかつて冒険チームのリーダーだった。仲間たちの信頼を一身に受けていた。でもある日、テクルの判断が──。',evIds:['e2','e4']},
-  'コネル':{color:'#9C27B0',type:'マイペース × クリエイション',catch:'没頭の先に、まだ誰も見たことのない世界がある。',kuchi:'「…面白いかも（小声）」',pers:'何かに取り組み始めると時間の概念が消える。「あと5分」が3時間になるのは日常。マニアックな知識が深くて、語り出したら止まらない。',weak:'「誰にもわかってもらえない」と思い込む癖。見せる前に諦めてしまう。',compat:'ツムギ',cd:'あなたの作品を世界に届けてくれる最高のプロデューサー。',bs:'コネルがいた「みんな同じ街」では、違うことをすると「変だ」と言われた。コネルは部屋にこもって、ずっと何かを作り続けていた──。',evIds:['e3','e5']},
-  'フワリ':{color:'#29B6F6',type:'マイペース × リラクゼーション',catch:'静かに見ている。でも、全部わかっている。',kuchi:'「……そういうことか（ポツリと）」',pers:'普段はぼんやりしているように見えるけど、実は一番よく見ている。突然、誰もが考えつかない核心を突く一言を言って周りを驚かせる。',weak:'行動に移せない。「自分には何もない」と思っている。',compat:'テクル',cd:'言葉がいらない関係。テクルの隣で静かに過ごす時間が一番好き。',bs:'フワリがいた「忙しい街」では全員が走っていた。立ち止まると怒られる街。フワリは走れなかった──。',evIds:['e4','e3']},
+  'アガル':{color:'#FF4D4D',type:'ワイワイ × アクション',catch:'考える前に、もう走ってる。',kuchi:'「やろやろ！絶対楽しいって！」',pers:'思い立ったら即行動。楽しそうなことには全力で飛びつくし、退屈な時間が一番の敵。誰かと一緒に盛り上がるのが最高に好きで、気づいたらみんなの中心にいる。',weak:'実は一人の夜が少し苦手。止まるのが怖い。',compat:'テクル',cd:'暴走するあなたを黙って支えてくれる存在。テクルと一緒なら、もっと遠くまで行ける。',bs:'アガルがネクストリートに来る前にいた場所は「灰色の平原」。何も起きない場所で、それでも毎日走っていた──。',tags:['event','outdoor','sports']},
+  'ツムギ':{color:'#FFD700',type:'ワイワイ × クリエイション',catch:'一人じゃできないことを、みんなでやる天才。',kuchi:'「ねえ、一緒にやろうよ！絶対いけるって！」',pers:'人を巻き込むのが天才的に上手い。「一緒にやろう！」の一言で周りが動き出す。アイデアは止まらないし、面倒見もいい。',weak:'自分一人のために何かをした記憶がない。頼りにされていないと不安になる。',compat:'コネル',cd:'あなたが光を当てることで、コネルの才能が世界に届く。最高のパートナー。',bs:'ツムギがかつていた「賑やかな街」では、毎日お祭りのようだった。でもある日、自分がいなくても祭りは続くことに気づいてしまった──。',tags:['event','workshop','culture']},
+  'ヌクミ':{color:'#4CAF50',type:'ワイワイ × リラクゼーション',catch:'そこにいるだけで、場が温かくなる。',kuchi:'「おなかすいた。何食べたい？おごるよ！」',pers:'ゆるくて温かくて、場の空気を和ませる天才。おいしいものへのアンテナは誰よりも強い。争いごとが嫌いで、間におにぎりを差し出して解決する。',weak:'本気を出すのが怖い。「楽しければいい」は、実は自分を守るための壁。',compat:'アガル',cd:'アガルの勢いをあなたが和ませて、あなたの背中をアガルが押してくれる。',bs:'ヌクミはかつて「競争の街」にいた。料理コンテストに出て、本気で作った最高の一品。結果は──。',tags:['cafe','food','relax']},
+  'テクル':{color:'#5C6BC0',type:'マイペース × アクション',catch:'言葉は少ない。でも、行動が全てを語る。',kuchi:'「……（無言で手を差し伸べる）」',pers:'一人で黙々と動くのが性に合っている。寡黙だけど冷たくはない。困ってる人がいたら何も言わずに手伝って、お礼を言われる前にいなくなる。',weak:'人に頼れない。「弱さを見せたら終わり」と思っている。',compat:'フワリ',cd:'言葉がなくても通じ合える。静かに過ごす時間が、二人にとって一番大切。',bs:'テクルはかつて冒険チームのリーダーだった。仲間たちの信頼を一身に受けていた。でもある日、テクルの判断が──。',tags:['sports','volunteer','outdoor']},
+  'コネル':{color:'#9C27B0',type:'マイペース × クリエイション',catch:'没頭の先に、まだ誰も見たことのない世界がある。',kuchi:'「…面白いかも（小声）」',pers:'何かに取り組み始めると時間の概念が消える。「あと5分」が3時間になるのは日常。マニアックな知識が深くて、語り出したら止まらない。',weak:'「誰にもわかってもらえない」と思い込む癖。見せる前に諦めてしまう。',compat:'ツムギ',cd:'あなたの作品を世界に届けてくれる最高のプロデューサー。',bs:'コネルがいた「みんな同じ街」では、違うことをすると「変だ」と言われた。コネルは部屋にこもって、ずっと何かを作り続けていた──。',tags:['workshop','learn','culture']},
+  'フワリ':{color:'#29B6F6',type:'マイペース × リラクゼーション',catch:'静かに見ている。でも、全部わかっている。',kuchi:'「……そういうことか（ポツリと）」',pers:'普段はぼんやりしているように見えるけど、実は一番よく見ている。突然、誰もが考えつかない核心を突く一言を言って周りを驚かせる。',weak:'行動に移せない。「自分には何もない」と思っている。',compat:'テクル',cd:'言葉がいらない関係。テクルの隣で静かに過ごす時間が一番好き。',bs:'フワリがいた「忙しい街」では全員が走っていた。立ち止まると怒られる街。フワリは走れなかった──。',tags:['relax','cafe','nature']},
 };
 const ALL_CHARS=['アガル','ツムギ','ヌクミ','テクル','コネル','フワリ'];
-const PREFS=['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'];
-const QS=[
-  {n:1,step:'STEP 1',text:'休みの日、まず何をする？',type:'s',opts:[{l:'誰かに連絡して予定を立てる',s:{e:3}},{l:'SNSで面白そうな情報を探す',s:{e:1}},{l:'家で好きなことに没頭する',s:{e:-2}},{l:'特に決めず、その時の気分で動く',s:{e:0}}]},
-  {n:2,step:'STEP 1',text:'友達と遊ぶとき、あなたの立ち位置は？',type:'s',opts:[{l:'自分が企画して声をかける方',s:{e:3}},{l:'誘われたら基本参加する',s:{e:1}},{l:'少人数の方が楽しい',s:{e:-1}},{l:'一人の時間も大事にしたい',s:{e:-3}}]},
-  {n:3,step:'STEP 1',text:'「めちゃくちゃ楽しそう！」と思うのは？',type:'s',opts:[{l:'体を動かすスポーツやアクティビティ',s:{a:3}},{l:'何かを自分の手で作る体験',s:{c:3}},{l:'おいしいものを食べたり、のんびり過ごす',s:{r:3}},{l:'新しい知識やスキルが身につくこと',s:{c:2}}]},
-  {n:4,step:'STEP 1',text:'SNSで思わず保存しちゃう投稿は？',type:'s',opts:[{l:'絶景や旅先の写真・アウトドア動画',s:{a:2}},{l:'作り方やメイキング動画',s:{c:2}},{l:'カフェ・グルメ・おしゃれスポット',s:{r:2}},{l:'ライフハック・知識・勉強系',s:{c:1,r:1}}]},
-  {n:5,step:'STEP 1',text:'自分へのご褒美として一番嬉しいのは？',type:'s',opts:[{l:'行ったことのない場所・新しい体験',s:{a:3}},{l:'いい道具や素材（画材、ガジェット等）',s:{c:3}},{l:'おいしいご飯・リラックスできる時間',s:{r:3}},{l:'映画・本・展覧会のチケット',s:{c:1,r:1}}]},
-  {n:6,step:'STEP 2',text:'イベントや遊びの情報、どこで見つける？',type:'s',opts:[{l:'友達や家族からの口コミ',s:{e:2}},{l:'Instagram・TikTok等のSNS',s:{e:1}},{l:'自分でネットで検索する',s:{e:-1}},{l:'正直、あんまり見つけられていない',s:{e:-2}}]},
-  {n:7,step:'STEP 2',text:'「行きたいけど行けなかった…」一番の理由は？',type:'s',dataOnly:true,opts:[{l:'一緒に行く人がいなかった',s:{}},{l:'お金が気になった',s:{}},{l:'どんな雰囲気かわからなくて不安だった',s:{}},{l:'そもそも自分に合うかわからなかった',s:{}}]},
-  {n:8,step:'STEP 2',text:'イベントや遊びに使える予算は？（1回あたり）',type:'s',dataOnly:true,opts:[{l:'無料がいい',s:{}},{l:'〜1,000円くらい',s:{}},{l:'数千円なら全然OK',s:{}},{l:'良い体験なら金額は気にしない',s:{}}]},
-  {n:9,step:'STEP 2',text:'新しいことを始めるとき、どうする？',type:'s',opts:[{l:'考えるより先に動く！',s:{e:2,a:1}},{l:'誰か誘ってから動く',s:{e:2}},{l:'まず情報を集めて納得してから',s:{c:1}},{l:'気分が乗ったら…かな',s:{e:-1,r:1}}]},
-  {n:10,step:'STEP 2',text:'理想の休日を一言で言うと？',type:'s',opts:[{l:'冒険と発見！',s:{e:1,a:2}},{l:'仲間と最高の時間！',s:{e:3}},{l:'何かを生み出す達成感！',s:{c:2}},{l:'最高にリラックスした時間',s:{e:-1,r:2}}]},
-  {n:11,step:'STEP 3',text:'普段よく使っているSNSは？（複数選択可）',type:'m',dataOnly:true,opts:[{l:'Instagram',s:{}},{l:'TikTok',s:{}},{l:'YouTube',s:{}},{l:'X（旧Twitter）',s:{}},{l:'LINE',s:{}},{l:'あまり使わない',s:{}}]},
-  {n:12,step:'STEP 3',text:'あなたの年齢は？',type:'s',dataOnly:true,opts:[{l:'〜12歳',s:{}},{l:'13〜15歳',s:{}},{l:'16〜18歳',s:{}},{l:'19〜24歳',s:{}},{l:'25〜34歳',s:{}},{l:'35歳以上',s:{}}]},
-  {n:13,step:'STEP 3',text:'お住まいの都道府県は？',type:'p',dataOnly:true},
-  {n:14,step:'STEP 3',text:'イベント情報、どのくらいの頻度で探す？',type:'s',dataOnly:true,opts:[{l:'ほぼ毎日チェックしたい',s:{}},{l:'週に1〜2回くらい',s:{}},{l:'月に数回',s:{}},{l:'特定の時期だけ',s:{}}]},
-];
 
+// =============================================
 // STATE
-let age='高校生',user=null,idx=0,fevs=[];
-let genre='all',sub='',flyG='all';
-let likes=new Set(),pts=0,ptsUsed=0,ptsMonthly=0,ptsTotal=0,stamps=0;
-let stampCnt=0,stampedPlaces=new Set(),fixedVisited=new Set();
-let ownedTitles=new Set(),ownedGoods=[],ownedCpns=[];
-let phist=[],reviews=[],mapOn=false;
-let ty=0,busy=false,partEvId=null,firstPart=true;
+// =============================================
+let age='高校生', user=null, userCity='';
+let EVS=[], OFFICIAL_EVS=[];
+let idx=0, fevs=[], feedMode='recommend';
+let genre='all', sub='', flyG='all';
+let likes=new Set(), wants=new Set();
+let pts=0, ptsUsed=0, ptsMonthly=0, ptsTotal=0;
+let stampCnt=0, stampedPlaces=new Set(), fixedVisited=new Set();
+let ownedGoods=[];
+let phist=[], reviews=[], mapOn=false;
+let ty=0, busy=false, partEvId=null, firstPart=true;
 let exItem=null;
-let dScores={e:0,a:0,c:0,r:0},dAnswers={},cQ=0,q2a=null,q3a=null,q5a=null;
+let dScores={e:0,a:0,c:0,r:0}, dAnswers={}, cQ=0;
+let collectedChars=new Set();
+let viewedToday=new Set(), viewPtsToday=0;
+let participations={};
+let charType=null;
+let rankMode='week';
 const CAMP=2;
+let sessionId = Math.random().toString(36).slice(2);
+let preRegDone = localStorage.getItem('nexca_prereg') === '1';
 
+// =============================================
+// ANONYMOUS TRACKING
+// =============================================
+async function trackAnonymousView(eventId) {
+  try {
+    await sb.from('anonymous_sessions').upsert({
+      session_id: sessionId,
+      age_group: age,
+      city: userCity,
+      viewed_events: [eventId],
+      updated_at: new Date().toISOString()
+    }, {onConflict: 'session_id'});
+  } catch(e) {}
+}
+
+// =============================================
+// DB HELPERS
+// =============================================
+async function loadEvents() {
+  const {data, error} = await sb.from('events').select('*').order('created_at', {ascending:false});
+  if (error) { console.error('events load error:', error); return; }
+  const all = (data||[]).map(e=>({
+    id: e.id, g: e.genre||'event', sub: e.sub_genre||'',
+    gl: e.genre_label||'イベント・おでかけ', ge: e.genre_emoji||'🎉',
+    title: e.title||'', ds: e.date_start||'', de: e.date_end||'',
+    ts: e.time_info||'', loc: e.location||'', addr: e.address||'',
+    price: e.price||'', desc: e.description||'', vid: e.video_url||'',
+    ig: e.instagram_url||'', hp: e.homepage_url||'',
+    rev: e.reservation_url||'', hasRev: e.has_reservation||false,
+    feed: e.show_in_feed !== false, tags: e.tags||[],
+    bg: e.background||'linear-gradient(135deg,#1a1a2e,#16213e)',
+    em: e.emoji||e.genre_emoji||'📍',
+    age: e.age_groups||['高校生','大学生','社会人'],
+    fixed: e.is_fixed||false,
+    isOfficial: e.is_official||false,
+    isExpired: e.is_expired||false,
+    wantCount: e.want_count||0,
+  }));
+  EVS = all.filter(e => !e.isOfficial);
+  OFFICIAL_EVS = all.filter(e => e.isOfficial);
+}
+
+async function loadProfile() {
+  if(!user) return;
+  const {data} = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if(data){
+    pts=data.points||0; ptsTotal=data.points_total||0;
+    ptsUsed=data.points_used||0; ptsMonthly=data.points_monthly||0;
+    stampCnt=data.stamp_count||0; age=data.age_group||'高校生';
+    userCity=data.prefecture||''; charType=data.char_type||null;
+  }
+}
+async function saveProfile() {
+  if(!user) return;
+  const lv = calcLevel(ptsTotal);
+  await sb.from('profiles').update({
+    points: Math.floor(pts), points_total: Math.floor(ptsTotal),
+    points_used: Math.floor(ptsUsed), points_monthly: Math.floor(ptsMonthly),
+    stamp_count: stampCnt, age_group: age, prefecture: userCity,
+    char_type: charType, level: lv.lv, title: lv.name,
+  }).eq('id', user.id);
+  // Update ranking
+  await sb.from('rankings').upsert({
+    user_id: user.id,
+    nickname: (user.user_metadata?.full_name||'ユーザー').slice(0,8),
+    total_points: Math.floor(ptsTotal),
+    updated_at: new Date().toISOString()
+  }, {onConflict: 'user_id'});
+}
+async function loadLikes() {
+  if(!user) return;
+  const {data} = await sb.from('likes').select('event_id').eq('user_id', user.id);
+  if(data) likes = new Set(data.map(r=>r.event_id));
+}
+async function saveLike(evId, isLiked) {
+  if(!user) return;
+  if(isLiked) await sb.from('likes').upsert({user_id:user.id, event_id:evId});
+  else await sb.from('likes').delete().eq('user_id',user.id).eq('event_id',evId);
+}
+async function loadWants() {
+  if(!user) return;
+  const {data} = await sb.from('want_to_go').select('event_id').eq('user_id', user.id);
+  if(data) wants = new Set(data.map(r=>r.event_id));
+}
+async function saveWant(evId, isWant) {
+  if(!user) return;
+  if(isWant) await sb.from('want_to_go').upsert({user_id:user.id, event_id:evId});
+  else await sb.from('want_to_go').delete().eq('user_id',user.id).eq('event_id',evId);
+}
+async function loadParticipations() {
+  if(!user) return;
+  const {data} = await sb.from('participations').select('event_id,status').eq('user_id', user.id);
+  if(data) data.forEach(r=>participations[r.event_id]=r.status);
+}
+async function saveParticipation(evId) {
+  if(!user) return;
+  await sb.from('participations').upsert({user_id:user.id, event_id:evId, status:'approved'});
+}
+async function loadStamps() {
+  if(!user) return;
+  const {data} = await sb.from('stamps').select('event_id').eq('user_id', user.id);
+  if(data){ stampedPlaces=new Set(data.map(r=>r.event_id)); stampCnt=stampedPlaces.size; }
+}
+async function saveStamp(evId) {
+  if(!user) return;
+  await sb.from('stamps').upsert({user_id:user.id, event_id:evId});
+}
+async function savePointHistory(reason, amt, camp) {
+  if(!user) return;
+  await sb.from('point_history').insert({user_id:user.id, reason, amount:amt, is_campaign:camp});
+}
+async function loadPointHistory() {
+  if(!user) return;
+  const {data} = await sb.from('point_history').select('*').eq('user_id', user.id)
+    .order('created_at',{ascending:false}).limit(50);
+  if(data) phist=data.map(r=>({reason:r.reason,amt:r.amount,date:new Date(r.created_at).toLocaleDateString('ja-JP'),camp:r.is_campaign}));
+}
+async function loadCollection() {
+  if(!user) return;
+  const {data} = await sb.from('owned_items').select('item_id').eq('user_id', user.id).like('item_id','char_%');
+  if(data) collectedChars=new Set(data.map(r=>r.item_id));
+}
+async function loadRankings() {
+  const {data} = await sb.from('rankings').select('*').order('total_points',{ascending:false}).limit(10);
+  return data||[];
+}
+
+async function loadAllUserData() {
+  await loadEvents();
+  await loadProfile();
+  await loadLikes();
+  await loadWants();
+  await loadParticipations();
+  await loadPointHistory();
+  await loadCollection();
+  updStats();
+  renderPtHero();
+  renderEarnList();
+  renderShopAll();
+  renderMissions();
+  renderMP();
+  renderFeed();
+  renderFlyer();
+  renderCollection();
+  renderFlyerTabs();
+  renderGenreOpts();
+}
+
+// AUTH
+sb.auth.onAuthStateChange(async(event, session) => {
+  if(session?.user){
+    user = session.user;
+    await loadAllUserData();
+    if(event==='SIGNED_IN') showToast('🎉 ログインしました！');
+  } else {
+    user = null;
+    renderMP();
+  }
+});
+sb.auth.getSession().then(({data:{session}}) => {
+  if(session?.user){ user=session.user; loadAllUserData(); }
+  else { loadEvents().then(()=>{ renderFeed(); renderFlyer(); renderFlyerTabs(); renderGenreOpts(); }); }
+});
+
+// =============================================
 // ONBOARDING
-let userCity='';
-function pickAge(el,a){
+// =============================================
+function pickAge(el, a) {
   document.querySelectorAll('#ob-step1 .ob-item').forEach(x=>x.classList.remove('sel'));
-  el.classList.add('sel');age=a;
+  el.classList.add('sel'); age=a;
   document.getElementById('ob-btn1').classList.add('on');
 }
-function goObStep2(){
+function goObStep2() {
   document.getElementById('ob-step1').style.display='none';
   document.getElementById('ob-step2').style.display='block';
 }
-function pickCity(el,city){
+function pickCity(el, city) {
   document.querySelectorAll('#ob-step2 .ob-item').forEach(x=>x.classList.remove('sel'));
-  el.classList.add('sel');userCity=city;
+  el.classList.add('sel'); userCity=city;
   document.getElementById('ob-btn2').classList.add('on');
 }
-async function startApp(){
+async function startApp() {
   document.getElementById('ob').classList.add('hide');
   document.getElementById('ab').style.display='flex';
-  updateAB();await loadEvents();renderFeed();renderFlyer();renderPtHero();renderEarnList();renderShopAll();renderMissions();
+  updateAB();
+  await loadEvents();
+  renderFeed();
+  renderFlyer();
+  renderFlyerTabs();
+  renderGenreOpts();
+  renderPtHero();
+  renderEarnList();
+  renderShopAll();
+  renderMissions();
   document.getElementById('d-mascot').innerHTML=cSVG('ネクスケ',120,120);
-  addPt('初回登録',20,false);addPt('年齢層設定',5,false);addPt('地域設定',5,false);
+  addPt('初回登録',20,false);
+  addPt('年齢層設定',5,false);
+  addPt('地域設定',5,false);
   saveProfile();
   showToast('🎉 ようこそNexcaへ！ +30pt');
+  // Pre-registration prompt
+  if(!preRegDone) {
+    setTimeout(()=>{ document.getElementById('prereg-modal').classList.add('on'); }, 3000);
+  }
 }
-function updateAB(){
-  const ic={'中学生':'📚','高校生':'🎒','大学生':'🎓','社会人':'💼'};
+
+// PRE REGISTRATION
+async function submitPreReg() {
+  const email = document.getElementById('prereg-email').value.trim();
+  if(!email || !email.includes('@')){ showToast('メールアドレスを正しく入力してください'); return; }
+  try {
+    await sb.from('pre_registrations').insert({ email, age_group:age, city:userCity });
+    localStorage.setItem('nexca_prereg', '1');
+    preRegDone = true;
+    document.getElementById('prereg-modal').classList.remove('on');
+    showToast('🎉 事前登録完了！サービス開始時に500ptプレゼント');
+  } catch(e) {
+    showToast('登録に失敗しました');
+  }
+}
+function skipPreReg() {
+  document.getElementById('prereg-modal').classList.remove('on');
+}
+
+// AGE BADGE
+function updateAB() {
+  const ic={'小学生の保護者':'👨‍👩‍👧‍👦','中学生':'📚','高校生':'🎒','大学生':'🎓','社会人':'💼'};
   document.getElementById('ab-ic').textContent=ic[age]||'🎒';
   document.getElementById('ab-lb').textContent=age;
 }
-function openAgeMod(){document.getElementById('agem').classList.add('on');}
-function closeAgeMod(){document.getElementById('agem').classList.remove('on');}
-function swAge(el,a){
-  age=a;updateAB();closeAgeMod();
-  const labels={'中学生':'📚 中学生','高校生':'🎒 高校生','大学生':'🎓 大学生','社会人':'💼 社会人'};
+function openAgeMod(){ document.getElementById('agem').classList.add('on'); }
+function closeAgeMod(){ document.getElementById('agem').classList.remove('on'); }
+function swAge(el, a) {
+  age=a; updateAB(); closeAgeMod();
+  const labels={'小学生の保護者':'👨‍👩‍👧‍👦 小学生の保護者','中学生':'📚 中学生','高校生':'🎒 高校生','大学生':'🎓 大学生','社会人':'💼 社会人'};
   document.getElementById('mpage').textContent=labels[a]||a;
-  renderFeed();renderFlyer();updateSubOpts();saveProfile();showToast(a+'モードに切替えました');
+  genre='all'; sub='';
+  renderFeed();
+  renderFlyer();
+  renderFlyerTabs();
+  renderGenreOpts();
+  saveProfile();
+  showToast(a+'モードに切替えました');
 }
 
+// GENRE OPTS (filter modal)
+function renderGenreOpts() {
+  const configs = GENRE_CONFIG[age]||GENRE_CONFIG['高校生'];
+  const el = document.getElementById('fm-gopts');
+  if(!el) return;
+  el.innerHTML = `<div class="fm-gopt on" data-g="all" onclick="pickGenre(this)">
+    <div class="fm-gopt-ic" style="background:rgba(255,255,255,0.07);">📍</div>
+    <div><div class="fm-gopt-n">すべて</div><div class="fm-gopt-s">全ジャンル表示</div></div>
+    <div class="fm-gopt-chk">✓</div>
+  </div>` + configs.map(c=>`
+  <div class="fm-gopt" data-g="${c.g}" onclick="pickGenre(this)">
+    <div class="fm-gopt-ic" style="background:${GS[c.g]?.bg||'rgba(255,255,255,0.07)'};">${c.emoji}</div>
+    <div><div class="fm-gopt-n">${c.label}</div><div class="fm-gopt-s">${c.desc}</div></div>
+    <div class="fm-gopt-chk">✓</div>
+  </div>`).join('');
+}
+
+// FLYER TABS
+function renderFlyerTabs() {
+  const configs = GENRE_CONFIG[age]||GENRE_CONFIG['高校生'];
+  const el = document.getElementById('ftabs-wrap');
+  if(!el) return;
+  el.innerHTML = `<div class="ftab on" data-g="all" onclick="setFlyG(this)">📍 すべて</div>` +
+    configs.map(c=>`<div class="ftab" data-g="${c.g}" onclick="setFlyG(this)">${c.emoji} ${c.label}</div>`).join('');
+  flyG='all';
+}
+function setFlyG(el) {
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on'); flyG=el.dataset.g;
+  renderFlyer();
+}
+
+// =============================================
 // FILTER
-function openFM(){document.getElementById('fm').classList.add('on');}
-function closeFM(){document.getElementById('fm').classList.remove('on');}
-function pickGenre(el){
-  document.querySelectorAll('.fm-gopt').forEach(b=>b.classList.remove('on'));el.classList.add('on');genre=el.dataset.g;sub='';
-  const ic={all:'📍',event:'🎉',learn:'🚀',volunteer:'🤝'};const lb={all:'すべて',event:'イベント',learn:'学び・挑戦',volunteer:'ボランティア'};
-  document.getElementById('fi').textContent=ic[genre];document.getElementById('fl').textContent=lb[genre];
-  updateSubOpts();renderFeed();closeFM();
+// =============================================
+function openFM(){ document.getElementById('fm').classList.add('on'); }
+function closeFM(){ document.getElementById('fm').classList.remove('on'); }
+function pickGenre(el) {
+  document.querySelectorAll('.fm-gopt').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on'); genre=el.dataset.g; sub='';
+  const configs = GENRE_CONFIG[age]||[];
+  const cfg = configs.find(c=>c.g===genre);
+  const ic={all:'📍',...Object.fromEntries(configs.map(c=>[c.g,c.emoji]))};
+  const lb={all:'すべて',...Object.fromEntries(configs.map(c=>[c.g,c.label]))};
+  document.getElementById('fi').textContent=ic[genre]||'📍';
+  document.getElementById('fl').textContent=lb[genre]||'すべて';
+  updateSubOpts();
+  renderFeed();
+  closeFM();
 }
-function updateSubOpts(){
-  const row=document.getElementById('fm-subs');
-  if(genre==='all'||genre==='volunteer'){row.innerHTML='<div style="font-size:11px;color:var(--dim);padding:4px 0 8px;">このジャンルに小ジャンルはありません</div>';return;}
-  const list=(SUBS[genre]&&SUBS[genre][age])||[];
-  if(!list.length){row.innerHTML='<div style="font-size:11px;color:var(--dim);padding:4px 0 8px;">なし</div>';return;}
-  row.innerHTML=list.map(s=>`<div class="fm-subopt ${sub===s?'on':''}" onclick="pickSub(this,'${s}')">${s}</div>`).join('');
+function updateSubOpts() {
+  const el = document.getElementById('fm-subs');
+  if(!el) return;
+  const configs = GENRE_CONFIG[age]||[];
+  const cfg = configs.find(c=>c.g===genre);
+  if(!cfg||!cfg.subs||!cfg.subs.length){
+    el.innerHTML='<div style="font-size:11px;color:var(--dim);padding:4px 0 8px;">このジャンルに小ジャンルはありません</div>';
+    return;
+  }
+  el.innerHTML=cfg.subs.map(s=>`<div class="fm-subopt ${sub===s?'on':''}" onclick="pickSub(this,'${s}')">${s}</div>`).join('');
 }
-function pickSub(el,s){sub=sub===s?'':s;document.querySelectorAll('.fm-subopt').forEach(b=>b.classList.toggle('on',b.textContent===sub));renderFeed();}
-function pickDate(el){document.querySelectorAll('.fm-dateopt').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function pickSub(el, s) {
+  sub=sub===s?'':s;
+  document.querySelectorAll('.fm-subopt').forEach(b=>b.classList.toggle('on',b.textContent===sub));
+  renderFeed();
+}
+function pickDate(el) {
+  document.querySelectorAll('.fm-dateopt').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
 
-// FEED
-function renderFeed(){
-  fevs=EVS.filter(e=>e.feed&&e.age.includes(age));
-  if(genre!=='all')fevs=fevs.filter(e=>e.g===genre);
-  if(sub)fevs=fevs.filter(e=>e.sub===sub);
-  idx=0;const st=document.getElementById('stack');st.innerHTML='';
-  if(!fevs.length){st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}
-  fevs.forEach((ev,i)=>st.appendChild(mkSlide(ev,i)));updPos();
-  if(fevs.length>0){clearTimeout(window._viewTimer);window._viewTimer=setTimeout(()=>trackView(fevs[0].id),2000);}
+// =============================================
+// SEARCH
+// =============================================
+function openSearchModal() {
+  document.getElementById('search-modal').classList.add('on');
+  setTimeout(()=>document.getElementById('search-input').focus(), 200);
 }
-function mkSlide(ev,i){
-  const s=document.createElement('div');s.className='slide dn';s.dataset.i=i;
-  const gs=GS[ev.g]||GS.event;const lk=likes.has(ev.id);
-  s.innerHTML=`<div class="sbg"><div class="sbg-in" style="background:${ev.bg};"><div class="sbg-em">${ev.em}</div></div><div class="sovl"></div></div>
+function closeSearchModal() {
+  document.getElementById('search-modal').classList.remove('on');
+  document.getElementById('search-input').value='';
+  document.getElementById('search-results').innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">キーワードを入力して検索</div></div>';
+}
+function doSearch(q) {
+  const el = document.getElementById('search-results');
+  if(!q.trim()){ el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">キーワードを入力して検索</div></div>'; return; }
+  const res = EVS.filter(e=>
+    e.title.includes(q)||e.loc.includes(q)||e.desc.includes(q)||e.tags.some(t=>t.includes(q))
+  );
+  if(!res.length){ el.innerHTML='<div class="empty"><div class="empty-ic">😶</div><div class="empty-t">「'+q+'」の検索結果はありません</div></div>'; return; }
+  el.innerHTML=res.map(e=>`
+  <div class="search-item" onclick="closeSearchModal();openDrw('${e.id}')">
+    <div class="search-item-em" style="background:${e.bg};">${e.em}</div>
+    <div>
+      <div class="search-item-t">${e.title}</div>
+      <div class="search-item-s">${e.ge} ${e.gl} · 📍 ${e.loc}</div>
+    </div>
+  </div>`).join('');
+}
+
+// =============================================
+// FEED
+// =============================================
+function setFeedTab(mode, el) {
+  document.querySelectorAll('.feed-tab').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  feedMode=mode;
+  renderFeed();
+}
+
+function renderFeed() {
+  let sourceEvs;
+  if(feedMode==='official') {
+    sourceEvs = OFFICIAL_EVS;
+  } else {
+    sourceEvs = EVS.filter(e=>e.feed && e.age.includes(age) && !e.isExpired);
+    if(genre!=='all') sourceEvs=sourceEvs.filter(e=>e.g===genre);
+    if(sub) sourceEvs=sourceEvs.filter(e=>e.sub===sub);
+  }
+  fevs=sourceEvs;
+  idx=0;
+  const st=document.getElementById('stack');
+  st.innerHTML='';
+  if(!fevs.length){
+    st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';
+    return;
+  }
+  fevs.forEach((ev,i)=>st.appendChild(mkSlide(ev,i)));
+  updPos();
+  if(fevs.length>0){
+    clearTimeout(window._viewTimer);
+    window._viewTimer=setTimeout(()=>{ trackView(fevs[0].id); },2000);
+  }
+}
+
+function mkSlide(ev, i) {
+  const s=document.createElement('div');
+  s.className='slide dn'; s.dataset.i=i;
+  const gs=GS[ev.g]||GS.event;
+  const lk=likes.has(ev.id);
+  const wnt=wants.has(ev.id);
+  s.innerHTML=`
+<div class="sbg"><div class="sbg-in" style="background:${ev.bg};"><div class="sbg-em">${ev.em}</div></div><div class="sovl"></div></div>
 <div class="srt">
-  <button class="sact${lk?' lk':''}" id="lb-${ev.id}" onclick="toggleLike('${ev.id}')"><div class="sact-c">${lk?'❤️':'🤍'}</div><div class="sact-l">いいね</div></button>
+  <button class="sact${lk?' lk':''}" id="lb-${ev.id}" onclick="toggleLike('${ev.id}')">
+    <div class="sact-c">${lk?'❤️':'🤍'}</div><div class="sact-l">いいね</div>
+  </button>
+  <button class="sact${wnt?' wnt':''}" id="wb-${ev.id}" onclick="toggleWant('${ev.id}')">
+    <div class="sact-c">${wnt?'⭐':'☆'}</div><div class="sact-l">行きたい</div>
+  </button>
   <button class="sact" onclick="shareEv('${ev.id}')"><div class="sact-c">📤</div><div class="sact-l">シェア</div></button>
 </div>
 <div class="sbot">
   <div class="sgtag" style="background:${gs.bg};border-color:${gs.bd};color:${gs.c};">${ev.ge} ${ev.gl}</div>
   <div class="stitle">${ev.title}</div>
-  <div class="smeta"><span class="smeta-i">📅 ${(ev.ds||'').replace(/-/g,'/')}</span><span class="smeta-i">📍 ${ev.loc}</span></div>
+  <div class="smeta"><span class="smeta-i">📅 ${(ev.ds||ev.ts||'').replace(/-/g,'/')}</span><span class="smeta-i">📍 ${ev.loc}</span></div>
   <button class="sdbtn" onclick="openDrw('${ev.id}')">📋 詳細情報</button>
 </div>
 <div class="shint">↑ スワイプで次へ</div>`;
   return s;
 }
-function updPos(){document.querySelectorAll('.slide').forEach(s=>{const i=parseInt(s.dataset.i);s.classList.remove('cur','up','dn');if(i===idx)s.classList.add('cur');else if(i<idx)s.classList.add('up');else s.classList.add('dn');});}
-function next(){if(busy||idx>=fevs.length-1)return;busy=true;idx++;updPos();clearTimeout(window._viewTimer);window._viewTimer=setTimeout(()=>{if(fevs[idx])trackView(fevs[idx].id);},2000);setTimeout(()=>busy=false,400);}
-function prev(){if(busy||idx<=0)return;busy=true;idx--;updPos();setTimeout(()=>busy=false,400);}
-function setupSwipe(){
+
+function updPos() {
+  document.querySelectorAll('.slide').forEach(s=>{
+    const i=parseInt(s.dataset.i);
+    s.classList.remove('cur','up','dn');
+    if(i===idx) s.classList.add('cur');
+    else if(i<idx) s.classList.add('up');
+    else s.classList.add('dn');
+  });
+}
+function next() { if(busy||idx>=fevs.length-1)return; busy=true; idx++; updPos(); clearTimeout(window._viewTimer); window._viewTimer=setTimeout(()=>{if(fevs[idx])trackView(fevs[idx].id);},2000); setTimeout(()=>busy=false,400); }
+function prev() { if(busy||idx<=0)return; busy=true; idx--; updPos(); setTimeout(()=>busy=false,400); }
+function setupSwipe() {
   const st=document.getElementById('stack');
   st.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
   st.addEventListener('touchend',e=>{const d=ty-e.changedTouches[0].clientY;if(Math.abs(d)>45){d>0?next():prev();}},{passive:true});
-  let wt;st.addEventListener('wheel',e=>{clearTimeout(wt);wt=setTimeout(()=>{e.deltaY>25?next():prev();},70);});
+  let wt; st.addEventListener('wheel',e=>{clearTimeout(wt);wt=setTimeout(()=>{e.deltaY>25?next():prev();},70);});
 }
 
+// TRACKING
+async function trackView(eventId) {
+  if(viewedToday.has(eventId)) return;
+  viewedToday.add(eventId);
+  trackAnonymousView(eventId);
+  if(!user) return;
+  try { await sb.from('event_views').insert({event_id:eventId,user_id:user.id}); } catch(e){}
+  if(viewPtsToday<10){ viewPtsToday++; addPt('動画視聴',1,false); updMis('m1'); }
+}
+async function trackClick(eventId, clickType) {
+  if(!user) return;
+  try { await sb.from('event_link_clicks').insert({event_id:eventId,user_id:user.id,click_type:clickType}); } catch(e){}
+}
+
+// =============================================
 // DRAWER
-function openDrw(id){
-  const ev=EVS.find(e=>e.id===id);if(!ev)return;
+// =============================================
+function openDrw(id) {
+  const ev=EVS.find(e=>e.id===id)||OFFICIAL_EVS.find(e=>e.id===id);
+  if(!ev) return;
   addPt('詳細情報を開く',1,false);
   const gs=GS[ev.g]||GS.event;
-  let pSec='';
-  const dateStr=ev.ds?(ev.ds||'').replace(/-/g,'/')+(ev.de&&ev.de!==ev.ds?' 〜 '+ev.de.replace(/-/g,'/'):'')+'　'+ev.ts:'常時営業　'+ev.ts;
   const mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);
+  const dateStr=ev.ds?(ev.ds||'').replace(/-/g,'/')+(ev.de&&ev.de!==ev.ds?' 〜 '+ev.de.replace(/-/g,'/'):'')+'　'+ev.ts:'常時営業　'+ev.ts;
+
+  // Recommend similar events
+  const similar = EVS.filter(e=>e.id!==id && e.g===ev.g && e.age.includes(age)).slice(0,3);
+
   document.getElementById('drwbody').innerHTML=`
+<button class="back-to-feed" onclick="closeDrw()">← 動画フィードに戻る</button>
 <div class="drw-t">${ev.title}</div>
 <div class="drw-gt" style="background:${gs.bg};border-color:${gs.bd};color:${gs.c};">${ev.ge} ${ev.gl}${ev.fixed?' · 固定掲載':''}</div>
 <div class="drw-tags">${ev.tags.map(t=>`<div class="drw-tag">${t}</div>`).join('')}</div>
-<div class="ptbar"><div style="font-size:18px;">⭐</div><div style="flex:1;"><div style="font-size:11px;font-weight:700;color:var(--yellow);">参加してポイントゲット！</div><div style="font-size:10px;color:var(--dim);margin-top:1px;">${ev.fixed?'訪問証明+30pt（生涯1回）':'参加証明+50pt・振り返り+20pt（2倍キャンペーン中）'}</div></div><div class="ptbar-bdg">${ev.fixed?'固定':'×2'}</div></div>
-${pSec}
+<div class="ptbar">
+  <div style="font-size:18px;">⭐</div>
+  <div style="flex:1;">
+    <div style="font-size:11px;font-weight:700;color:var(--yellow);">参加してポイントゲット！</div>
+    <div style="font-size:10px;color:var(--dim);margin-top:1px;">${ev.fixed?'訪問証明+30pt（生涯1回）':'参加証明+50pt・振り返り+20pt（2倍キャンペーン中）'}</div>
+  </div>
+  <div class="ptbar-bdg">${ev.fixed?'固定':'×2'}</div>
+</div>
 <div class="ic"><div class="ic-l">📅 日程・時間</div><div class="ic-v">${dateStr}</div></div>
 <div class="ic">
   <div class="ic-l">📍 場所・住所</div>
   <div class="ic-v">${ev.loc}<br><span style="font-size:11px;color:var(--dim);">${ev.addr}</span></div>
-  <a href="${mapUrl}" target="_blank" class="gmapbtn">🗺️ Googleマップで場所を確認する</a>
+  <a href="${mapUrl}" target="_blank" class="gmapbtn" onclick="trackClick('${ev.id}','map')">🗺️ Googleマップで場所を確認する</a>
 </div>
 <div class="ic"><div class="ic-l">💴 参加費</div><div class="ic-v">${ev.price}</div></div>
 <p class="desc">${ev.desc}</p>
@@ -1002,23 +1564,49 @@ ${pSec}
   ${ev.ig?`<a class="cta cta-i" href="${ev.ig}" target="_blank" onclick="trackClick('${ev.id}','instagram')">📸 Instagramを見る</a>`:''}
   ${ev.hp?`<a class="cta cta-h" href="${ev.hp}" target="_blank" onclick="trackClick('${ev.id}','homepage')">🌐 公式ホームページ</a>`:''}
   <button class="cta" style="background:rgba(168,85,247,0.15);border:1.5px solid rgba(168,85,247,0.3);color:#c084fc;" onclick="openOrgPage('${ev.id}')">🏢 主催者ページを見る</button>
-</div>`;
-  document.getElementById('drw').classList.add('on');document.getElementById('drwbg').classList.add('on');
+</div>
+${similar.length?`
+<div class="recommend-section">
+  <div class="recommend-title">👀 このイベントを見た人はこれも見ています</div>
+  ${similar.map(s=>`
+  <div class="recommend-item" onclick="openDrw('${s.id}')">
+    <div class="recommend-em" style="background:${s.bg};">${s.em}</div>
+    <div>
+      <div style="font-size:12px;font-weight:700;">${s.title}</div>
+      <div style="font-size:10px;color:${GC[s.g]};margin-top:2px;">${s.ge} ${s.gl}</div>
+    </div>
+  </div>`).join('')}
+</div>`:''}`;
+  document.getElementById('drw').classList.add('on');
+  document.getElementById('drwbg').classList.add('on');
 }
-function closeDrw(){document.getElementById('drw').classList.remove('on');document.getElementById('drwbg').classList.remove('on');}
-var participations={};
+function closeDrw() {
+  document.getElementById('drw').classList.remove('on');
+  document.getElementById('drwbg').classList.remove('on');
+}
 
+// =============================================
 // FLYER
-function setFG(el){document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));el.classList.add('on');flyG=el.dataset.g;renderFlyer();}
-function renderFlyer(){
+// =============================================
+function renderFlyer() {
   let evs=flyG==='all'?EVS:EVS.filter(e=>e.g===flyG);
-  evs=evs.filter(e=>e.age.includes(age));
+  evs=evs.filter(e=>e.age.includes(age)&&!e.isExpired);
   const grid=document.getElementById('flgrid');
-  if(!evs.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}
+  if(!evs.length){ grid.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>'; return; }
   grid.innerHTML=evs.map(ev=>`
 <div class="fc" onclick="openVOV('${ev.id}')">
-  <div class="fct" style="background:${ev.bg};">${ev.vid?`<iframe src="https://www.youtube.com/embed/${ev.vid}?mute=1&controls=0" style="position:absolute;inset:0;width:100%;height:100%;" frameborder="0"></iframe>`:`<div class="fct-em">${ev.em}</div>`}<div class="fct-ovl"></div><div class="fct-play">▶</div>${ev.fixed?'<div class="fct-fixed">固定掲載</div>':''}</div>
-  <div class="fci"><div class="fcg" style="color:${GC[ev.g]}">${ev.ge} ${ev.gl}</div><div class="fct-t">${ev.title}</div><div class="fcd">${ev.ds?'📅 '+(ev.ds||'').replace(/-/g,'/'):ev.ts}</div><div class="fctags">${ev.tags.slice(0,3).map(t=>`<span class="fctag">${t}</span>`).join('')}</div></div>
+  <div class="fct" style="background:${ev.bg};">
+    ${ev.vid?`<iframe src="https://www.youtube.com/embed/${ev.vid}?mute=1&controls=0" style="position:absolute;inset:0;width:100%;height:100%;" frameborder="0"></iframe>`:`<div class="fct-em">${ev.em}</div>`}
+    <div class="fct-ovl"></div>
+    <div class="fct-play">▶</div>
+    ${ev.fixed?'<div class="fct-fixed">固定掲載</div>':''}
+  </div>
+  <div class="fci">
+    <div class="fcg" style="color:${GC[ev.g]}">${ev.ge} ${ev.gl}</div>
+    <div class="fct-t">${ev.title}</div>
+    <div class="fcd">${ev.ds?'📅 '+(ev.ds||'').replace(/-/g,'/'):ev.ts}</div>
+    <div class="fctags">${ev.tags.slice(0,3).map(t=>`<span class="fctag">${t}</span>`).join('')}</div>
+  </div>
 </div>`).join('');
   document.getElementById('mplist').innerHTML=evs.map(ev=>`
 <a class="mpitem" href="https://maps.google.com/?q=${encodeURIComponent(ev.addr)}" target="_blank">
@@ -1027,264 +1615,384 @@ function renderFlyer(){
   <div style="font-size:15px;color:var(--blue);">›</div>
 </a>`).join('');
 }
-function toggleMap(){mapOn=!mapOn;document.getElementById('mapview').classList.toggle('on',mapOn);document.getElementById('flscr').style.display=mapOn?'none':'';document.getElementById('mpbtn').textContent=mapOn?'📋 一覧':'🗺️ 地図';}
-
-// VIDEO OVERLAY
-function openVOV(id){
-  const ev=EVS.find(e=>e.id===id);if(!ev)return;
-  document.getElementById('vov-t').textContent=ev.title;
-  document.getElementById('vov-c').innerHTML=ev.vid?`<iframe src="https://www.youtube.com/embed/${ev.vid}?autoplay=1&playsinline=1" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="width:100%;height:100%;"></iframe>`:`<div style="width:100%;height:100%;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:68px;opacity:0.22;">${ev.em}</div>`;
-  const mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);
-  document.getElementById('vov-d').innerHTML=`<div style="font-size:14px;font-weight:900;margin-bottom:5px;">${ev.title}</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">${ev.tags.map(t=>`<span style="font-size:9px;padding:2px 7px;background:var(--s2);border-radius:20px;color:var(--dim);font-weight:700;">${t}</span>`).join('')}</div><div style="font-size:11px;color:var(--dim);margin-bottom:10px;">${ev.ds?'📅 '+(ev.ds||'').replace(/-/g,'/'):''}　📍 ${ev.loc}</div><div style="display:flex;flex-direction:column;gap:6px;">${ev.hasRev?`<a class="cta cta-a" href="${ev.rev}" target="_blank" style="font-size:12px;padding:10px;">✏️ 申し込む</a>`:''}<a class="cta cta-m" href="${mapUrl}" target="_blank" style="font-size:12px;padding:10px;">🗺️ 地図で見る</a></div>`;
-  document.getElementById('vov').classList.add('on');
+function toggleMap() {
+  mapOn=!mapOn;
+  document.getElementById('mapview').classList.toggle('on',mapOn);
+  document.getElementById('flscr').style.display=mapOn?'none':'';
+  document.getElementById('mpbtn').textContent=mapOn?'📋 一覧':'🗺️ 地図';
 }
-function closeVOV(){document.getElementById('vov').classList.remove('on');document.getElementById('vov-c').innerHTML='';}
 
+// VIDEO OVERLAY (Flyer)
+function openVOV(id) {
+  const ev=EVS.find(e=>e.id===id)||OFFICIAL_EVS.find(e=>e.id===id);
+  if(!ev) return;
+  document.getElementById('vov-t').textContent=ev.title;
+  document.getElementById('vov-c').innerHTML=ev.vid
+    ?`<iframe src="https://www.youtube.com/embed/${ev.vid}?autoplay=1&playsinline=1" frameborder="0" allow="autoplay;encrypted-media" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;"></iframe>`
+    :`<div style="width:100%;height:100%;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:68px;opacity:0.22;">${ev.em}</div>`;
+  const mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);
+  document.getElementById('vov-d').innerHTML=`
+<div style="font-size:14px;font-weight:900;margin-bottom:5px;">${ev.title}</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">${ev.tags.map(t=>`<span style="font-size:9px;padding:2px 7px;background:var(--s2);border-radius:20px;color:var(--dim);font-weight:700;">${t}</span>`).join('')}</div>
+<div style="font-size:11px;color:var(--dim);margin-bottom:10px;">${ev.ds?'📅 '+(ev.ds||'').replace(/-/g,'/'):''}　📍 ${ev.loc}</div>
+<button class="back-to-feed" onclick="closeVOV()" style="margin-bottom:8px;">← チラシ一覧に戻る</button>
+<div style="display:flex;flex-direction:column;gap:6px;">
+  ${ev.hasRev?`<a class="cta cta-a" href="${ev.rev}" target="_blank" style="font-size:12px;padding:10px;">✏️ 申し込む</a>`:''}
+  <a class="cta cta-m" href="${mapUrl}" target="_blank" style="font-size:12px;padding:10px;">🗺️ 地図で見る</a>
+  <button class="cta cta-h" onclick="closeVOV();openDrw('${ev.id}')" style="font-size:12px;padding:10px;">📋 詳細情報を見る</button>
+</div>`;
+  document.getElementById('vov').style.display='flex';
+}
+function closeVOV() {
+  document.getElementById('vov').style.display='none';
+  document.getElementById('vov-c').innerHTML='';
+}
+
+// =============================================
+// LIKES & WANTS
+// =============================================
+function toggleLike(id) {
+  if(likes.has(id)){ likes.delete(id); showToast('いいねを取り消しました'); saveLike(id,false); }
+  else { likes.add(id); showToast('❤️ いいねしました'); saveLike(id,true); addPt('いいね',2,false); updMis('m2'); }
+  const b=document.getElementById('lb-'+id);
+  if(b){ b.classList.toggle('lk',likes.has(id)); b.querySelector('.sact-c').textContent=likes.has(id)?'❤️':'🤍'; }
+  updStats();
+}
+function toggleWant(id) {
+  if(wants.has(id)){ wants.delete(id); showToast('行きたいを取り消しました'); saveWant(id,false); }
+  else { wants.add(id); showToast('⭐ 行きたい登録しました'); saveWant(id,true); addPt('行きたい登録',2,false); updMis('m6'); }
+  const b=document.getElementById('wb-'+id);
+  if(b){ b.classList.toggle('wnt',wants.has(id)); b.querySelector('.sact-c').textContent=wants.has(id)?'⭐':'☆'; }
+  updStats();
+}
+function shareEv(id) {
+  const ev=EVS.find(e=>e.id===id);if(!ev)return;
+  addPt('SNSシェア',5,false); updMis('m4');
+  const shareData={title:ev.title,text:`【${ev.title}】\n📅 ${(ev.ds||ev.ts||'').replace(/-/g,'/')}　📍 ${ev.loc}\nNexcaで見つけた！`,url:location.href};
+  if(navigator.share) navigator.share(shareData).catch(()=>{});
+  else { navigator.clipboard?.writeText(shareData.text+'\n'+shareData.url); showToast('📋 コピーしました！'); }
+}
+
+// =============================================
 // PARTICIPATION
-function openPartM(evId){
+// =============================================
+function openPartM(evId) {
   const ev=EVS.find(e=>e.id===evId);if(!ev)return;
   partEvId=evId;
   document.getElementById('partm-ev').textContent=ev.title;
-  if(ev.fixed&&fixedVisited.has(evId)){
-    document.getElementById('partm-s').textContent='固定掲載店舗（生涯1回のみポイント付与）';
-    document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 訪問済みです</div><button class="part-submit" onclick="closePartM()">閉じる</button>';
-  } else {
-    document.getElementById('partm-s').textContent=ev.fixed?'📍 固定掲載店舗 → 訪問証明（生涯1回のみ +30pt）':'🎉 イベント参加証明（1イベント1回のみ +50pt）';
-    document.getElementById('partm-content').innerHTML=`<div class="qr-area" onclick="simQR()"><div style="font-size:40px;margin-bottom:8px;">📷</div><div style="font-size:13px;font-weight:700;">QRコードをスキャン</div><div style="font-size:11px;color:var(--dim);margin-top:4px;">会場・店頭のQRにかざす</div></div><div style="text-align:center;font-size:11px;color:var(--dim);margin:8px 0;">または</div><input class="code-input" id="part-code" type="text" maxlength="6" placeholder="コードを入力" oninput="this.value=this.value.toUpperCase()"><button class="part-submit" onclick="submitPart()">参加証明する → +${ev.fixed?30:50}pt</button>`;
-  }
+  document.getElementById('partm-s').textContent=ev.fixed?'📍 固定掲載店舗 → 訪問証明（生涯1回のみ +30pt）':'🎉 イベント参加証明（1イベント1回のみ +50pt）';
+  document.getElementById('partm-content').innerHTML=`
+<div class="qr-area">
+  <div style="font-size:40px;margin-bottom:8px;">📷</div>
+  <div style="font-size:13px;font-weight:700;">QRコードをスキャン</div>
+  <div style="font-size:11px;color:var(--dim);margin-top:4px;">会場・店頭のQRにかざす</div>
+</div>
+<div style="text-align:center;font-size:11px;color:var(--dim);margin:8px 0;">または</div>
+<input class="code-input" id="part-code" type="text" maxlength="6" placeholder="コードを入力" oninput="this.value=this.value.toUpperCase()">
+<button class="part-submit" onclick="submitPart()">参加証明する → +${ev.fixed?30:50}pt</button>`;
   document.getElementById('partm').classList.add('on');
 }
-function closePartM(){document.getElementById('partm').classList.remove('on');partEvId=null;}
-function simQR(){const ev=EVS.find(e=>e.id===partEvId);if(ev){const ci=document.getElementById('part-code');if(ci)ci.value=ev.qr;showToast('📷 QRコードを読み込みました');}}
-function submitPart(){
+function closePartM(){ document.getElementById('partm').classList.remove('on'); partEvId=null; }
+function submitPart() {
   const ci=document.getElementById('part-code');if(!ci)return;
   const code=ci.value.trim().toUpperCase();
   const ev=EVS.find(e=>e.id===partEvId);if(!ev)return;
-  if(code.length<4){showToast('コードを入力してください');return;}
-  if(code!==ev.qr){document.getElementById('partm-content').innerHTML='<div class="part-st ng">❌ コードが正しくありません</div><button class="part-submit" onclick="closePartM()">閉じる</button>';return;}
+  if(code.length<4){ showToast('コードを入力してください'); return; }
+  if(code!==ev.qr){
+    document.getElementById('partm-content').innerHTML='<div class="part-st ng">❌ コードが正しくありません</div><button class="part-submit" onclick="closePartM()">閉じる</button>';
+    return;
+  }
   if(ev.fixed){
-    if(fixedVisited.has(partEvId)){document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 訪問済みです</div><button class="part-submit" onclick="closePartM()">閉じる</button>';return;}
-    fixedVisited.add(partEvId);addStamp(partEvId);addPt('QR参加証明（固定店舗）',30,false);showToast('🏪 訪問証明完了！ +30pt + スタンプ1個');
-    saveParticipation(partEvId);saveStamp(partEvId);
+    if(fixedVisited.has(partEvId)){
+      document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 訪問済みです</div><button class="part-submit" onclick="closePartM()">閉じる</button>';
+      return;
+    }
+    fixedVisited.add(partEvId);
+    addPt('QR参加証明（固定店舗）',30,false);
+    saveParticipation(partEvId);
+    showToast('🏪 訪問証明完了！ +30pt');
   } else {
-    participations[partEvId]='approved';stamps++;addStamp(partEvId);addPt('QR参加証明（イベント）',50,false);
-    saveParticipation(partEvId);saveStamp(partEvId);
-    if(firstPart){firstPart=false;addPt('初回参加ボーナス',30,true);showToast('🎉 初回参加！ +50pt +60pt（2倍）+ スタンプ');}
-    else showToast('✅ 参加証明完了！ +50pt + スタンプ1個');
-    updMis('m1');if(ev.g==='learn')updMis('m2');
+    participations[partEvId]='approved';
+    addPt('QR参加証明（イベント）',50,false);
+    saveParticipation(partEvId);
+    if(firstPart){ firstPart=false; addPt('初回参加ボーナス',30,true); showToast('🎉 初回参加！ +80pt'); }
+    else showToast('✅ 参加証明完了！ +50pt');
+    updMis('m1');
   }
-  document.getElementById('partm-content').innerHTML=`<div class="part-st ok">✅ 完了！スタンプ帳に記録されました。</div><div style="font-size:12px;color:var(--dim);text-align:center;margin-bottom:10px;">現在のスタンプ：${stampCnt}個</div><button class="part-submit" onclick="closePartM()">閉じる</button>`;
-  updStats();renderPtHero();populateRevSel();renderStampBook();
+  document.getElementById('partm-content').innerHTML=`
+<div class="part-st ok">✅ 完了！参加が記録されました。</div>
+<button class="part-submit" onclick="closePartM()">閉じる</button>`;
+  updStats(); renderPtHero();
 }
 
-// STAMPS
-function addStamp(placeId){
-  if(!stampedPlaces.has(placeId)){
-    stampedPlaces.add(placeId);stampCnt++;updMis('m5');
-    if(stampCnt===5)showToast('🎉 スタンプ5個！缶バッジ購入権が解放されました');
-    if(stampCnt===10)showToast('🎉 スタンプ10個！アクキー購入権が解放されました');
-    if(stampCnt===20){showToast('🎉 スタンプ20個達成！Legend称号+ボーナス50pt');addPt('スタンプ20個達成',50,false);}
+// =============================================
+// CHARACTER COLLECTION
+// =============================================
+async function collectChar(charCode) {
+  if(!user){ showToast('ログインしてからQRを読み込んでください'); return; }
+  const charMap={
+    'CHAR_AGARU':'アガル','CHAR_TSUMUGI':'ツムギ','CHAR_NUKUMI':'ヌクミ',
+    'CHAR_TEKURU':'テクル','CHAR_KONERU':'コネル','CHAR_FUWARI':'フワリ',
+    'CHAR_NEXKE':'ネクスケ','CHAR_KAGE':'カゲ'
+  };
+  const charName=charMap[charCode];
+  if(!charName){ showToast('無効なコードです'); return; }
+  const itemId='char_'+charCode;
+  if(collectedChars.has(itemId)){ showToast(charName+'は既に獲得済みです'); return; }
+  collectedChars.add(itemId);
+  await sb.from('owned_items').upsert({user_id:user.id,item_id:itemId,is_used:false});
+  addPt('キャラ獲得：'+charName,10,false);
+  showToast('🎉 '+charName+'を獲得しました！ +10pt');
+  renderCollection();
+  renderMP();
+}
+function renderCollection() {
+  const el=document.getElementById('char-collection');if(!el)return;
+  const chars=['アガル','ツムギ','ヌクミ','テクル','コネル','フワリ','ネクスケ','カゲ'];
+  const codes=['CHAR_AGARU','CHAR_TSUMUGI','CHAR_NUKUMI','CHAR_TEKURU','CHAR_KONERU','CHAR_FUWARI','CHAR_NEXKE','CHAR_KAGE'];
+  const count=chars.filter((c,i)=>collectedChars.has('char_'+codes[i])).length;
+  document.getElementById('char-count').textContent=count+' / 8';
+  el.innerHTML=chars.map((c,i)=>{
+    const has=collectedChars.has('char_'+codes[i]);
+    return `<div style="text-align:center;${has?'':'opacity:0.2;filter:grayscale(1);'}">
+      <div style="width:52px;height:52px;margin:0 auto 4px;">${CSVG[c]||''}</div>
+      <div style="font-size:9px;font-weight:700;color:${has?(CD[c]?.color||'var(--txt)'):'var(--dim)'};">${has?c:'???'}</div>
+    </div>`;
+  }).join('');
+  const rewards=document.getElementById('char-rewards');
+  if(rewards){
+    rewards.innerHTML=`<div style="font-size:10px;color:var(--dim);margin-top:8px;">
+      🎯 3体 → ステッカー交換権 ${count>=3?'<span style="color:var(--green);">✅ 解放済</span>':''}<br>
+      🎯 5体 → 缶バッジ交換権 ${count>=5?'<span style="color:var(--green);">✅ 解放済</span>':''}<br>
+      🎯 8体 → 限定グッズ交換権 ${count>=8?'<span style="color:var(--green);">✅ 解放済</span>':''}
+    </div>`;
   }
 }
-function renderStampBook(){
-  const el=document.getElementById('stamp-grid');if(!el)return;
-  let h='';for(let i=0;i<20;i++){const f=i<stampCnt;h+=`<div class="stamp-cell" style="background:${f?'rgba(255,190,0,0.15)':'rgba(255,255,255,0.04)'};border:1.5px solid ${f?'rgba(255,190,0,0.4)':'rgba(255,255,255,0.07)'};">${f?'🐾':''}</div>`;}
-  el.innerHTML=h;
-  const lbl=document.getElementById('stamp-lbl');if(lbl)lbl.textContent=stampCnt+' / 20';
-}
 
+// =============================================
 // POINTS
-function addPt(reason,amt,camp){
-  const a=camp?amt*CAMP:amt;pts+=a;ptsTotal+=a;ptsMonthly+=a;
+// =============================================
+function addPt(reason, amt, camp) {
+  const oldTotal=ptsTotal;
+  const a=camp?amt*CAMP:amt;
+  pts+=a; ptsTotal+=a; ptsMonthly+=a;
   phist.unshift({reason,amt:a,date:new Date().toLocaleDateString('ja-JP'),camp});
-  updStats();renderPtHero();renderPtHistory();
-  savePointHistory(reason,a,camp);saveProfile();
+  checkLevelUp(oldTotal, ptsTotal);
+  updStats(); renderPtHero(); renderPtHistory();
+  savePointHistory(reason,a,camp); saveProfile();
 }
-function usePt(amt,reason){
-  if(pts<amt)return false;pts-=amt;ptsUsed+=amt;
+function usePt(amt, reason) {
+  if(pts<amt) return false;
+  pts-=amt; ptsUsed+=amt;
   phist.unshift({reason,amt:-amt,date:new Date().toLocaleDateString('ja-JP'),camp:false});
-  updStats();renderPtHero();renderPtHistory();
-  savePointHistory(reason,-amt,false);saveProfile();
+  updStats(); renderPtHero(); renderPtHistory();
+  savePointHistory(reason,-amt,false); saveProfile();
   return true;
 }
-function updStats(){
+function updStats() {
   const v=Math.floor(pts);
   ['ph-val','mp-ptv','st-pt'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=v;});
   const els=[document.getElementById('ph-month'),document.getElementById('ph-total'),document.getElementById('ph-used')];
-  const vals=[ptsMonthly,ptsTotal,ptsUsed];
-  els.forEach((el,i)=>{if(el)el.textContent=Math.floor(vals[i]);});
-  if(document.getElementById('st-lk'))document.getElementById('st-lk').textContent=likes.size;
-  if(document.getElementById('st-vi'))document.getElementById('st-vi').textContent=viewedToday.size;
+  [ptsMonthly,ptsTotal,ptsUsed].forEach((val,i)=>{if(els[i])els[i].textContent=Math.floor(val);});
+  if(document.getElementById('st-lk')) document.getElementById('st-lk').textContent=likes.size;
+  if(document.getElementById('st-wnt')) document.getElementById('st-wnt').textContent=wants.size;
+  if(document.getElementById('st-vi')) document.getElementById('st-vi').textContent=viewedToday.size;
+  renderLvBar();
 }
-function renderPtHero(){
-  const all=[...SHOP_GOODS,...SHOP_TITLE,...SHOP_CPN].sort((a,b)=>a.cost-b.cost);
+function renderPtHero() {
+  const all=SHOP_GOODS.sort((a,b)=>a.cost-b.cost);
   const next=all.find(s=>s.cost>Math.floor(pts));
   const nn=document.getElementById('pt-next');if(!nn)return;
-  if(next){const p=Math.floor(pts),need=next.cost-p,pct=Math.min(100,Math.round(p/next.cost*100));
-    nn.innerHTML=`<div class="pt-next-lbl">🎯 次の特典まで</div><div class="pt-next-row"><div style="font-size:22px;">${next.ic}</div><div style="flex:1;"><div class="pt-next-n">${next.name}</div><div class="pt-next-pt">あと <strong>${need}pt</strong> で交換可能</div></div></div><div class="pt-prog"><div class="pt-prog-bar" style="width:${pct}%"></div></div>`;}
-  else nn.innerHTML=`<div style="text-align:center;font-size:12px;font-weight:700;color:var(--yellow);">🎉 全ての特典が交換可能です！</div>`;
+  if(next){
+    const p=Math.floor(pts),need=next.cost-p,pct=Math.min(100,Math.round(p/next.cost*100));
+    nn.innerHTML=`<div class="pt-next-lbl">🎯 次の特典まで</div>
+<div class="pt-next-row">
+  <div style="font-size:22px;">${next.ic}</div>
+  <div style="flex:1;"><div class="pt-next-n">${next.name}</div><div class="pt-next-pt">あと <strong>${need}pt</strong> で交換可能</div></div>
+</div>
+<div class="pt-prog"><div class="pt-prog-bar" style="width:${pct}%"></div></div>`;
+  } else {
+    nn.innerHTML='<div style="text-align:center;font-size:12px;font-weight:700;color:var(--yellow);">🎉 全ての特典が交換可能です！</div>';
+  }
   renderShopAll();
 }
-function renderEarnList(){
+function renderEarnList() {
   document.getElementById('earn-list').innerHTML=EARN_RULES.map(r=>`
-<div class="earn-item"><div class="earn-ic" style="background:${r.color};">${r.ic}</div>
-<div style="flex:1;"><div class="earn-name">${r.name}</div><div class="earn-sub">${r.sub}</div></div>
-<div style="text-align:right;"><div class="earn-pt">+${r.pt}pt</div>${r.camp?`<div class="earn-camp">×${CAMP}倍中</div>`:''}</div>
+<div class="earn-item">
+  <div class="earn-ic" style="background:${r.color};">${r.ic}</div>
+  <div style="flex:1;"><div class="earn-name">${r.name}</div><div class="earn-sub">${r.sub}</div></div>
+  <div style="text-align:right;"><div class="earn-pt">+${r.pt}pt</div>${r.camp?`<div class="earn-camp">×${CAMP}倍中</div>`:''}</div>
 </div>`).join('');
 }
-function renderShopAll(){
+function renderShopAll() {
   const v=Math.floor(pts);
-  function rItems(items,elId,tagCls){
-    const el=document.getElementById(elId);if(!el)return;
-    el.innerHTML=items.map(s=>{const av=v>=s.cost;return `<div class="shop-item ${av?'avail':''}" onclick="openEx('${s.id}')">
-<div class="shop-ic" style="background:${s.cat==='goods'?'rgba(255,190,0,0.1)':s.cat==='title'?'rgba(168,85,247,0.1)':'rgba(0,229,160,0.1)'};">${s.ic}</div>
-<div style="flex:1;"><div class="shop-name">${s.name}</div><div class="shop-desc">${s.desc}</div><span class="shop-tag ${s.cat}">${s.cat==='goods'?'出店グッズ':s.cat==='title'?'称号':'掲載店クーポン'}</span></div>
-<div><div class="shop-pt">${s.cost}</div><div class="shop-pt-u">pt</div><span class="shop-tag ${av?s.cat:'lk'}" style="display:block;text-align:center;margin-top:3px;">${av?'交換可':'pt不足'}</span></div>
-</div>`;}).join('');
-  }
-  rItems(SHOP_GOODS,'shop-goods','goods');rItems(SHOP_TITLE,'shop-title','title');rItems(SHOP_CPN,'shop-cpn','cpn');
+  const el=document.getElementById('shop-goods');if(!el)return;
+  el.innerHTML=SHOP_GOODS.map(s=>{
+    const av=v>=s.cost;
+    return `<div class="shop-item ${av?'avail':''}" onclick="openEx('${s.id}')">
+<div class="shop-ic" style="background:rgba(255,190,0,0.1);">${s.ic}</div>
+<div style="flex:1;"><div class="shop-name">${s.name}</div><div class="shop-desc">${s.desc}</div>
+<span class="shop-tag goods">出店グッズ</span></div>
+<div><div class="shop-pt">${s.cost}</div><div class="shop-pt-u">pt</div>
+<span class="shop-tag ${av?'goods':'lk'}" style="display:block;text-align:center;margin-top:3px;">${av?'交換可':'pt不足'}</span></div>
+</div>`;
+  }).join('');
 }
-function openEx(id){
-  exItem=[...SHOP_GOODS,...SHOP_TITLE,...SHOP_CPN].find(s=>s.id===id);if(!exItem)return;
+function renderMissions() {
+  document.getElementById('mis-list').innerHTML=MISSIONS.map(m=>{
+    const pct=Math.min(100,Math.round(m.progress/m.goal*100));
+    return `<div class="mis-item ${m.done?'done':''}">
+<div class="mis-top"><div class="mis-name">${m.name}</div><div class="mis-pt">+${m.pt}pt</div></div>
+<div class="mis-sub">${m.sub}</div>
+<div class="mis-prog"><div class="mis-bar" style="width:${pct}%"></div></div>
+<div class="mis-st ${m.done?'done':''}">${m.done?'✅ 達成済み':`${m.progress}/${m.goal} 達成中`}</div>
+</div>`;
+  }).join('');
+}
+function updMis(id) {
+  const m=MISSIONS.find(x=>x.id===id);if(!m||m.done)return;
+  m.progress=Math.min(m.goal,m.progress+1);
+  if(m.progress>=m.goal){ m.done=true; addPt('ミッション達成',m.pt,false); showToast(`🏆 ミッション達成！+${m.pt}pt`); }
+  renderMissions();
+}
+function renderPtHistory() {
+  const el=document.getElementById('phist-list');if(!el)return;
+  if(!phist.length){ el.innerHTML='<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">まだ履歴がありません</div></div>'; return; }
+  el.innerHTML=phist.slice(0,20).map(p=>`
+<div class="phi">
+  <div class="phi-ic" style="background:${p.amt>0?'rgba(255,190,0,0.1)':'rgba(255,23,68,0.1)'};">${p.amt>0?'⭐':'🎟️'}</div>
+  <div style="flex:1;"><div class="phi-t">${p.reason}</div><div class="phi-d">${p.date}${p.camp?' · 2倍適用':''}</div></div>
+  <div class="phi-a" style="color:${p.amt>0?'var(--yellow)':'var(--red)'};">${p.amt>0?'+':''}${p.amt}pt</div>
+</div>`).join('');
+}
+function setPTab(el, tab) {
+  document.querySelectorAll('.pt-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  ['earn','shop','mis','rank','hist'].forEach(t=>document.getElementById('pt-'+t).style.display=t===tab?'':'none');
+  if(tab==='hist') renderPtHistory();
+  if(tab==='shop') renderShopAll();
+  if(tab==='mis') renderMissions();
+  if(tab==='rank') renderRanking();
+}
+
+// RANKING
+async function renderRanking() {
+  const el=document.getElementById('rank-list');if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim);">読み込み中...</div>';
+  const data=await loadRankings();
+  if(!data.length){ el.innerHTML='<div class="empty"><div class="empty-ic">🏆</div><div class="empty-t">まだランキングデータがありません</div></div>'; return; }
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML=data.map((r,i)=>`
+<div class="rank-item ${user&&r.user_id===user.id?'rank-me':''}">
+  <div class="rank-num ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${medals[i]||i+1}</div>
+  <div class="rank-name">${r.nickname||'ユーザー'}${user&&r.user_id===user.id?' （あなた）':''}</div>
+  <div class="rank-pt">${r.total_points||0}pt</div>
+</div>`).join('');
+  // My rank
+  if(user){
+    const myRank=data.findIndex(r=>r.user_id===user.id);
+    const myEl=document.getElementById('my-rank');
+    if(myEl) myEl.innerHTML=myRank>=0?`<div style="font-size:11px;color:var(--dim);text-align:center;">あなたの順位：${myRank+1}位</div>`:'';
+  }
+}
+function setRankTab(mode, el) {
+  rankMode=mode;
+  document.querySelectorAll('.rank-tab-btn').forEach(b=>{b.style.color='var(--dim)';});
+  el.style.color='var(--txt)';
+  renderRanking();
+}
+
+// EXCHANGE
+function openEx(id) {
+  exItem=SHOP_GOODS.find(s=>s.id===id);if(!exItem)return;
   const v=Math.floor(pts),can=v>=exItem.cost;
-  document.getElementById('exmbox').innerHTML=`<div class="exm-t">${exItem.ic} ${exItem.name}</div><div class="exm-s">${exItem.desc}</div><div class="exm-cost">${exItem.cost}pt</div><div style="font-size:12px;color:var(--dim);text-align:center;margin-bottom:12px;">現在 ${v}pt 保有</div>${can?`<button class="exm-ex" onclick="doEx()">この特典と交換する</button>`:`<div style="padding:10px;background:rgba(255,23,68,0.08);border-radius:9px;text-align:center;font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;">あと${exItem.cost-v}pt必要です</div>`}<button class="exm-cc" onclick="closeEx()">キャンセル</button>`;
+  document.getElementById('exmbox').innerHTML=`
+<div class="exm-t">${exItem.ic} ${exItem.name}</div>
+<div class="exm-s">${exItem.desc}<br><br>⚠️ この権利はNexca出店時にのみ使用できます。</div>
+<div class="exm-cost">${exItem.cost}pt</div>
+<div style="font-size:12px;color:var(--dim);text-align:center;margin-bottom:12px;">現在 ${v}pt 保有</div>
+${can?`<button class="exm-ex" onclick="doEx()">この特典と交換する</button>`:`<div style="padding:10px;background:rgba(255,23,68,0.08);border-radius:9px;text-align:center;font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;">あと${exItem.cost-v}pt必要です</div>`}
+<button class="exm-cc" onclick="closeEx()">キャンセル</button>`;
   document.getElementById('exm').classList.add('on');
 }
-function closeEx(){document.getElementById('exm').classList.remove('on');exItem=null;}
-function doEx(){
+function closeEx(){ document.getElementById('exm').classList.remove('on'); exItem=null; }
+function doEx() {
   if(!exItem||!usePt(exItem.cost,exItem.name+'交換'))return;
   closeEx();
-  if(exItem.cat==='title'){ownedTitles.add(exItem.id);showToast(`🏅 ${exItem.name}を取得しました！`);}
-  else if(exItem.cat==='goods'){ownedGoods.push(exItem.id);showToast(`🎁 ${exItem.name}を取得！Nexca出店時に提示してください`);}
-  else if(exItem.cat==='cpn'){ownedCpns.push({id:exItem.id,name:exItem.name,disc:exItem.disc,used:false,date:new Date().toLocaleDateString('ja-JP')});showToast(`🎟️ ${exItem.disc}円OFFクーポンを取得！掲載店で使用できます`);}
-  renderShopAll();renderMP();
-}
-function renderMissions(){
-  document.getElementById('mis-list').innerHTML=MISSIONS.map(m=>{const pct=Math.min(100,Math.round(m.progress/m.goal*100));return `<div class="mis-item ${m.done?'done':''}"><div class="mis-top"><div class="mis-name">${m.name}</div><div class="mis-pt">+${m.pt}pt</div></div><div class="mis-sub">${m.sub}</div><div class="mis-prog"><div class="mis-bar" style="width:${pct}%"></div></div><div class="mis-st ${m.done?'done':''}">${m.done?'✅ 達成済み':`${m.progress}/${m.goal} 達成中`}</div></div>`;}).join('');
-}
-function updMis(id){const m=MISSIONS.find(x=>x.id===id);if(!m||m.done)return;m.progress=Math.min(m.goal,m.progress+1);if(m.progress>=m.goal){m.done=true;addPt('ミッション達成',m.pt,false);showToast(`🏆 ミッション達成！+${m.pt}pt`);}renderMissions();}
-function renderPtHistory(){
-  const el=document.getElementById('phist-list');if(!el)return;
-  if(!phist.length){el.innerHTML='<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">まだ履歴がありません</div></div>';return;}
-  el.innerHTML=phist.slice(0,20).map(p=>`<div class="phi"><div class="phi-ic" style="background:${p.amt>0?'rgba(255,190,0,0.1)':'rgba(255,23,68,0.1)'};">${p.amt>0?'⭐':'🎟️'}</div><div style="flex:1;"><div class="phi-t">${p.reason}</div><div class="phi-d">${p.date}${p.camp?' · 2倍適用':''}</div></div><div class="phi-a" style="color:${p.amt>0?'var(--yellow)':'var(--red)'};">${p.amt>0?'+':''}${p.amt}pt</div></div>`).join('');
-}
-function setPTab(el,tab){
-  document.querySelectorAll('.pt-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
-  ['earn','shop','mis','hist'].forEach(t=>document.getElementById('pt-'+t).style.display=t===tab?'':'none');
-  if(tab==='hist')renderPtHistory();if(tab==='shop')renderShopAll();if(tab==='mis')renderMissions();
+  ownedGoods.push(exItem.id);
+  showToast(`🎁 ${exItem.name}を取得！Nexca出店時に提示してください`);
+  renderShopAll();
 }
 
-// REVIEW
-function populateRevSel(){
-  const sel=document.getElementById('rev-ev');if(!sel)return;
-  const approved=EVS.filter(e=>participations[e.id]==='approved');
-  const done=reviews.map(r=>r.evId);
-  sel.innerHTML='<option value="">イベントを選択</option>'+approved.filter(e=>!done.includes(e.id)).map(e=>`<option value="${e.id}">${e.title}</option>`).join('');
-}
-function submitReview(){
-  const evid=document.getElementById('rev-ev').value;
-  const q1=document.getElementById('rev-q1').value;
-  const q2=document.getElementById('rev-q2').value;
-  const q3=document.getElementById('rev-q3').value;
-  if(!evid){showToast('イベントを選択してください');return;}
-  if(q1.length<10||q2.length<10||q3.length<10){showToast('各質問に10文字以上入力してください');return;}
-  if(participations[evid]!=='approved'){showToast('参加証明が必要です');return;}
-  reviews.push({evId:evid,q1,q2,q3,date:new Date().toLocaleDateString('ja-JP')});
-  saveReview(evid,q1,q2,q3);
-  addPt('振り返り完了',20,true);
-  if(q1.length>=15&&q2.length>=15&&q3.length>=15)addPt('学び達成ボーナス',10,false);
-  showToast('✍️ 振り返りを送りました！ +40pt');
-  updMis('m3');['rev-ev','rev-q1','rev-q2','rev-q3'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  populateRevSel();renderPtHistory();
-}
-
-// AUTH
-async function doLogin(){
-  const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
-  if(error) showToast('ログインに失敗しました: '+error.message);
-}
-async function doLogout(){
-  await sb.auth.signOut();
-  user=null;likes=new Set();pts=0;ptsUsed=0;ptsMonthly=0;ptsTotal=0;phist=[];ownedTitles=new Set();ownedGoods=[];ownedCpns=[];collectedChars=new Set();renderMP();updStats();renderPtHero();showToast('ログアウトしました');
-}
-function copyRef(){const c=document.getElementById('rcode').textContent;if(navigator.clipboard)navigator.clipboard.writeText(c).then(()=>showToast('📋 招待コードをコピーしました'));else showToast('📋 '+c);}
-
-// MYPAGE
-function renderMP(){
-  const ic={'高校生':'🎒','大学生':'🎓','社会人':'💼'};
-  document.getElementById('mpage').textContent=(ic[age]||'🎒')+' '+age;
-  if(user){
-    const m=user.user_metadata||{};
-    document.getElementById('mpname').textContent=m.full_name||'ユーザー';
-    document.getElementById('mpemail').textContent=user.email||'';
-    if(m.picture)document.getElementById('mpav').innerHTML=`<img src="${m.picture}" alt="">`;
-    document.getElementById('gsec').style.display='none';
-    document.getElementById('lsec').style.display='block';
-    document.getElementById('rcode').textContent='NEXCA-'+(user.id||'').slice(0,4).toUpperCase();
-    updStats();renderCollection();
-    const cs=document.getElementById('cpn-sec');const cl=document.getElementById('cpn-list');
-    if(ownedCpns.length>0){if(cs)cs.style.display='';cl.innerHTML=ownedCpns.map((c,i)=>`<div class="cpn-item" style="background:${c.used?'var(--s2)':'rgba(0,229,160,0.07)'};border-color:${c.used?'rgba(255,255,255,0.05)':'rgba(0,229,160,0.2)'};">  <div style="font-size:22px;">🎟️</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:${c.used?'var(--dim)':'var(--green)'};">${c.disc}円OFFクーポン</div><div style="font-size:10px;color:var(--dim);">Nexca掲載店限定・取得日: ${c.date}</div></div><div style="font-size:11px;font-weight:700;color:${c.used?'var(--dim)':'var(--green)'};">${c.used?'使用済み':'使用可能'}</div></div>`).join('');}
-    else{if(cs)cs.style.display='none';}
-    const lg=document.getElementById('lgrid');const lev=EVS.filter(e=>likes.has(e.id));
-    if(!lev.length){lg.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🤍</div><div class="empty-t">まだいいねがありません</div></div>';return;}
-    lg.innerHTML=lev.map(ev=>`<div class="fc" onclick="openVOV('${ev.id}')"><div class="fct" style="background:${ev.bg};"><div class="fct-em">${ev.em}</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fcg" style="color:${GC[ev.g]}">${ev.ge}</div><div class="fct-t">${ev.title}</div></div></div>`).join('');
-  }else{
-    document.getElementById('mpname').textContent='ゲスト';
-    document.getElementById('mpemail').textContent='ログインしていません';
-    document.getElementById('mpav').innerHTML='👤';
-    document.getElementById('gsec').style.display='block';
-    document.getElementById('lsec').style.display='none';
-  }
-}
-
+// =============================================
 // DIAGNOSIS
-function startDiag(){dScores={e:0,a:0,c:0,r:0};dAnswers={};cQ=0;q2a=null;q3a=null;q5a=null;document.getElementById('diag-start').style.display='none';document.getElementById('diag-q').style.display='flex';renderQ();}
-function renderQ(){
-  const q=QS[cQ];document.getElementById('q-prog-fill').style.width=Math.round((cQ/14)*100)+'%';
-  document.getElementById('q-step-lbl').textContent=q.step;document.getElementById('q-num-lbl').textContent=(cQ+1)+' / 14';
-  document.getElementById('q-step').textContent=q.step;document.getElementById('q-text').textContent=q.text;
+// =============================================
+let QS=[];
+function startDiag() {
+  QS=QS_MAP[age]||QS_MAP['高校生'];
+  dScores={e:0,a:0,c:0,r:0}; dAnswers={}; cQ=0;
+  document.getElementById('diag-start').style.display='none';
+  document.getElementById('diag-q').style.display='flex';
+  renderQ();
+}
+function renderQ() {
+  const q=QS[cQ];
+  document.getElementById('q-prog-fill').style.width=Math.round((cQ/15)*100)+'%';
+  document.getElementById('q-step-lbl').textContent=q.step;
+  document.getElementById('q-num-lbl').textContent=(cQ+1)+' / 15';
+  document.getElementById('q-step').textContent=q.step;
+  document.getElementById('q-text').textContent=q.text;
   const nb=document.getElementById('q-next-btn');nb.classList.remove('show');
   let h='';
-  if(q.type==='p'){h=`<div class="q-pref-grid">${PREFS.map(p=>`<div class="q-pref" onclick="selPref(this,'${p}')">${p}</div>`).join('')}</div>`;nb.classList.add('show');}
-  else if(q.type==='m'){h=`<div class="q-opts">${q.opts.map((o,i)=>`<div class="q-opt" onclick="togMulti(this,${i})"><div class="q-chk-row"><div class="q-chk-box" id="chk-${i}"></div>${o.l}</div></div>`).join('')}</div>`;nb.classList.add('show');}
-  else{h=`<div class="q-opts">${q.opts.map((o,i)=>`<div class="q-opt" onclick="selSingle(${i})">${o.l}</div>`).join('')}</div>`;}
+  if(q.type==='s'){
+    h=`<div class="q-opts">${q.opts.map((o,i)=>`<div class="q-opt" onclick="selSingle(${i})">${o.l}</div>`).join('')}</div>`;
+  }
   document.getElementById('q-opts-wrap').innerHTML=h;
 }
-function selSingle(oi){
+function selSingle(oi) {
   const q=QS[cQ];const o=q.opts[oi];
-  if(!q.dataOnly&&o.s)Object.entries(o.s).forEach(([k,v])=>{dScores[k]=(dScores[k]||0)+v;});
-  dAnswers[cQ]=oi;if(cQ===1)q2a=oi;if(cQ===2)q3a=oi;if(cQ===4)q5a=oi;
+  if(!q.dataOnly&&o.s) Object.entries(o.s).forEach(([k,v])=>{dScores[k]=(dScores[k]||0)+v;});
+  dAnswers[cQ]=oi;
   document.querySelectorAll('.q-opt').forEach((el,i)=>el.classList.toggle('sel',i===oi));
   setTimeout(()=>diagNext(),350);
 }
-function togMulti(el,i){el.classList.toggle('sel');const chk=document.getElementById('chk-'+i);if(chk)chk.textContent=el.classList.contains('sel')?'✓':'';}
-function selPref(el){document.querySelectorAll('.q-pref').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');}
-function diagNext(){cQ++;if(cQ>=QS.length){showDiagResult();return;}renderQ();}
-function diagBack(){if(cQ<=0){document.getElementById('diag-q').style.display='none';document.getElementById('diag-start').style.display='flex';return;}cQ--;renderQ();}
-function calcResult(){
-  const eTotal=dScores.e||0;
-  let isWai=eTotal>=5?true:eTotal<=-5?false:(q2a!==null&&q2a<=1);
-  const a=dScores.a||0,c=dScores.c||0,r=dScores.r||0;
-  const maxV=Math.max(a,c,r);
-  const tops=[a===maxV?'a':null,c===maxV?'c':null,r===maxV?'r':null].filter(Boolean);
-  let trigger;
-  if(tops.length===1){trigger=tops[0];}
-  else if(q3a!==null){trigger=q3a===0?'a':(q3a===1||q3a===3?'c':'r');}
-  else if(q5a!==null){trigger=q5a===0?'a':(q5a===1?'c':'r');}
-  else trigger='r';
+function diagNext() { cQ++; if(cQ>=QS.length){showDiagResult();return;} renderQ(); }
+function diagBack() {
+  if(cQ<=0){document.getElementById('diag-q').style.display='none';document.getElementById('diag-start').style.display='flex';return;}
+  cQ--; renderQ();
+}
+function calcResult() {
+  const e=dScores.e||0,a=dScores.a||0,c=dScores.c||0,r=dScores.r||0;
+  const isWai=e>=3;
+  const maxAcr=Math.max(a,c,r);
+  let trigger=a===maxAcr?'a':(c===maxAcr?'c':'r');
   return {true:{a:'アガル',c:'ツムギ',r:'ヌクミ'},false:{a:'テクル',c:'コネル',r:'フワリ'}}[isWai][trigger];
 }
-function showDiagResult(){
+function showDiagResult() {
   document.getElementById('diag-q').style.display='none';
   document.getElementById('diag-load').style.display='flex';
   document.getElementById('load-mascot').innerHTML=cSVG('ネクスケ',90,90);
-  setTimeout(()=>{document.getElementById('diag-load').style.display='none';const type=calcResult();renderResult(type);document.getElementById('diag-result').style.display='block';addPt('診断完了',15,false);updMis('m3');},2500);
+  setTimeout(()=>{
+    document.getElementById('diag-load').style.display='none';
+    const type=calcResult();
+    charType=type;
+    renderResult(type);
+    document.getElementById('diag-result').style.display='block';
+    addPt('診断完了',15,false);
+    updMis('m3');
+    saveProfile();
+  },2500);
 }
-function renderResult(type){
+function renderResult(type) {
   const d=CD[type];if(!d)return;
   const compatD=CD[d.compat];
-  const recEvs=EVS.filter(e=>d.evIds.includes(e.id));
-  const allGrid=ALL_CHARS.map(c=>`<div class="res-all-item ${c===type?'':'dim'}"><div class="res-all-char">${cSVG(c,60,60)}</div><div class="res-all-name" style="color:${c===type?CD[c].color:'var(--dim)'};">${c}</div></div>`).join('')+`<div class="res-all-item dim"><div class="res-all-char">${cSVG('カゲ',60,60)}</div><div class="res-all-name" style="color:var(--dim);">カゲ</div></div>`;
+  // Tag-based event recommendation
+  const recEvs=EVS.filter(e=>e.age.includes(age)&&!e.isExpired&&d.tags&&d.tags.some(t=>e.tags.includes(t)||e.g===t)).slice(0,3);
+  const allGrid=ALL_CHARS.map(c=>`
+<div class="res-all-item ${c===type?'':'dim'}">
+  <div class="res-all-char">${cSVG(c,60,60)}</div>
+  <div class="res-all-name" style="color:${c===type?CD[c].color:'var(--dim)'};">${c}</div>
+</div>`).join('')+`<div class="res-all-item dim"><div class="res-all-char">${cSVG('カゲ',60,60)}</div><div class="res-all-name" style="color:var(--dim);">カゲ</div></div>`;
   document.getElementById('res-wrap').innerHTML=`
 <div class="res-label">DIAGNOSIS RESULT</div>
 <div class="res-char">${cSVG(type,140,140)}</div>
@@ -1295,9 +2003,18 @@ function renderResult(type){
 <div class="res-catch" style="background:${d.color}18;color:${d.color};">${d.catch}</div>
 <div class="res-card"><div class="res-card-t">💡 性格</div><div class="res-card-v">${d.pers}</div></div>
 <div class="res-card"><div class="res-card-t">⚡ 弱点</div><div class="res-card-v">${d.weak}</div></div>
-<div class="res-card"><div class="res-card-t">💞 相性キャラ</div><div class="res-compat"><div class="res-compat-char">${cSVG(d.compat,56,56)}</div><div><div class="res-compat-name" style="color:${compatD?compatD.color:'var(--txt)'};">${d.compat}</div><div class="res-compat-desc">${d.cd}</div></div></div></div>
-${recEvs.length?`<div class="res-card"><div class="res-card-t">🎯 おすすめイベント</div>${recEvs.map(ev=>`<div class="res-evitem" onclick="goTab('flyer',document.querySelectorAll('.nb')[1]);closeDiagR();"><div style="font-size:22px;">${ev.em}</div><div><div style="font-size:12px;font-weight:700;">${ev.title}</div><div style="font-size:10px;color:${GC[ev.g]}">${ev.ge} ${ev.gl}</div></div></div>`).join('')}</div>`:''}
-<div class="res-card"><div class="res-card-t">📖 バックストーリー</div><div class="res-card-v">${d.bs}</div><div style="font-size:11px;color:var(--dim);font-style:italic;margin-top:8px;">🔒 続きはスタンプを集めると読めるようになります</div></div>
+<div class="res-card"><div class="res-card-t">💞 相性キャラ</div>
+<div class="res-compat">
+  <div class="res-compat-char">${cSVG(d.compat,56,56)}</div>
+  <div><div class="res-compat-name" style="color:${compatD?compatD.color:'var(--txt)'};">${d.compat}</div><div class="res-compat-desc">${d.cd}</div></div>
+</div></div>
+${recEvs.length?`<div class="res-card"><div class="res-card-t">🎯 あなたにおすすめのイベント</div>
+${recEvs.map(ev=>`<div class="res-evitem" onclick="goTab('flyer',document.querySelectorAll('.nb')[1]);closeDiagR();">
+  <div style="font-size:22px;">${ev.em}</div>
+  <div><div style="font-size:12px;font-weight:700;">${ev.title}</div><div style="font-size:10px;color:${GC[ev.g]}">${ev.ge} ${ev.gl}</div></div>
+</div>`).join('')}</div>`:''}
+<div class="res-card"><div class="res-card-t">📖 バックストーリー</div><div class="res-card-v">${d.bs}</div>
+<div style="font-size:11px;color:var(--dim);font-style:italic;margin-top:8px;">🔒 続きはスタンプを集めると読めるようになります</div></div>
 <div class="res-btns">
   <button class="res-main-btn" style="background:${d.color};" onclick="goTab('flyer',document.querySelectorAll('.nb')[1])">おすすめイベントを見る</button>
   <button class="res-share-btn" onclick="shareDiag('${type}')">📤 結果をシェアする</button>
@@ -1307,57 +2024,108 @@ ${recEvs.length?`<div class="res-card"><div class="res-card-t">🎯 おすすめ
 <div class="res-all-grid">${allGrid}</div>
 <div style="font-size:10px;color:var(--dim);text-align:center;margin-top:10px;line-height:1.8;">カゲは通常の診断では出現しません。<br>特定の条件でのみ姿を現すと言われています。</div>`;
 }
-function closeDiagR(){document.getElementById('diag-result').style.display='none';document.getElementById('diag-start').style.display='flex';}
-function retryDiag(){document.getElementById('diag-result').style.display='none';document.getElementById('diag-start').style.display='flex';}
-function shareDiag(type){const txt=`Nexca診断で「${type}」タイプでした！${CD[type]?.catch}`;if(navigator.share)navigator.share({title:'Nexca診断結果',text:txt,url:location.href});else showToast('URLをコピーしてシェアしてください');}
+function closeDiagR(){ document.getElementById('diag-result').style.display='none'; document.getElementById('diag-start').style.display='flex'; }
+function retryDiag(){ document.getElementById('diag-result').style.display='none'; document.getElementById('diag-start').style.display='flex'; }
+function shareDiag(type) {
+  const txt=`Nexca診断で「${type}」タイプでした！${CD[type]?.catch}`;
+  addPt('SNSシェア',5,false);
+  if(navigator.share) navigator.share({title:'Nexca診断結果',text:txt,url:location.href});
+  else { navigator.clipboard?.writeText(txt+'\n'+location.href); showToast('📋 コピーしました！'); }
+}
 
+// =============================================
+// AUTH
+// =============================================
+async function doLogin() {
+  const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+  if(error) showToast('ログインに失敗しました: '+error.message);
+}
+async function doLogout() {
+  await sb.auth.signOut();
+  user=null; likes=new Set(); wants=new Set(); pts=0; ptsUsed=0; ptsMonthly=0; ptsTotal=0;
+  phist=[]; collectedChars=new Set(); charType=null;
+  renderMP(); updStats(); renderPtHero();
+  showToast('ログアウトしました');
+}
+function copyRef() {
+  const c=document.getElementById('rcode').textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(c).then(()=>showToast('📋 招待コードをコピーしました'));
+}
+
+// =============================================
+// MYPAGE
+// =============================================
+function renderMP() {
+  const ic={'小学生の保護者':'👨‍👩‍👧‍👦','中学生':'📚','高校生':'🎒','大学生':'🎓','社会人':'💼'};
+  document.getElementById('mpage').textContent=(ic[age]||'🎒')+' '+age;
+  if(user){
+    const m=user.user_metadata||{};
+    document.getElementById('mpname').textContent=m.full_name||'ユーザー';
+    document.getElementById('mpemail').textContent=user.email||'';
+    if(m.picture) document.getElementById('mpav').innerHTML=`<img src="${m.picture}" alt="">`;
+    document.getElementById('gsec').style.display='none';
+    document.getElementById('lsec').style.display='block';
+    document.getElementById('rcode').textContent='NEXCA-'+(user.id||'').slice(0,4).toUpperCase();
+
+    // Character display
+    const charWrap=document.getElementById('mp-char-wrap');
+    const charImg=document.getElementById('mp-char-img');
+    const charName=document.getElementById('mp-char-name');
+    if(charType&&CD[charType]){
+      charImg.innerHTML=cSVG(charType,36,36);
+      charName.textContent=charType;
+      charName.style.color=CD[charType].color;
+      charWrap.style.display='flex';
+    }
+
+    updStats();
+    renderCollection();
+    renderLvBar();
+
+    // Liked events
+    const lg=document.getElementById('lgrid');
+    const lev=EVS.filter(e=>likes.has(e.id));
+    if(!lev.length){ lg.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🤍</div><div class="empty-t">まだいいねがありません</div></div>'; }
+    else { lg.innerHTML=lev.map(ev=>`<div class="fc" onclick="openVOV('${ev.id}')"><div class="fct" style="background:${ev.bg};"><div class="fct-em">${ev.em}</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fcg" style="color:${GC[ev.g]}">${ev.ge}</div><div class="fct-t">${ev.title}</div></div></div>`).join(''); }
+
+    // Want events
+    const wg=document.getElementById('wgrid');
+    const wev=EVS.filter(e=>wants.has(e.id));
+    if(!wev.length){ wg.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">☆</div><div class="empty-t">まだ行きたいがありません</div></div>'; }
+    else { wg.innerHTML=wev.map(ev=>`<div class="fc" onclick="openVOV('${ev.id}')"><div class="fct" style="background:${ev.bg};"><div class="fct-em">${ev.em}</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fcg" style="color:${GC[ev.g]}">${ev.ge}</div><div class="fct-t">${ev.title}</div></div></div>`).join(''); }
+  } else {
+    document.getElementById('mpname').textContent='ゲスト';
+    document.getElementById('mpemail').textContent='ログインしていません';
+    document.getElementById('mpav').innerHTML='👤';
+    document.getElementById('gsec').style.display='block';
+    document.getElementById('lsec').style.display='none';
+  }
+}
+
+// =============================================
 // TABS
-function goTab(tab,btn){
+// =============================================
+function goTab(tab, btn) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById(tab).classList.add('on');
-  if(btn)btn.classList.add('on');
-  if(tab==='mypage')renderMP();
-  if(tab==='flyer')renderFlyer();
-  if(tab==='points'){renderPtHero();renderEarnList();}
-  if(tab==='diag'){if(document.getElementById('diag-result').style.display!=='block'&&document.getElementById('diag-load').style.display!=='flex'){document.getElementById('diag-start').style.display='flex';document.getElementById('diag-q').style.display='none';}}
-}
-
-// LIKES
-function toggleLike(id){
-  if(likes.has(id)){likes.delete(id);showToast('いいねを取り消しました');saveLike(id,false);}
-  else{likes.add(id);showToast('❤️ いいねしました');saveLike(id,true);addPt('いいね',2,false);updMis('m2');}
-  const b=document.getElementById('lb-'+id);
-  if(b){b.classList.toggle('lk',likes.has(id));b.querySelector('.sact-c').textContent=likes.has(id)?'❤️':'🤍';}
-  updStats();
-}
-function shareEv(id){
-  const ev=EVS.find(e=>e.id===id);if(!ev)return;
-  addPt('SNSシェア',5,false);updMis('m4');
-  const shareData={
-    title:ev.title,
-    text:`【${ev.title}】\n📅 ${(ev.ds||ev.ts||'').replace(/-/g,'/')}　📍 ${ev.loc}\n💡 ${ev.price}\n\nNexcaで見つけた！`,
-    url:location.href
-  };
-  if(navigator.share&&navigator.canShare&&navigator.canShare(shareData)){
-    navigator.share(shareData).catch(()=>{});
-  } else if(navigator.share){
-    navigator.share({title:shareData.title,url:shareData.url}).catch(()=>fallbackCopy(shareData.text+'\n'+shareData.url));
-  } else {
-    fallbackCopy(shareData.text+'\n'+shareData.url);
+  if(btn) btn.classList.add('on');
+  if(tab==='mypage') renderMP();
+  if(tab==='flyer'){ renderFlyer(); }
+  if(tab==='points'){ renderPtHero(); renderEarnList(); }
+  if(tab==='diag'){
+    if(document.getElementById('diag-result').style.display!=='block'&&
+       document.getElementById('diag-load').style.display!=='flex'){
+      document.getElementById('diag-start').style.display='flex';
+      document.getElementById('diag-q').style.display='none';
+    }
   }
 }
-function fallbackCopy(txt){
-  const el=document.createElement('textarea');el.value=txt;el.style.cssText='position:fixed;opacity:0;top:0;left:0;';
-  document.body.appendChild(el);el.focus();el.select();
-  try{document.execCommand('copy');showToast('📋 コピーしました！LINEなどで貼り付けてね');}
-  catch(e){showToast('長押しでコピーしてシェアしてください');}
-  document.body.removeChild(el);
-}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800);}
 
+// =============================================
 // ORGANIZER PAGE
-function openOrgPage(evId){
+// =============================================
+function openOrgPage(evId) {
   const ev=EVS.find(e=>e.id===evId);if(!ev)return;
   const mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);
   document.getElementById('org-ov-body').innerHTML=`
@@ -1365,27 +2133,43 @@ function openOrgPage(evId){
 <div style="font-size:17px;font-weight:900;margin-bottom:2px;">主催者</div>
 <div style="font-size:12px;color:var(--dim);margin-bottom:12px;">地域のイベントを通じて、人と人をつなぐ活動をしています。</div>
 <div style="display:flex;gap:16px;margin-bottom:16px;">
-  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--green);">312</div><div style="font-size:9px;color:var(--dim);font-weight:700;">いいね</div></div>
-  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--yellow);">127</div><div style="font-size:9px;color:var(--dim);font-weight:700;">参加証明</div></div>
-  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--blue);">43</div><div style="font-size:9px;color:var(--dim);font-weight:700;">振り返り</div></div>
+  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--green);">${ev.wantCount||0}</div><div style="font-size:9px;color:var(--dim);font-weight:700;">行きたい</div></div>
+  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--red);">-</div><div style="font-size:9px;color:var(--dim);font-weight:700;">いいね</div></div>
+  <div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--blue);">-</div><div style="font-size:9px;color:var(--dim);font-weight:700;">振り返り</div></div>
 </div>
 <div style="display:flex;gap:7px;margin-bottom:20px;">
   ${ev.ig?`<a href="${ev.ig}" target="_blank" style="flex:1;padding:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);border-radius:10px;text-align:center;font-size:12px;font-weight:700;color:white;text-decoration:none;">📸 Instagram</a>`:''}
   ${ev.hp?`<a href="${ev.hp}" target="_blank" style="flex:1;padding:10px;background:var(--s2);border-radius:10px;text-align:center;font-size:12px;font-weight:700;color:var(--txt);text-decoration:none;border:1.5px solid rgba(255,255,255,0.08);">🌐 ホームページ</a>`:''}
 </div>
-<div style="font-size:13px;font-weight:900;margin-bottom:10px;">📌 過去のイベント</div>
+<div style="font-size:13px;font-weight:900;margin-bottom:10px;">📌 このイベント</div>
 <div style="display:flex;align-items:center;gap:10px;padding:11px;background:var(--s2);border-radius:11px;margin-bottom:8px;">
   <div style="width:44px;height:58px;border-radius:8px;background:${ev.bg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${ev.em}</div>
-  <div style="flex:1;"><div style="font-size:12px;font-weight:700;">${ev.title}</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">${ev.ds?ev.ds.replace(/-/g,'/'):ev.ts}</div><div style="font-size:10px;color:var(--blue);margin-top:3px;">参加証明127件 · いいね312件</div></div>
-</div>
-`;
+  <div style="flex:1;"><div style="font-size:12px;font-weight:700;">${ev.title}</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">${ev.ds?ev.ds.replace(/-/g,'/'):ev.ts}</div></div>
+</div>`;
   document.getElementById('org-ov').style.display='flex';
 }
-function closeOrgPage(){document.getElementById('org-ov').style.display='none';}
+function closeOrgPage(){ document.getElementById('org-ov').style.display='none'; }
 
+// =============================================
+// TOAST
+// =============================================
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),2800);
+}
+
+// =============================================
 // INIT
+// =============================================
 setupSwipe();
-renderPtHero();renderEarnList();renderShopAll();renderMissions();renderCollection();
+renderPtHero();
+renderEarnList();
+renderShopAll();
+renderMissions();
+renderCollection();
+document.getElementById('d-mascot').innerHTML=cSVG('ネクスケ',120,120);
+document.getElementById('load-mascot').innerHTML=cSVG('ネクスケ',90,90);
 </script>
 </body>
 </html>
