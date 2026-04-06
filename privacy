@@ -3,50 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
 <title>プライバシーポリシー | Nexca</title>
 <style>
-body{background:#0a0a0f;color:#f0f0f8;font-family:'Hiragino Sans','Noto Sans JP',sans-serif;padding:20px;max-width:640px;margin:0 auto;line-height:1.9;font-size:14px;}
-h1{font-size:20px;margin-bottom:4px;}
-h2{font-size:16px;margin-top:24px;color:#FF1744;}
-.sub{font-size:12px;color:#7070a0;margin-bottom:20px;}
-a{color:#4d9fff;}
+:root{--bg:#0a0a0f;--s1:#111119;--s2:#1a1a26;--red:#FF1744;--txt:#f0f0f8;--dim:#6060a0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:'Hiragino Sans','Noto Sans JP',sans-serif;line-height:1.8;padding-bottom:40px;}
+.hd{position:sticky;top:0;background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:100;}
+.hd-back{width:34px;height:34px;background:rgba(255,255,255,0.07);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--txt);font-size:16px;flex-shrink:0;}
+.hd-logo{font-weight:700;font-size:17px;letter-spacing:-1px;}
+.hd-logo span{color:var(--red);}
+.hd-t{font-size:13px;font-weight:700;color:var(--dim);}
+.wrap{max-width:680px;margin:0 auto;padding:24px 18px;}
+.last-updated{font-size:11px;color:var(--dim);margin-bottom:24px;padding:8px 12px;background:var(--s2);border-radius:8px;display:inline-block;}
+h1{font-size:20px;font-weight:900;margin-bottom:6px;}
+h2{font-size:14px;font-weight:900;margin:28px 0 10px;padding-left:10px;border-left:3px solid var(--red);color:var(--txt);}
+p{font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:10px;line-height:1.9;}
+ul{padding-left:18px;margin-bottom:10px;}
+li{font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:6px;line-height:1.8;}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12px;}
+th{background:var(--s2);padding:9px 10px;text-align:left;font-weight:700;border:1px solid rgba(255,255,255,0.07);}
+td{padding:9px 10px;border:1px solid rgba(255,255,255,0.07);color:rgba(255,255,255,0.7);vertical-align:top;}
+.note{background:var(--s2);border:1.5px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;margin:14px 0;}
+.note p{margin:0;font-size:12px;color:var(--dim);}
+.contact{margin-top:28px;background:var(--s1);border:1.5px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;}
+.contact-t{font-size:13px;font-weight:700;margin-bottom:6px;}
+.contact-s{font-size:12px;color:var(--dim);line-height:1.8;}
 </style>
 </head>
 <body>
-<h1>Nexca プライバシーポリシー</h1>
-<div class="sub">最終更新日：2026年4月1日</div>
+<div class="hd">
+  <a href="index.html" class="hd-back">←</a>
+  <div>
+    <div class="hd-logo">Nex<span>ca</span></div>
+    <div class="hd-t">プライバシーポリシー</div>
+  </div>
+</div>
+<div class="wrap">
+  <h1>プライバシーポリシー</h1>
+  <div class="last-updated">最終更新日：2026年4月1日</div>
 
-<h2>1. 収集する情報</h2>
-<p>本サービスでは以下の情報を収集します。<br>
-（1）Googleアカウント情報（表示名、メールアドレス、プロフィール画像）<br>
-（2）ユーザーが入力した情報（年齢層、地域、診断回答）<br>
-（3）サービス利用データ（動画視聴履歴、いいね、リンククリック、ポイント履歴）</p>
+  <p>Nexca（以下「当サービス」）は、ユーザーの個人情報の保護を重要な責務と考えています。本プライバシーポリシーでは、収集する情報・利用目的・管理方法についてご説明します。</p>
 
-<h2>2. 利用目的</h2>
-<p>収集した情報は以下の目的で使用します。<br>
-（1）サービスの提供・運営・改善<br>
-（2）ユーザーに適した情報の表示（地域・年齢に基づく最適化）<br>
-（3）主催者への集計データの提供（個人を特定しない統計情報のみ）<br>
-（4）お問い合わせへの対応</p>
+  <h2>第1条（収集する情報）</h2>
+  <p>当サービスでは、以下の情報を収集します。</p>
+  <table>
+    <tr><th>情報の種類</th><th>収集タイミング</th></tr>
+    <tr><td>氏名・メールアドレス・プロフィール画像</td><td>Googleログイン時（Google提供）</td></tr>
+    <tr><td>年齢層・居住地域</td><td>初回設定時（ユーザー入力）</td></tr>
+    <tr><td>閲覧・いいね・行きたい・クリックの行動履歴</td><td>サービス利用中</td></tr>
+    <tr><td>ポイント履歴・参加証明履歴</td><td>サービス利用中</td></tr>
+    <tr><td>診断結果・キャラクタータイプ</td><td>診断実施時</td></tr>
+    <tr><td>事前登録メールアドレス</td><td>事前登録時</td></tr>
+    <tr><td>匿名セッション情報（ログイン前）</td><td>サービスアクセス時</td></tr>
+  </table>
 
-<h2>3. 第三者提供</h2>
-<p>収集した個人情報は、法令に基づく場合を除き、ユーザーの同意なく第三者に提供しません。主催者に提供するデータは、個人を特定できない集計データ（総視聴数・いいね数・遷移数等）のみです。</p>
+  <h2>第2条（利用目的）</h2>
+  <p>収集した情報は以下の目的で利用します。</p>
+  <ul>
+    <li>サービスの提供・改善・新機能の開発</li>
+    <li>年齢層・地域に合わせたイベント情報のパーソナライズ表示</li>
+    <li>ポイント・参加証明の管理</li>
+    <li>主催者向けの統計データの提供（個人を特定しない集計値）</li>
+    <li>サービスに関する重要なお知らせの送信</li>
+    <li>不正利用の防止・セキュリティの確保</li>
+  </ul>
 
-<h2>4. データの保管</h2>
-<p>データはSupabase（AWS東京リージョン）の暗号化されたデータベースに保管されます。適切なセキュリティ措置を講じ、不正アクセス・紛失・改ざんの防止に努めます。</p>
+  <h2>第3条（第三者提供）</h2>
+  <p>当サービスは、以下の場合を除き、ユーザーの個人情報を第三者に提供しません。</p>
+  <ul>
+    <li>ユーザー本人の同意がある場合</li>
+    <li>法令に基づく場合</li>
+    <li>人の生命・身体・財産の保護のために必要な場合</li>
+  </ul>
+  <div class="note">
+    <p>※ 主催者に提供するデータは、個人を特定できない集計値（総視聴数・いいね数・行きたい数など）のみです。個人のユーザー情報を主催者に提供することはありません。</p>
+  </div>
 
-<h2>5. データの削除</h2>
-<p>ユーザーはアカウントの削除を運営に申請できます。削除申請後、合理的な期間内にすべての個人データを削除します。連絡先：taichi102433@gmail.com</p>
+  <h2>第4条（外部サービスの利用）</h2>
+  <p>当サービスは以下の外部サービスを利用しています。</p>
+  <table>
+    <tr><th>サービス</th><th>用途</th></tr>
+    <tr><td>Supabase</td><td>データベース・認証基盤</td></tr>
+    <tr><td>Google OAuth</td><td>ログイン認証</td></tr>
+    <tr><td>YouTube</td><td>動画の埋め込み表示</td></tr>
+    <tr><td>Google Maps</td><td>地図リンクの生成</td></tr>
+  </table>
+  <p>各外部サービスのプライバシーポリシーについては、各社のウェブサイトをご確認ください。</p>
 
-<h2>6. Cookie等</h2>
-<p>本サービスはGoogleログインのためにCookieおよびローカルストレージを使用します。ブラウザの設定によりCookieを無効化できますが、一部機能が利用できなくなる場合があります。</p>
+  <h2>第5条（Cookieおよびローカルストレージ）</h2>
+  <p>当サービスは、サービスの利便性向上のためにブラウザのローカルストレージを使用します。ユーザーの設定情報（年齢層・地域など）を端末に保存し、次回アクセス時の入力を省略します。</p>
 
-<h2>7. ポリシーの変更</h2>
-<p>本ポリシーは必要に応じて変更することがあります。重要な変更がある場合はサービス内でお知らせします。</p>
+  <h2>第6条（データの保管・セキュリティ）</h2>
+  <p>収集したデータはSupabase（米国）のサーバーに保管されます。不正アクセス・漏洩・改ざんを防ぐため、適切なセキュリティ措置を講じています。ただし、完全な安全性を保証するものではありません。</p>
 
-<h2>8. お問い合わせ</h2>
-<p>個人情報の取扱いに関するお問い合わせ：<br>
-運営者：鈴木太智<br>
-メール：taichi102433@gmail.com</p>
+  <h2>第7条（未成年者の利用）</h2>
+  <p>当サービスは中学生・高校生の利用を想定しています。13歳未満の方はご利用いただけません。保護者の方は、お子さまの利用状況をご確認ください。</p>
+
+  <h2>第8条（個人情報の開示・訂正・削除）</h2>
+  <p>ユーザーは、自身の個人情報の開示・訂正・削除を求めることができます。ご希望の場合は下記お問い合わせ先までご連絡ください。アカウント削除はアプリ内の設定画面からも行えます。</p>
+
+  <h2>第9条（ポリシーの変更）</h2>
+  <p>本ポリシーは必要に応じて変更することがあります。重要な変更がある場合は、サービス内でお知らせします。</p>
+
+  <div class="note">
+    <p>※ 本ポリシーは暫定版です。正式サービス開始（2026年6月予定）に合わせて、弁護士監修のもと正式版を公開予定です。</p>
+  </div>
+
+  <div class="contact">
+    <div class="contact-t">📧 個人情報に関するお問い合わせ</div>
+    <div class="contact-s">
+      運営者：Nexca（個人事業）<br>
+      代表：鈴木太智<br>
+      メール：nexca.official@gmail.com<br>
+      所在地：広島県広島市<br><br>
+      お問い合わせ受付後、原則7営業日以内にご返答します。
+    </div>
+  </div>
+</div>
 </body>
 </html>
