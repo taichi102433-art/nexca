@@ -620,7 +620,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
   <div style="overflow-y:auto;flex:1;padding:16px;" id="org-ov-body"></div>
 </div>
 <div id="toast"></div>
-ありません</div></div>';sb.from('rankings').upsert({user_id:user.id,nickname:(m.full_name||'ユーザー').slice(0,8),total_points:Math.floor(ptsTotal),updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(()=>{}).catch(()=>{});}else{document.getElementById('mpname').textContent='ゲスト';document.getElementById('mpemail').textContent='ログインしていません';document.getElementById('mpav').innerHTML='👤';document.getElementById('gsec').style.display='block';document.getElementById('lsec').style.display='none';}}
+('rankings').upsert({user_id:user.id,nickname:(m.full_name||'ユーザー').slice(0,8),total_points:Math.floor(ptsTotal),updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(()=>{}).catch(()=>{});}else{document.getElementById('mpname').textContent='ゲスト';document.getElementById('mpemail').textContent='ログインしていません';document.getElementById('mpav').innerHTML='👤';document.getElementById('gsec').style.display='block';document.getElementById('lsec').style.display='none';}}
 function openTown(){document.getElementById('town-ov').style.display='flex';renderTownChars();document.getElementById('town-pts-val').textContent=Math.floor(pts);}
 function closeTown(){document.getElementById('town-ov').style.display='none';}
 function renderTownStars(){const el=document.getElementById('town-stars');if(!el)return;el.innerHTML=Array.from({length:30},()=>{const x=Math.random()*100,y=Math.random()*100,s=Math.random()*2+0.5;return `<div class="town-star" style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${Math.random()*0.5+0.1};"></div>`;}).join('');}
