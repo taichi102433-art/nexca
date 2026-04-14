@@ -647,5 +647,10 @@ function closeOrgPage(){document.getElementById('org-ov').style.display='none';}
 setupSwipe();
 initApp();
 </script>
-</body>
+<script>
+function pickAge(el,a){document.querySelectorAll('#ob-step1 .ob-item').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');window._age=a;document.getElementById('ob-btn1').classList.add('on');}
+function goObStep2(){document.getElementById('ob-step1').style.display='none';document.getElementById('ob-step2').style.display='block';}
+function pickCity(el,city){document.querySelectorAll('#ob-step2 .ob-item').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');window._city=city;document.getElementById('ob-btn2').classList.add('on');}
+function startApp(){if(typeof age!=='undefined'){age=window._age||age;}if(typeof userCity!=='undefined'){userCity=window._city||userCity;}localStorage.setItem('nexca_age',window._age||'高校生');localStorage.setItem('nexca_city',window._city||'広島市中区');document.getElementById('ob').classList.add('hide');document.getElementById('ab').style.display='flex';if(typeof updateAB==='function')updateAB();if(typeof EVS!=='undefined'&&!EVS.length&&typeof MOCK_EVS!=='undefined'){EVS=MOCK_EVS.filter(e=>!e.isOfficial);OFFICIAL_EVS=MOCK_EVS.filter(e=>e.isOfficial);}if(typeof boot==='function')boot();if(typeof addPt==='function')addPt('初回登録完了',30,false);if(typeof showToast==='function')showToast('ようこそNexcaへ！ +30pt');}
+</script></body>
 </html>
