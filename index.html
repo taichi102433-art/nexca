@@ -37,25 +37,24 @@ body::after{
   background-size:40px 40px;
 }
 /* ONBOARDING */
-#ob{position:fixed;inset:0;z-index:9000;background:radial-gradient(ellipse at 30% 20%,rgba(230,57,70,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(77,159,255,0.06) 0%,transparent 50%),var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;}
+#ob{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;overflow-y:auto;}
 #ob.hide{display:none;}
 .ob-logo{font-family:var(--font-en);font-size:52px;letter-spacing:4px;line-height:1;margin-bottom:6px;}
-.ob-logo span{color:var(--red);text-shadow:0 0 30px var(--red-glow);}
-.ob-tagline{font-size:11px;color:var(--dim);margin-bottom:36px;text-align:center;letter-spacing:0.5px;}
+.ob-logo span{color:var(--red);}
+.ob-tagline{font-size:11px;color:var(--dim);margin-bottom:32px;text-align:center;}
 .ob-lbl{font-family:var(--font-en);font-size:11px;letter-spacing:2px;color:var(--dim);margin-bottom:12px;width:100%;max-width:300px;}
 .ob-list{display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;}
-.ob-item{padding:13px 16px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.07);border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;}
-.ob-item::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(230,57,70,0.15),transparent);opacity:0;transition:opacity 0.2s;}
+.ob-item{padding:13px 16px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.07);border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;}
 .ob-item.sel{border-color:var(--red);background:rgba(230,57,70,0.1);}
-.ob-item.sel::before{opacity:1;}
-.ob-item:active{transform:scale(0.97);}
 .ob-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:rgba(255,255,255,0.06);}
-.ob-item.sel .ob-icon{background:rgba(230,57,70,0.2);}
 .ob-item-sub{font-size:10px;color:var(--dim);font-weight:400;margin-top:1px;}
-.ob-btn{width:100%;max-width:300px;padding:15px;background:var(--red);border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;color:white;cursor:pointer;margin-top:18px;font-family:var(--font-jp);opacity:0.35;pointer-events:none;transition:all 0.25s;position:relative;overflow:hidden;}
-.ob-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);}
-.ob-btn.on{opacity:1;pointer-events:all;box-shadow:0 4px 24px rgba(230,57,70,0.4);}
-.ob-btn:active{transform:scale(0.97);}
+.ob-btn{width:100%;max-width:300px;padding:15px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:var(--r-md);font-size:15px;font-weight:700;color:rgba(255,255,255,0.3);cursor:default;margin-top:18px;font-family:var(--font-jp);}
+.ob-btn.on{background:var(--red);color:white;cursor:pointer;box-shadow:0 4px 24px rgba(230,57,70,0.4);border-color:var(--red);}
+.ob-start-btn{width:100%;max-width:300px;padding:16px;background:var(--red);border:none;border-radius:var(--r-md);font-size:16px;font-weight:700;color:white;cursor:pointer;font-family:var(--font-jp);box-shadow:0 4px 28px rgba(230,57,70,0.4);margin-top:8px;}
+.ob-vp{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-md);padding:12px 14px;margin-bottom:8px;}
+.ob-vp-icon{font-size:24px;flex-shrink:0;}
+.ob-vp-text{font-size:13px;font-weight:700;line-height:1.4;}
+.ob-vp-sub{font-size:10px;color:var(--dim);margin-top:1px;font-weight:400;}
 /* SCREENS */
 .screen{position:fixed;top:0;left:0;right:0;bottom:var(--nav);display:none;flex-direction:column;overflow:hidden;z-index:1;}
 .screen.on{display:flex;}
@@ -828,22 +827,8 @@ body::after{
   <div class="ob-logo">NEX<span>CA</span></div>
   <div class="ob-tagline">まだ知らない体験が、次の自分を連れてくる。</div>
 
-  <div id="ob-step0" class="ob-step0-wrap" style="width:100%;max-width:300px;text-align:center;">
-    <div class="ob-value-props">
-      <div class="ob-vp">
-        <div class="ob-vp-icon">🎬</div>
-        <div><div class="ob-vp-text">動画でイベントを発見</div><div class="ob-vp-sub">TikTok感覚で広島の体験を探せる</div></div>
-      </div>
-      <div class="ob-vp">
-        <div class="ob-vp-icon">🎫</div>
-        <div><div class="ob-vp-text">参加してポイントゲット</div><div class="ob-vp-sub">実際に行くとキャラが育ち特典がもらえる</div></div>
-      </div>
-      <div class="ob-vp">
-        <div class="ob-vp-icon">🎭</div>
-        <div><div class="ob-vp-text">あなただけのキャラ診断</div><div class="ob-vp-sub">行動パターンからNextreetキャラが決まる</div></div>
-      </div>
-    </div>
-    <button class="ob-start-btn" onclick="goObStep1()">はじめる →</button>
+  <div id="ob-step0" style="width:100%;max-width:300px;text-align:center;">
+    <button class="ob-start-btn" onclick="goObStep1()" style="width:100%;padding:18px;background:var(--red);border:none;border-radius:14px;font-size:18px;font-weight:700;color:white;cursor:pointer;font-family:var(--font-jp);box-shadow:0 4px 28px rgba(230,57,70,0.5);">はじめる →</button>
   </div>
 
   <div id="ob-step1" style="display:none;width:100%;max-width:300px;">
