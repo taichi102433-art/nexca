@@ -1063,7 +1063,8 @@ body::after{
 <script>
 const SURL='https://umbscalpmmofbzfpmhhr.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtYnNjYWxwbW1vZmJ6ZnBtaGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTIwNDMsImV4cCI6MjA5MDI4ODA0M30.lgI836TkVP8EqxgIVH8FHCz8iQ87cJZikkw9S9W49Ic';
-const sb=window.supabase.createClient(SURL,SKEY);
+let sb;
+try{sb=window.supabase.createClient(SURL,SKEY);}catch(e){console.warn('Supabase init failed',e);sb={auth:{onAuthStateChange:function(){},getSession:function(){return Promise.resolve({data:{session:null}})},signInWithOAuth:function(){},signOut:function(){return Promise.resolve()}},from:function(){return {select:function(){return {order:function(){return {limit:function(){return Promise.resolve({data:[]})}}}}},insert:function(){return Promise.resolve()},upsert:function(){return Promise.resolve()}}}};}
 const EVS=[
 {id:'n1',g:'event',gl:'イベント',ge:'🎉',title:'Nexca x 広島アートフェスティバル2026',ds:'2026-06-15',ts:'10:00-18:00',loc:'広島市中区基町',addr:'広島市中区基町',price:'無料',desc:'Nexcaがお届けする広島最大級のアートフェスティバル。地元アーティスト30組以上が集結。',em:'🎨',bg:'linear-gradient(135deg,#1a0a2e,#2e0a1a)',tags:['アート','無料','Nexca公認'],age:['中学生','高校生','大学生','社会人'],fixed:false,isOfficial:false,wantCount:147,charKey:'アガル',charEmoji:'🔥',charName:'Nexcaアガル(アートver)',charDesc:'体験が生まれる瞬間に現れるキャラ。',qr:'ART001',genre:'event',ig:'https://instagram.com/nexca_official'},
 {id:'n2',g:'event',gl:'カフェ',ge:'☕',title:'Nexca推薦 路地裏コーヒーラボ',ds:'',ts:'10:00-20:00(月曜定休)',loc:'広島市西区己斐',addr:'広島市西区己斐上',price:'ドリンク代のみ',desc:'Nexcaが認めた広島のスペシャルティコーヒー専門店。',em:'☕',bg:'linear-gradient(135deg,#1a0e06,#2a1a0a)',tags:['カフェ','Nexca限定特典'],age:['中学生','高校生','大学生','社会人'],fixed:true,isOfficial:false,wantCount:203,charKey:'ヌクミ',charEmoji:'🍃',charName:'Nexcaヌクミ(コーヒーver)',charDesc:'このカフェに宿る居心地の守護キャラ。',qr:'CAFE001',genre:'cafe',ig:'https://instagram.com/nexca_official'},
@@ -1145,7 +1146,7 @@ function closeAgeMod(){document.getElementById('agem').classList.remove('on');}
 function swAge(el,a){age=a;updateAB();closeAgeMod();localStorage.setItem('nx_age',a);var labels={中学生:'📚 中学生',高校生:'🎒 高校生',大学生:'🎓 大学生',社会人:'💼 社会人'};document.getElementById('mpage').textContent=labels[a]||a;renderFeed();renderFlyer();renderFlyerTabs();renderGenreOpts();toast(a+'モードに変更しました');}
 function setFeedTab(mode,el){document.querySelectorAll('.feed-tab').forEach(function(b){b.classList.remove('on');});el.classList.add('on');feedMode=mode;renderFeed();}
 function renderFeed(){var src=feedMode==='official'?EVS.filter(function(e){return e.isOfficial;}):EVS.filter(function(e){return !e.isOfficial&&(!e.age||e.age.includes(age));});if(feedMode!=='official'&&genre!=='all')src=src.filter(function(e){return e.g===genre;});fevs=src;idx=0;var st=document.getElementById('stack');st.innerHTML='';if(!fevs.length){st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}fevs.forEach(function(ev,i){st.appendChild(mkSlide(ev,i));});updPos();if(fevs.length)setTimeout(function(){trackView(fevs[0].id);},2000);}
-function mkSlide(ev,i){var s=document.createElement('div');s.className='slide dn';s.dataset.i=i;var gs=GS[ev.g]||GS.event;var lk=likes.has(ev.id);var wnt=wants.has(ev.id);s.innerHTML='<div class="sbg" style="background:'+ev.bg+';"><div class="sbg-em">'+ev.em+'</div></div><div class="sovl"></div><div class="srt"><button class="sact'+(lk?' lk':'')+'" id="lb-'+ev.id+'" onclick="toggleLike(''+ev.id+'')"><div class="sact-c">'+(lk?'❤️':'🤍')+'</div><div class="sact-l">いいね</div></button><button class="sact'+(wnt?' wnt':'')+'" id="wb-'+ev.id+'" onclick="toggleWant(''+ev.id+'')"><div class="sact-c">'+(wnt?'⭐':'☆')+'</div><div class="sact-l">行きたい</div></button><button class="sact" onclick="shareEv(''+ev.id+'')"><div class="sact-c">📤</div><div class="sact-l">シェア</div></button></div><div class="sbot">'+(ev.charKey?'<div class="schar-badge"><span style="font-size:14px;">'+ev.charEmoji+'</span><span style="font-size:10px;font-weight:700;">'+ev.charName+'</span></div>':'')+'<div class="sgtag" style="background:'+gs.bg+';border-color:'+gs.bd+';color:'+gs.c+';">'+ev.ge+' '+ev.gl+'</div><div class="stitle">'+ev.title+'</div><div class="smeta"><span class="smeta-i">📅 '+(ev.ds||ev.ts||'随時')+'</span><span class="smeta-i">📍 '+ev.loc+'</span></div><button class="sdbtn" onclick="openDrw(''+ev.id+'')">詳細情報・参加コード</button></div><div class="shint">↑ スワイプで次へ</div>';return s;}
+function mkSlide(ev,i){var s=document.createElement('div');s.className='slide dn';s.dataset.i=i;var gs=GS[ev.g]||GS.event;var lk=likes.has(ev.id);var wnt=wants.has(ev.id);var id=ev.id;s.innerHTML='<div class="sbg" style="background:'+ev.bg+';"><div class="sbg-em">'+ev.em+'</div></div><div class="sovl"></div><div class="srt"><button class="sact'+(lk?' lk':'')+'" id="lb-'+id+'" onclick="toggleLike(&quot;'+id+'&quot;)"><div class="sact-c">'+(lk?'❤️':'🤍')+'</div><div class="sact-l">いいね</div></button><button class="sact'+(wnt?' wnt':'')+'" id="wb-'+id+'" onclick="toggleWant(&quot;'+id+'&quot;)"><div class="sact-c">'+(wnt?'⭐':'☆')+'</div><div class="sact-l">行きたい</div></button><button class="sact" onclick="shareEv(&quot;'+id+'&quot;)"><div class="sact-c">📤</div><div class="sact-l">シェア</div></button></div><div class="sbot">'+(ev.charKey?'<div class="schar-badge"><span style="font-size:14px;">'+ev.charEmoji+'</span><span style="font-size:10px;font-weight:700;">'+ev.charName+'</span></div>':'')+'<div class="sgtag" style="background:'+gs.bg+';border-color:'+gs.bd+';color:'+gs.c+';">'+ev.ge+' '+ev.gl+'</div><div class="stitle">'+ev.title+'</div><div class="smeta"><span class="smeta-i">📅 '+(ev.ds||ev.ts||'随時')+'</span><span class="smeta-i">📍 '+ev.loc+'</span></div><button class="sdbtn" onclick="openDrw(&quot;'+id+'&quot;)">詳細情報・参加コード</button></div><div class="shint">↑ スワイプで次へ</div>';return s;}
 function updPos(){
   document.querySelectorAll('.slide').forEach(function(s){
     var i=parseInt(s.dataset.i);s.classList.remove('cur','up','dn');
@@ -1160,16 +1161,13 @@ function setupSwipe(){var st=document.getElementById('stack');st.addEventListene
 function getMis(ev,n){var m={event:{1:['このイベントで知らない人に1人話しかける','一番印象に残った瞬間を写真に撮る'],2:['帰りにお互いの今日のベスト瞬間を話す'],3:['各自がイベントの違う部分をレポートして共有する']},cafe:{1:['スマホを裏向きに置いて30分過ごす'],2:['お互いに最近ハマっていることを90秒で話す'],3:['全員で次に行く場所をガチャで決める']},vintage:{1:['予算1000円以内で今の自分らしくないものを選ぶ'],2:['相手が絶対買わなさそうなものを選んで理由を言う'],3:['全員で1人のコーデを作ってみる']},learn:{1:['今日学んだことを一言でまとめる'],2:['お互いの学びをシェアして気づきを話す'],3:['全員で今日の発見を発表し合う']},volunteer:{1:['活動中に知り合った人の名前を1人覚える'],2:['二人で今日の成果と次回の目標を話す'],3:['全員で今日の成果を振り返る']}};var g=ev.genre||ev.g||'event';var pool=m[g]||m.event;var key=n>=3?3:n>=2?2:1;return(pool[key]||pool[1]||[]).slice(0,2);}
 function renderMC(ms){var r=['mc-c','mc-u','mc-r2'],l=['Common','Uncommon','Rare'];return ms.map(function(m,i){return '<div class="mc"><span class="mc-r '+r[i]+'">'+(l[i]||'Common')+'</span><div class="mc-text">'+m+'</div></div>';}).join('');}
 function swMis(el,n,evId){document.querySelectorAll('.ptab').forEach(function(b){b.classList.remove('on');});el.classList.add('on');var ev=EVS.find(function(e){return e.id===evId;});if(ev)document.getElementById('mis-cards').innerHTML=renderMC(getMis(ev,parseInt(n)));}
-function openDrw(id){var ev=EVS.find(function(e){return e.id===id;});if(!ev)return;var gs=GS[ev.g]||GS.event;var mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);var cd=ev.charKey?OC[ev.charKey]:null;var similar=EVS.filter(function(e){return e.id!==id&&e.g===ev.g&&!e.isOfficial;}).slice(0,2);var cHtml='';if(cd){var info=calcCprog(charExp[ev.charKey]||0);cHtml='<div class="cblk" style="background:'+cd.color+'0a;border:1.5px solid '+cd.color+'30;" onclick="openPartM(''+ev.id+'')"><div class="cblk-em" style="border-color:'+cd.color+'40;background:'+cd.color+'15;"><span>'+ev.charEmoji+'</span></div><div><div class="cblk-name" style="color:'+cd.color+';">'+ev.charName+'</div><div class="cblk-desc">'+ev.charDesc+'</div><div style="font-size:9px;color:'+cd.color+';margin-top:4px;">Lv'+info.lv+' · '+info.cur+'/'+info.need+' EXP</div><div class="clvbar"><div class="clvfill" style="width:'+info.pct+'%;background:'+cd.color+';"></div></div></div></div>';}
-var ms=getMis(ev,1);
-document.getElementById('drwbody').innerHTML='<button class="bkbtn" onclick="closeDrw()">← 動画フィードに戻る</button><div class="drw-t">'+ev.title+'</div><div class="drw-gt" style="background:'+gs.bg+';border-color:'+gs.bd+';color:'+gs.c+';">'+ev.ge+' '+ev.gl+(ev.fixed?' · 固定掲載':'')+'</div><div class="drw-tags">'+(ev.tags||[]).map(function(t){return '<div class="drw-tag">'+t+'</div>';}).join('')+'</div>'+cHtml+'<div class="ptbar"><div style="font-size:18px;">⭐</div><div style="flex:1;"><div style="font-size:11px;font-weight:700;color:var(--yellow);">参加してポイントゲット！キャラのEXPも上がる</div><div style="font-size:10px;color:var(--dim);">'+(ev.fixed?'訪問証明+30pt':'参加証明+50pt・振り返り+20pt')+'</div></div></div><div class="ic"><div class="ic-l">DATE / TIME</div><div class="ic-v">'+(ev.ds?ev.ds.replace(/-/g,'/')+(ev.ts?' '+ev.ts:''):ev.ts||'随時')+'</div></div><div class="ic"><div class="ic-l">LOCATION</div><div class="ic-v">'+ev.loc+'<br><span style="font-size:11px;color:var(--dim);">'+ev.addr+'</span></div><a href="'+mapUrl+'" target="_blank" class="gmapbtn">🗺️ Googleマップで確認する</a></div><div class="ic"><div class="ic-l">FEE</div><div class="ic-v">'+ev.price+'</div></div><p class="desc-txt">'+ev.desc+'</p><div class="mbox"><div class="mbox-t">EXPERIENCE MISSION</div><div class="ptabs"><button class="ptab on" onclick="swMis(this,1,''+ev.id+'')">1人</button><button class="ptab" onclick="swMis(this,2,''+ev.id+'')">2人</button><button class="ptab" onclick="swMis(this,3,''+ev.id+'')">3人以上</button></div><div id="mis-cards">'+renderMC(ms)+'</div></div><div class="ctas"><button class="cta cta-y" onclick="openPartM(''+ev.id+'')">参加コードを入力する</button><a class="cta cta-m" href="'+mapUrl+'" target="_blank">🗺️ 地図で場所を確認</a>'+(ev.ig?'<a class="cta cta-i" href="'+ev.ig+'" target="_blank">📸 Instagramを見る</a>':'')+'</div>'+(similar.length?'<div class="rec-sec"><div style="font-family:var(--font-en);font-size:10px;letter-spacing:1px;color:var(--dim);margin-bottom:10px;">ALSO RECOMMENDED</div>'+similar.map(function(sv){return '<div class="rec-item" onclick="openDrw(''+sv.id+'')"><div style="width:40px;height:40px;border-radius:9px;background:'+sv.bg+';display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;">'+sv.em+'</div><div><div style="font-size:12px;font-weight:700;">'+sv.title+'</div></div></div>';}).join('')+'</div>':'');
-document.getElementById('drw').classList.add('on');document.getElementById('drwbg').classList.add('on');}
+function openDrw(id){var ev=EVS.find(function(e){return e.id===id;});if(!ev)return;var gs=GS[ev.g]||GS.event;var mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);var cd=ev.charKey?OC[ev.charKey]:null;var similar=EVS.filter(function(e){return e.id!==id&&e.g===ev.g&&!e.isOfficial;}).slice(0,2);var cHtml='';if(cd){var info=calcCprog(charExp[ev.charKey]||0);cHtml='<div class="cblk" onclick="openPartM(this.dataset.id)" data-id="'+ev.id+'"><span>'+ev.charEmoji+'</span><div style="color:'+cd.color+';">'+ev.charName+'</div><div class="clvbar"><div class="clvfill" style="width:'+info.pct+'%;background:'+cd.color+';"></div></div></div>';}var ms=getMis(ev,1);var h='';h+='<button class="bkbtn" onclick="closeDrw()">← 動画フィードに戻る</button>';h+='<div class="drw-t">'+ev.title+'</div>';h+='<div class="drw-gt" style="background:'+gs.bg+';color:'+gs.c+';">'+ev.ge+' '+ev.gl+'</div>';h+='<div class="drw-tags">'+(ev.tags||[]).map(function(t){return '<div class="drw-tag">'+t+'</div>';}).join('')+'</div>';h+=cHtml;h+='<div class="ic"><div class="ic-l">LOCATION</div><div class="ic-v">'+ev.loc+'</div><a href="'+mapUrl+'" target="_blank" class="gmapbtn">🗺️ MAP</a></div>';h+='<div class="ic"><div class="ic-l">FEE</div><div class="ic-v">'+ev.price+'</div></div>';h+='<p class="desc-txt">'+ev.desc+'</p>';h+='<div class="mbox"><div class="mbox-t">MISSION</div><div class="ptabs"><button class="ptab on" onclick="swMis(this,1,this.dataset.eid)" data-eid="'+ev.id+'">1人</button><button class="ptab" onclick="swMis(this,2,this.dataset.eid)" data-eid="'+ev.id+'">2人</button><button class="ptab" onclick="swMis(this,3,this.dataset.eid)" data-eid="'+ev.id+'">3人+</button></div><div id="mis-cards">'+renderMC(ms)+'</div></div>';h+='<div class="ctas"><button class="cta cta-y" onclick="openPartM(this.dataset.id)" data-id="'+ev.id+'">参加コードを入力する</button><a class="cta cta-m" href="'+mapUrl+'" target="_blank">🗺️ 地図で確認</a></div>';if(similar.length){h+='<div class="rec-sec">';similar.forEach(function(sv){h+='<div class="rec-item" onclick="openDrw(this.dataset.id)" data-id="'+sv.id+'">'+sv.em+' '+sv.title+'</div>';});h+='</div>';}document.getElementById('drwbody').innerHTML=h;document.getElementById('drw').classList.add('on');document.getElementById('drwbg').classList.add('on');}
 function closeDrw(){document.getElementById('drw').classList.remove('on');document.getElementById('drwbg').classList.remove('on');}
 function renderFlyerTabs(){var cfg=[{g:'all',label:'すべて',emoji:'📍'},{g:'event',label:'イベント',emoji:'🎉'},{g:'learn',label:'学び',emoji:'🚀'},{g:'volunteer',label:'ボランティア',emoji:'🤝'}];document.getElementById('ftabs-wrap').innerHTML=cfg.map(function(c){return '<div class="ftab'+(flyG===c.g?' on':'')+'" data-g="'+c.g+'" onclick="setFlyG(this)">'+c.emoji+' '+c.label+'</div>';}).join('');flyG='all';}
 function setFlyG(el){document.querySelectorAll('.ftab').forEach(function(t){t.classList.remove('on');});el.classList.add('on');flyG=el.dataset.g;renderFlyer();}
-function renderFlyer(){var evs=flyG==='all'?EVS.filter(function(e){return !e.isOfficial;}):EVS.filter(function(e){return !e.isOfficial&&e.g===flyG;});var grid=document.getElementById('flgrid');if(!evs.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}grid.innerHTML=evs.map(function(ev){return '<div class="fc" onclick="openVOV(''+ev.id+'')"><div class="fct" style="background:'+ev.bg+';"><div class="fct-em">'+ev.em+'</div><div class="fct-ovl"></div><div class="fct-play">▶</div>'+(ev.fixed?'<div class="fct-fixed">固定掲載</div>':'')+'</div><div class="fci"><div class="fcg" style="color:'+(GC[ev.g]||'var(--dim)')+'">'+ev.ge+' '+ev.gl+'</div><div class="fct-t">'+ev.title+'</div><div class="fcd">'+(ev.ds?'📅 '+ev.ds.replace(/-/g,'/'):ev.ts||'随時')+'</div></div></div>';}).join('');document.getElementById('mplist').innerHTML=evs.map(function(ev){return '<a class="mpitem" href="https://maps.google.com/?q='+encodeURIComponent(ev.addr)+'" target="_blank"><div style="font-size:20px;">'+ev.em+'</div><div style="flex:1;"><div style="font-size:12px;font-weight:700;">'+ev.title+'</div><div style="font-size:10px;color:var(--dim);">📍 '+ev.loc+'</div></div><div style="font-size:16px;color:var(--blue);">›</div></a>';}).join('');}
+function renderFlyer(){var evs=flyG==='all'?EVS.filter(function(e){return !e.isOfficial;}):EVS.filter(function(e){return !e.isOfficial&&e.g===flyG;});var grid=document.getElementById('flgrid');if(!evs.length){grid.innerHTML='<div class="empty">イベントがありません</div>';return;}var h='';evs.forEach(function(ev){h+='<div class="fc" onclick="openVOV(this.dataset.id)" data-id="'+ev.id+'"><div class="fct" style="background:'+ev.bg+';"><div class="fct-em">'+ev.em+'</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fct-t">'+ev.title+'</div></div></div>';});grid.innerHTML=h;var mh='';evs.forEach(function(ev){mh+='<a class="mpitem" href="https://maps.google.com/?q='+encodeURIComponent(ev.addr)+'" target="_blank">'+ev.em+' '+ev.title+'</a>';});document.getElementById('mplist').innerHTML=mh;}
 function toggleMap(){mapOn=!mapOn;document.getElementById('mapview').classList.toggle('on',mapOn);document.getElementById('flscr').style.display=mapOn?'none':'';document.getElementById('mpbtn').textContent=mapOn?'一覧':'地図';}
-function openVOV(id){var ev=EVS.find(function(e){return e.id===id;});if(!ev)return;var mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);document.getElementById('vov-t').textContent=ev.title;document.getElementById('vov-c').innerHTML='<div style="width:100%;height:100%;background:'+ev.bg+';display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;"><div style="font-size:88px;opacity:0.25;">'+ev.em+'</div><div style="font-family:var(--font-en);font-size:13px;letter-spacing:2px;color:rgba(255,255,255,0.3);">VIDEO COMING SOON</div></div>';document.getElementById('vov-d').innerHTML='<div style="font-size:14px;font-weight:900;margin-bottom:10px;">'+ev.title+'</div><div style="display:flex;flex-direction:column;gap:6px;"><a class="cta cta-m" href="'+mapUrl+'" target="_blank" style="font-size:12px;padding:10px;">🗺️ 地図で見る</a><button class="cta cta-h" onclick="closeVOV();openDrw(''+ev.id+'')" style="font-size:12px;padding:10px;">詳細情報を見る</button></div>';document.getElementById('vov').style.display='flex';}
+function openVOV(id){var ev=EVS.find(function(e){return e.id===id;});if(!ev)return;var mapUrl='https://maps.google.com/?q='+encodeURIComponent(ev.addr);document.getElementById('vov-t').textContent=ev.title;document.getElementById('vov-c').innerHTML='<div style="width:100%;height:100%;background:'+ev.bg+';display:flex;align-items:center;justify-content:center;"><div style="font-size:88px;opacity:0.25;">'+ev.em+'</div></div>';document.getElementById('vov-d').innerHTML='<div style="font-size:14px;font-weight:700;margin-bottom:10px;">'+ev.title+'</div><button class="cta cta-h" onclick="closeVOV();openDrw(this.dataset.id)" data-id="'+ev.id+'" style="width:100%;padding:10px;">詳細情報を見る</button>';document.getElementById('vov').style.display='flex';}
 function closeVOV(){document.getElementById('vov').style.display='none';}
 function renderGenreOpts(){var cfg=[{g:'all',label:'すべて',sub:'全ジャンル表示',em:'📍'},{g:'event',label:'イベント・おでかけ',sub:'イベント・カフェ・古着',em:'🎉'},{g:'learn',label:'学び・挑戦',sub:'ワークショップ・体験',em:'🚀'},{g:'volunteer',label:'ボランティア',sub:'地域活動',em:'🤝'}];document.getElementById('fm-gopts').innerHTML=cfg.map(function(c){return '<div class="fm-gopt'+(genre===c.g?' on':'')+'" data-g="'+c.g+'" onclick="pickGenre(this)"><div class="fm-gopt-ic" style="background:'+(GS[c.g]?GS[c.g].bg:'rgba(255,255,255,0.07)')+';">'+c.em+'</div><div><div class="fm-gopt-n">'+c.label+'</div><div class="fm-gopt-sub">'+c.sub+'</div></div><div class="fm-gopt-chk">✓</div></div>';}).join('');}
 function openFM(){document.getElementById('fm').classList.add('on');}
@@ -1178,20 +1176,13 @@ function pickGenre(el){document.querySelectorAll('.fm-gopt').forEach(function(b)
 function pickDate(el){document.querySelectorAll('.fm-dateopt').forEach(function(c){c.classList.remove('on');});el.classList.add('on');}
 function openSearch(){document.getElementById('search-modal').classList.add('on');setTimeout(function(){document.getElementById('search-input').focus();},200);}
 function closeSearch(){document.getElementById('search-modal').classList.remove('on');document.getElementById('search-input').value='';}
-function doSearch(q){var el=document.getElementById('search-results');if(!q.trim()){el.innerHTML='<div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">キーワードを入力して検索</div></div>';return;}var res=EVS.filter(function(e){return !e.isOfficial&&(e.title.includes(q)||e.loc.includes(q));});if(!res.length){el.innerHTML='<div class="empty"><div class="empty-ic">😶</div><div class="empty-t">結果がありません</div></div>';return;}el.innerHTML=res.map(function(e){return '<div style="display:flex;align-items:center;gap:12px;padding:13px;background:rgba(255,255,255,0.04);border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.06);" onclick="closeSearch();openDrw(''+e.id+'')"><div style="width:46px;height:46px;border-radius:11px;background:'+e.bg+';display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">'+e.em+'</div><div><div style="font-size:13px;font-weight:700;">'+e.title+'</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">📍 '+e.loc+'</div></div></div>';}).join('');}
+function doSearch(q){var el=document.getElementById('search-results');if(!q.trim()){el.innerHTML='<div class="empty">キーワードを入力</div>';return;}var res=EVS.filter(function(e){return !e.isOfficial&&(e.title.includes(q)||e.loc.includes(q));});if(!res.length){el.innerHTML='<div class="empty">結果がありません</div>';return;}var h='';res.forEach(function(e){h+='<div style="padding:13px;background:rgba(255,255,255,0.04);border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;" onclick="closeSearch();openDrw(this.dataset.id)" data-id="'+e.id+'">'+e.em+' <strong>'+e.title+'</strong><br><small>📍 '+e.loc+'</small></div>';});el.innerHTML=h;}
 function toggleLike(id){if(likes.has(id)){likes.delete(id);toast('いいねを取り消しました');}else{likes.add(id);toast('❤️ いいねしました');addPt('いいね',2,false);}var b=document.getElementById('lb-'+id);if(b){b.classList.toggle('lk',likes.has(id));b.querySelector('.sact-c').textContent=likes.has(id)?'❤️':'🤍';}updStats();}
 function toggleWant(id){if(wants.has(id)){wants.delete(id);toast('行きたいを取り消しました');}else{wants.add(id);toast('⭐ 行きたい登録しました');addPt('行きたい登録',2,false);}var b=document.getElementById('wb-'+id);if(b){b.classList.toggle('wnt',wants.has(id));b.querySelector('.sact-c').textContent=wants.has(id)?'⭐':'☆';}updStats();}
 function shareEv(id){var ev=EVS.find(function(e){return e.id===id;});if(!ev)return;addPt('SNSシェア',5,false);var txt='【'+ev.title+'】\n📅 '+(ev.ds||ev.ts||'随時')+'\n#Nexca広島';if(navigator.share)navigator.share({title:ev.title,text:txt,url:location.href});else{navigator.clipboard&&navigator.clipboard.writeText(txt);toast('コピーしました！');}}
-function openPartM(evId){var ev=EVS.find(function(e){return e.id===evId;});if(!ev)return;partEvId=evId;document.getElementById('partm-ev').textContent=ev.title;document.getElementById('partm-s').textContent=ev.fixed?'📍 固定掲載店舗':'🎉 イベント参加証明';document.getElementById('partm-content').innerHTML='<div class="code-inp-wrap">
-        <input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="XXXXXXXX" oninput="this.value=this.value.toUpperCase();updateCodeLights(this.value)">
-        <div class="code-inp-lights" id="code-lights">
-          <div class="code-light"></div><div class="code-light"></div><div class="code-light"></div>
-          <div class="code-light"></div><div class="code-light"></div><div class="code-light"></div>
-          <div class="code-light"></div><div class="code-light"></div>
-        </div>
-      </div><button class="part-sub" onclick="submitPart()">'+(ev.fixed?'訪問証明する +30pt':'参加証明する +50pt')+'</button>';document.getElementById('partm').classList.add('on');}
+function openPartM(evId){if(evId&&typeof evId==='object')evId=evId.dataset?evId.dataset.id:String(evId);var ev=EVS.find(function(e){return e.id===evId;});if(!ev)return;partEvId=evId;document.getElementById('partm-ev').textContent=ev.title;document.getElementById('partm-s').textContent=ev.fixed?'📍 固定掲載店舗':'🎉 イベント参加証明';var h='<div class="code-inp-wrap"><input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="XXXXXXXX" oninput="this.value=this.value.toUpperCase();updateCodeLights(this.value)"><div class="code-inp-lights" id="code-lights"><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div></div></div><button class="part-sub" onclick="submitPart()">'+(ev.fixed?'訪問証明する +30pt':'参加証明する +50pt')+'</button>';document.getElementById('partm-content').innerHTML=h;document.getElementById('partm').classList.add('on');}
 function closePartM(){document.getElementById('partm').classList.remove('on');partEvId=null;}
-function submitPart(){var code=document.getElementById('part-code')&&document.getElementById('part-code').value.trim().toUpperCase();var ev=EVS.find(function(e){return e.id===partEvId;});if(!ev)return;if(!code||code.length<3){toast('参加コードを入力してください');return;}if(code!==ev.qr){document.getElementById('partm-content').innerHTML='<div class="part-st ng">❌ コードが正しくありません</div><input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="もう一度入力" oninput="this.value=this.value.toUpperCase()"><button class="part-sub" onclick="submitPart()">再試行</button>';return;}if(parts[partEvId]){document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 参加済みです</div><button class="part-sub" onclick="closePartM()">閉じる</button>';return;}parts[partEvId]='ok';var ptG=ev.fixed?30:50;addPt('参加証明',ptG,false);if(ev.charKey&&OC[ev.charKey]){var expMap={event:30,cafe:25,vintage:25,learn:30,volunteer:35};var expG=expMap[ev.genre]||30;var oldLv=calcClv(charExp[ev.charKey]||0);charExp[ev.charKey]=(charExp[ev.charKey]||0)+expG;var newLv=calcClv(charExp[ev.charKey]);if(newLv>oldLv)showClvup(ev.charKey,newLv);else toast(ev.charEmoji+' '+ev.charKey+' EXP +'+expG);}var lc=LC.find(function(c){return c.spotId===partEvId;});if(lc&&!lcChars.has(lc.key)){lcChars.add(lc.key);addPt('キャラ獲得',10,false);}if(firstPart){firstPart=false;addPt('初回参加ボーナス',30,true);}document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 参加証明完了！+'+ptG+'pt</div><div style="margin:10px 0;"><div style="font-size:12px;font-weight:700;color:var(--dim);margin-bottom:7px;">✍️ 振り返りを書く（+20pt）</div><textarea id="rv-input" style="width:100%;padding:11px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--txt);font-size:13px;resize:none;height:72px;font-family:inherit;" placeholder="体験の感想..."></textarea><button class="part-sub" style="margin-top:8px;" onclick="submitRv(''+partEvId+'')">振り返りを送信 +20pt</button></div><button style="width:100%;padding:11px;background:none;border:none;color:var(--dim);cursor:pointer;font-family:inherit;" onclick="closePartM()">閉じる</button>';updStats();}
+function submitPart(){var code=document.getElementById('part-code')&&document.getElementById('part-code').value.trim().toUpperCase();var ev=EVS.find(function(e){return e.id===partEvId;});if(!ev)return;if(!code||code.length<3){toast('参加コードを入力してください');return;}if(code!==ev.qr){var nh='<div style="color:var(--red);font-weight:700;font-size:13px;margin-bottom:10px;">❌ コードが正しくありません</div><div class="code-inp-wrap"><input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="もう一度入力" oninput="this.value=this.value.toUpperCase();updateCodeLights(this.value)"><div class="code-inp-lights" id="code-lights"><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div></div></div><button class="part-sub" onclick="submitPart()">再試行</button>';document.getElementById('partm-content').innerHTML=nh;return;}if(parts[partEvId]){document.getElementById('partm-content').innerHTML='<div style="color:var(--green);font-weight:700;text-align:center;padding:20px;">✅ 参加済みです</div><button class="part-sub" onclick="closePartM()">閉じる</button>';return;}parts[partEvId]='ok';var ptG=ev.fixed?30:50;addPt('参加証明',ptG,false);if(ev.charKey&&OC[ev.charKey]){var expG=30;var oldLv=calcClv(charExp[ev.charKey]||0);charExp[ev.charKey]=(charExp[ev.charKey]||0)+expG;var newLv=calcClv(charExp[ev.charKey]);setTimeout(function(){closePartM();if(newLv>oldLv)showClvup(ev.charKey,newLv);else showCharSummon(ev.charKey,ptG,expG);},600);}if(firstPart){firstPart=false;addPt('初回参加ボーナス',30,true);}if(!ev.charKey){var rh='<div style="color:var(--green);font-weight:700;font-size:13px;margin-bottom:10px;">✅ 参加証明完了！+'+ptG+'pt</div><textarea id="rv-input" style="width:100%;padding:11px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--txt);font-size:13px;resize:none;height:72px;" placeholder="体験の感想..."></textarea><button class="part-sub" style="margin-top:8px;" onclick="submitRv(this.dataset.id)" data-id="'+partEvId+'">振り返りを送信 +20pt</button><button style="width:100%;padding:11px;background:none;border:none;color:var(--dim);cursor:pointer;" onclick="closePartM()">閉じる</button>';document.getElementById('partm-content').innerHTML=rh;}updStats();}
 async function submitRv(evId){var text=document.getElementById('rv-input')&&document.getElementById('rv-input').value;if(!text||text.length<5){toast('感想を5文字以上書いてください');return;}addPt('振り返り投稿',20,false);if(user){try{await sb.from('reviews').insert({event_id:evId,user_id:user.id,text:text,stars:5,age_group:age,city:city,created_at:new Date().toISOString()});}catch(e){}}closePartM();toast('振り返り完了！ +20pt');}
 async function collectChar(code){if(!code){toast('コードを入力してください');return;}var map={CHAR_AGARU:'アガル',CHAR_TSUMUGI:'ツムギ',CHAR_NUKUMI:'ヌクミ',CHAR_TEKURU:'テクル',CHAR_KAGE:'カゲ'};var name=map[code];if(!name){toast('無効なコードです');return;}if(ocChars.has(code)){toast(name+'は既に獲得済みです');return;}ocChars.add(code);addPt('キャラ獲得：'+name,10,false);toast(name+'を獲得！ +10pt');renderOcGrid();document.getElementById('char-code-input').value='';}
 function renderOcGrid(){var keys=['CHAR_AGARU','CHAR_TSUMUGI','CHAR_NUKUMI','CHAR_TEKURU','CHAR_KAGE'];var names=['アガル','ツムギ','ヌクミ','テクル','カゲ'];var el=document.getElementById('official-char-grid');if(!el)return;el.innerHTML=names.map(function(c,i){var has=ocChars.has(keys[i]);var cd=OC[c];return '<div class="char-cell '+(has?'got':'')+'"><div class="char-cell-img '+(has?'':'locked')+'">'+(has?'🎭':'❓')+'</div><div class="char-cell-name '+(has?'got':'')+'" style="'+(has?'color:'+cd.color+';':'')+'">'+( has?c:'???')+'</div>'+(has?'<div style="font-size:7px;color:'+cd.color+';">Lv'+calcClv(charExp[c]||0)+'</div>':'')+'</div>';}).join('');}
@@ -1204,7 +1195,7 @@ function closeLvUp(){document.getElementById('lvup').classList.remove('on');}
 function updStats(){var v=Math.floor(pts);['ph-val','mp-ptv','st-pt'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=v;});var els=[document.getElementById('ph-month'),document.getElementById('ph-total'),document.getElementById('ph-used')];[ptm,ptt,ptu].forEach(function(val,i){if(els[i])els[i].textContent=Math.floor(val);});if(document.getElementById('st-lk'))document.getElementById('st-lk').textContent=likes.size;if(document.getElementById('st-wnt'))document.getElementById('st-wnt').textContent=wants.size;if(document.getElementById('st-vi'))document.getElementById('st-vi').textContent=viewed.size;if(document.getElementById('town-pts-val'))document.getElementById('town-pts-val').textContent=Math.floor(pts);}
 function renderPtHero(){var all=SHOP.slice().sort(function(a,b){return a.cost-b.cost;});var next=all.find(function(s){return s.cost>Math.floor(pts);});var nn=document.getElementById('pt-next');if(!nn)return;if(next){var p=Math.floor(pts),need=next.cost-p,pct=Math.min(100,Math.round(p/next.cost*100));nn.innerHTML='<div style="font-family:var(--font-en);font-size:10px;letter-spacing:1px;color:var(--dim);margin-bottom:9px;">NEXT REWARD</div><div style="display:flex;align-items:center;gap:11px;"><div style="font-size:24px;">'+next.ic+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;">'+next.name+'</div><div style="font-family:var(--font-num);font-size:11px;color:var(--yellow);margin-top:2px;">あと <strong>'+need+'pt</strong></div></div></div><div style="height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:9px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,var(--yellow),#ff8c00);border-radius:2px;"></div></div>';}else{nn.innerHTML='<div style="text-align:center;font-size:12px;font-weight:700;color:var(--yellow);">🎉 全ての特典が交換可能！</div>';}renderShop();}
 function renderEarn(){document.getElementById('earn-list').innerHTML=EARN.map(function(r){return '<div class="earn-item"><div class="earn-ic" style="background:'+r.col+';">'+r.ic+'</div><div style="flex:1;"><div class="earn-name">'+r.name+'</div><div class="earn-sub">'+r.sub+'</div></div><div class="earn-pt">+'+r.pt+'pt</div></div>';}).join('');}
-function renderShop(){var v=Math.floor(pts);var el=document.getElementById('shop-goods');if(!el)return;el.innerHTML=SHOP.map(function(s){var av=v>=s.cost;return '<div class="shop-item'+(av?' avail':'')+'" onclick="openEx(''+s.id+'')"><div class="shop-ic" style="background:rgba(255,190,0,0.1);">'+s.ic+'</div><div style="flex:1;"><div class="shop-name">'+s.name+'</div><div class="shop-desc">'+s.desc+'</div></div><div style="text-align:right;"><div style="font-family:var(--font-num);font-size:16px;font-weight:700;color:var(--yellow);">'+s.cost+'pt</div><div style="font-size:9px;padding:2px 7px;border-radius:var(--pill);display:inline-block;margin-top:3px;background:'+(av?'rgba(255,190,0,0.12)':'rgba(255,255,255,0.05)')+';color:'+(av?'var(--yellow)':'var(--dim)')+';">'+(av?'交換可':'pt不足')+'</div></div></div>';}).join('');}
+function renderShop(){var v=Math.floor(pts);var el=document.getElementById('shop-goods');if(!el)return;var h='';SHOP.forEach(function(s){var av=v>=s.cost;h+='<div class="shop-item'+(av?' avail':'')+'" onclick="openEx(this.dataset.id)" data-id="'+s.id+'"><div class="shop-ic">'+s.ic+'</div><div style="flex:1;"><div class="shop-name">'+s.name+'</div><div class="shop-desc">'+s.desc+'</div></div><div style="text-align:right;"><div style="font-family:var(--font-num);font-size:16px;font-weight:700;color:var(--yellow);">'+s.cost+'pt</div></div></div>';});el.innerHTML=h;}
 function renderMis(){document.getElementById('mis-list').innerHTML=MISSIONS.map(function(m){var pct=Math.min(100,Math.round(m.progress/m.goal*100));return '<div class="mis-item'+(m.done?' done':'')+'"><div class="mis-top"><div class="mis-name">'+m.name+'</div><div class="mis-pt">+'+m.pt+'pt</div></div><div class="mis-sub">'+m.sub+'</div><div class="mis-prog"><div class="mis-bar" style="width:'+pct+'%"></div></div><div class="mis-st'+(m.done?' done':'')+'">'+(m.done?'✅ 達成済み':m.progress+'/'+m.goal+' 達成中')+'</div></div>';}).join('');}
 function renderPtHist(){var el=document.getElementById('phist-list');if(!el)return;if(!phist.length){el.innerHTML='<div class="empty"><div class="empty-ic">📋</div><div class="empty-t">まだ履歴がありません</div></div>';return;}el.innerHTML=phist.slice(0,20).map(function(p){return '<div class="phi"><div class="phi-ic" style="background:'+(p.amt>0?'rgba(255,190,0,0.1)':'rgba(230,57,70,0.1)')+';">'+(p.amt>0?'⭐':'🎟')+'</div><div style="flex:1;"><div class="phi-t">'+p.reason+'</div><div class="phi-d">'+p.date+(p.camp?' · 2倍適用':'')+'</div></div><div class="phi-a" style="color:'+(p.amt>0?'var(--yellow)':'var(--red)')+';">'+(p.amt>0?'+':'')+p.amt+'pt</div></div>';}).join('');}
 function setPTab(el,tab){document.querySelectorAll('.pt-tab').forEach(function(t){t.classList.remove('on');});el.classList.add('on');['earn','shop','mis','rank','hist'].forEach(function(t){document.getElementById('pt-'+t).style.display=t===tab?'':'none';});if(tab==='hist')renderPtHist();if(tab==='shop')renderShop();if(tab==='mis')renderMis();if(tab==='rank')renderRank();}
@@ -1224,13 +1215,13 @@ function calcResult(){var e=dScores.e||0,a=dScores.a||0,c=dScores.c||0,r=dScores
 function showDiagResult(){document.getElementById('diag-q').style.display='none';document.getElementById('diag-load').style.display='flex';setTimeout(function(){document.getElementById('diag-load').style.display='none';var type=calcResult();charType=type;renderResult(type);document.getElementById('diag-result').style.display='block';addPt('診断完了',15,false);var m=MISSIONS.find(function(x){return x.id==='m3';});if(m&&!m.done){m.progress=1;m.done=true;addPt('ミッション達成：'+m.name,m.pt,false);toast('🏆 ミッション達成！ +'+m.pt+'pt');}if(user)sb.from('diagnosis_results').upsert({user_id:user.id,character:type,created_at:new Date().toISOString()},{onConflict:'user_id'}).then(function(){}).catch(function(){});
     renderTodayWidget();
   },2500);}
-function renderResult(type){var d=OC[type];if(!d)return;var mbti=d.mbti||{E:50,N:50,F:50,P:50};document.getElementById('res-wrap').innerHTML='<div style="font-family:var(--font-en);font-size:10px;letter-spacing:3px;text-align:center;color:var(--dim);margin-bottom:14px;">NEXTREET DIAGNOSIS RESULT</div><div style="font-size:80px;text-align:center;margin-bottom:18px;animation:float 3s ease-in-out infinite;">🎭</div><div class="res-name" style="color:'+d.color+';">'+type+'</div><div style="font-size:13px;font-weight:700;text-align:center;color:var(--dim);margin-bottom:5px;">'+d.genre+'タイプ</div><div style="font-size:13px;font-weight:700;text-align:center;font-style:italic;margin-bottom:18px;">'+d.kuchi+'</div><div class="res-catch" style="background:'+d.color+'18;color:'+d.color+';">'+d.catch+'</div><div class="mbti-card"><div class="mbti-title">PERSONALITY ANALYSIS</div><div style="font-size:13px;line-height:1.85;color:rgba(255,255,255,0.72);margin-bottom:12px;">'+d.pers+'</div><div class="mbti-grid"><div class="mbti-item"><div class="mbti-lbl">外向性 (E)</div><div class="mbti-val" style="color:'+(mbti.E>50?'#ff8fa0':'#4d9fff')+';">'+mbti.E+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.E+'%;background:'+(mbti.E>50?'var(--red)':'var(--blue)')+'"></div></div></div><div class="mbti-item"><div class="mbti-lbl">直感力 (N)</div><div class="mbti-val" style="color:#c084fc;">'+mbti.N+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.N+'%;background:#9c27b0"></div></div></div><div class="mbti-item"><div class="mbti-lbl">感情優先 (F)</div><div class="mbti-val" style="color:#ff8fa0;">'+mbti.F+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.F+'%;background:var(--red)"></div></div></div><div class="mbti-item"><div class="mbti-lbl">柔軟性 (P)</div><div class="mbti-val" style="color:var(--green);">'+(mbti.P||50)+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+(mbti.P||50)+'%;background:var(--green)"></div></div></div></div><div class="str-tags">'+d.strengths.map(function(s){return '<span class="str-tag">'+s+'</span>';}).join('')+'</div><div class="grow-box"><span style="color:var(--yellow);font-weight:700;">🌱 成長ポイント：</span>'+d.growth+'</div></div><div class="res-card"><div class="res-card-t">WEAKNESS</div><div class="res-card-v">'+d.weak+'</div></div><div class="res-card"><div class="res-card-t">COMPATIBLE · '+d.compat+'</div><div class="res-card-v">'+d.cd+'</div></div><div style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px;"><button style="padding:14px;border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;color:white;background:'+d.color+';box-shadow:0 4px 20px '+d.color+'40;" onclick="goTab('feed',document.querySelector('.nb'))">体験を探しに行く</button><button style="padding:13px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--txt);" onclick="shareDiag(''+type+'')">📤 診断結果をシェア</button></div><div style="text-align:center;font-size:13px;color:var(--dim);cursor:pointer;text-decoration:underline;margin-bottom:22px;" onclick="retryDiag()">もう一度診断する</div>';}
+function renderResult(type){var d=OC[type];if(!d)return;var mbti=d.mbti||{E:50,N:50,F:50,P:50};var h='<div style="font-size:10px;text-align:center;color:var(--dim);margin-bottom:14px;">NEXTREET DIAGNOSIS RESULT</div>';h+='<div style="font-size:80px;text-align:center;margin-bottom:18px;">🎭</div>';h+='<div class="res-name" style="color:'+d.color+';">'+type+'</div>';h+='<div style="font-size:13px;text-align:center;color:var(--dim);margin-bottom:5px;">'+d.genre+'タイプ</div>';h+='<div style="font-size:13px;text-align:center;font-style:italic;margin-bottom:18px;">'+d.kuchi+'</div>';h+='<div class="res-catch" style="background:'+d.color+'18;color:'+d.color+';">'+d.catch+'</div>';h+='<div class="mbti-card"><div class="mbti-title">PERSONALITY ANALYSIS</div><div style="font-size:13px;line-height:1.85;color:rgba(255,255,255,0.72);margin-bottom:12px;">'+d.pers+'</div>';h+='<div class="mbti-grid"><div class="mbti-item"><div class="mbti-lbl">外向性(E)</div><div class="mbti-val" style="color:'+(mbti.E>50?'#ff8fa0':'#4d9fff')+';">'+mbti.E+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.E+'%;background:'+(mbti.E>50?'var(--red)':'var(--blue)')+';"></div></div></div>';h+='<div class="mbti-item"><div class="mbti-lbl">直感力(N)</div><div class="mbti-val" style="color:#c084fc;">'+mbti.N+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.N+'%;background:#9c27b0;"></div></div></div>';h+='<div class="mbti-item"><div class="mbti-lbl">感情優先(F)</div><div class="mbti-val" style="color:#ff8fa0;">'+mbti.F+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.F+'%;background:var(--red);"></div></div></div>';h+='<div class="mbti-item"><div class="mbti-lbl">柔軟性(P)</div><div class="mbti-val" style="color:var(--green);">'+(mbti.P||50)+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+(mbti.P||50)+'%;background:var(--green);"></div></div></div>';h+='</div><div class="str-tags">'+d.strengths.map(function(s){return '<span class="str-tag">'+s+'</span>';}).join('')+'</div>';h+='<div class="grow-box"><span style="color:var(--yellow);font-weight:700;">🌱 成長ポイント：</span>'+d.growth+'</div></div>';h+='<div class="res-card"><div class="res-card-t">WEAKNESS</div><div class="res-card-v">'+d.weak+'</div></div>';h+='<div class="res-card"><div class="res-card-t">COMPATIBLE · '+d.compat+'</div><div class="res-card-v">'+d.cd+'</div></div>';h+='<div style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px;"><button style="padding:14px;border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;cursor:pointer;color:white;background:'+d.color+';" onclick="goTab(this.dataset.tab,document.querySelector(this.dataset.sel))" data-tab="feed" data-sel=".nb">体験を探しに行く</button><button style="padding:13px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;color:var(--txt);" onclick="shareDiag(this.dataset.type)" data-type="'+type+'">📤 診断結果をシェア</button></div><div style="text-align:center;font-size:13px;color:var(--dim);cursor:pointer;text-decoration:underline;margin-bottom:22px;" onclick="retryDiag()">もう一度診断する</div>';document.getElementById('res-wrap').innerHTML=h;}
 function retryDiag(){document.getElementById('diag-result').style.display='none';document.getElementById('diag-start').style.display='flex';}
 function shareDiag(type){var d=OC[type];var txt='Nexca診断で'+type+'タイプでした！\n'+(d?d.catch:'')+'\n#Nexca広島';addPt('SNSシェア',5,false);if(navigator.share)navigator.share({title:'Nexca診断結果',text:txt,url:location.href});else{navigator.clipboard&&navigator.clipboard.writeText(txt);toast('コピーしました！');}}
 async function doLogin(){var r=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});if(r.error)toast('ログインに失敗しました');}
 async function doLogout(){await sb.auth.signOut();user=null;likes=new Set();wants=new Set();pts=0;ptu=0;ptm=0;ptt=0;phist=[];ocChars=new Set();lcChars=new Set();charType=null;renderMP();updStats();renderPtHero();toast('ログアウトしました');}
 function copyRef(){navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('rcode').textContent).then(function(){toast('招待コードをコピーしました');});}
-function renderMP(){var icA={中学生:'📚',高校生:'🎒',大学生:'🎓',社会人:'💼'};document.getElementById('mpage').textContent=(icA[age]||'🎒')+' '+age;if(user){var m=user.user_metadata||{};document.getElementById('mpname').textContent=m.full_name||'ユーザー';document.getElementById('mpemail').textContent=user.email||'';if(m.picture)document.getElementById('mpav').innerHTML='<img src="'+m.picture+'" alt="">';var lv=calcLv(ptt);document.getElementById('mp-title-badge').textContent=lv.name;document.getElementById('gsec').style.display='none';document.getElementById('lsec').style.display='block';document.getElementById('rcode').textContent='NEXCA-'+(user.id||'').slice(0,4).toUpperCase();updStats();renderOcGrid();renderLcGrid();var lev=EVS.filter(function(e){return likes.has(e.id);});document.getElementById('lgrid').innerHTML=lev.length?lev.map(function(ev){return '<div class="fc" onclick="openVOV(''+ev.id+'')"><div class="fct" style="background:'+ev.bg+';"><div class="fct-em">'+ev.em+'</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fct-t">'+ev.title+'</div></div></div>';}).join(''):'<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🤍</div><div class="empty-t">まだいいねがありません</div></div>';var wev=EVS.filter(function(e){return wants.has(e.id);});document.getElementById('wgrid').innerHTML=wev.length?wev.map(function(ev){return '<div class="fc" onclick="openVOV(''+ev.id+'')"><div class="fct" style="background:'+ev.bg+';"><div class="fct-em">'+ev.em+'</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fct-t">'+ev.title+'</div></div></div>';}).join(''):'<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">☆</div><div class="empty-t">まだ行きたいがありません</div></div>';sb.from('rankings').upsert({user_id:user.id,nickname:(m.full_name||'ユーザー').slice(0,8),total_points:Math.floor(ptt),updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(function(){}).catch(function(){});}else{document.getElementById('mpname').textContent='ゲスト';document.getElementById('mpemail').textContent='ログインしていません';document.getElementById('mpav').innerHTML='👤';document.getElementById('gsec').style.display='block';document.getElementById('lsec').style.display='none';}}
+function renderMP(){var icA={中学生:'📚',高校生:'🎒',大学生:'🎓',社会人:'💼'};document.getElementById('mpage').textContent=(icA[age]||'🎒')+' '+age;if(user){var m=user.user_metadata||{};document.getElementById('mpname').textContent=m.full_name||'ユーザー';document.getElementById('mpemail').textContent=user.email||'';if(m.picture)document.getElementById('mpav').innerHTML='<img src="'+m.picture+'" alt="">';var lv=calcLv(ptt);document.getElementById('mp-title-badge').textContent=lv.name;document.getElementById('gsec').style.display='none';document.getElementById('lsec').style.display='block';document.getElementById('rcode').textContent='NEXCA-'+(user.id||'').slice(0,4).toUpperCase();updStats();renderOcGrid();renderLcGrid();var lev=EVS.filter(function(e){return likes.has(e.id);});var lh='';if(lev.length){lev.forEach(function(ev){lh+='<div class="fc" onclick="openVOV(this.dataset.id)" data-id="'+ev.id+'"><div class="fct" style="background:'+ev.bg+';"><div class="fct-em">'+ev.em+'</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fct-t">'+ev.title+'</div></div></div>';});}else{lh='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">🤍</div><div class="empty-t">まだいいねがありません</div></div>';}document.getElementById('lgrid').innerHTML=lh;var wev=EVS.filter(function(e){return wants.has(e.id);});var wh='';if(wev.length){wev.forEach(function(ev){wh+='<div class="fc" onclick="openVOV(this.dataset.id)" data-id="'+ev.id+'"><div class="fct" style="background:'+ev.bg+';"><div class="fct-em">'+ev.em+'</div><div class="fct-ovl"></div><div class="fct-play">▶</div></div><div class="fci"><div class="fct-t">'+ev.title+'</div></div></div>';});}else{wh='<div class="empty" style="grid-column:1/-1;"><div class="empty-ic">☆</div><div class="empty-t">まだ行きたいがありません</div></div>';}document.getElementById('wgrid').innerHTML=wh;}else{document.getElementById('mpname').textContent='ゲスト';document.getElementById('mpemail').textContent='ログインしていません';document.getElementById('mpav').innerHTML='👤';document.getElementById('gsec').style.display='block';document.getElementById('lsec').style.display='none';}}
 function openTown(){
   document.getElementById('town-ov').style.display='flex';
   renderTownChars();
@@ -1240,310 +1231,15 @@ function openTown(){
 }
 function closeTown(){document.getElementById('town-ov').style.display='none';}
 function renderTownStars(){var el=document.getElementById('town-stars');if(!el)return;el.innerHTML=Array.from({length:35},function(){var x=Math.random()*100,y=Math.random()*100,s=Math.random()*2+0.5;return '<div class="town-star" style="left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;opacity:'+(Math.random()*0.6+0.1)+';"></div>';}).join('');}
-function renderTownShop(){var el=document.getElementById('town-shop-scroll');if(!el)return;el.innerHTML=TOWN_ITEMS.map(function(item){return '<div class="town-shop-item'+(Math.floor(pts)>=item.cost?' buyable':'')+'" onclick="buyTownItem(''+item.id+'')"><div class="town-shop-em">'+item.em+'</div><div class="town-shop-name">'+item.name+'</div><div class="town-shop-cost">⭐'+item.cost+'pt</div></div>';}).join('');}
+function renderTownShop(){var el=document.getElementById('town-shop-scroll');if(!el)return;var h='';TOWN_ITEMS.forEach(function(item){h+='<div class="town-shop-item'+(Math.floor(pts)>=item.cost?' buyable':'')+'" onclick="buyTownItem(this.dataset.id)" data-id="'+item.id+'"><div class="town-shop-em">'+item.em+'</div><div class="town-shop-name">'+item.name+'</div><div class="town-shop-cost">⭐'+item.cost+'pt</div></div>';});el.innerHTML=h;}
 function buyTownItem(itemId){var item=TOWN_ITEMS.find(function(i){return i.id===itemId;});if(!item)return;if(Math.floor(pts)<item.cost){toast('ポイントが足りません（必要:'+item.cost+'pt）');return;}if(!usePt(item.cost,item.name+'購入'))return;var x=10+Math.random()*75,y=45+Math.random()*45;townData.items.push({id:itemId,em:item.em,name:item.name,x:x,y:y});renderTownMap();renderTownShop();document.getElementById('town-pts-val').textContent=Math.floor(pts);toast(item.name+'を設置しました！');updateTownLevel();}
-function renderTownChars(){var el=document.getElementById('town-chars-scroll');if(!el)return;var all=['アガル','ツムギ','ヌクミ','テクル','カゲ'];el.innerHTML=all.map(function(c){var inTown=townData.chars.find(function(tc){return tc.key===c;});var cd=OC[c];var lv=calcClv(charExp[c]||0);return '<div class="town-char-thumb'+(inTown?' in-town':'')+'" onclick="toggleCharInTown(''+c+'')"><div style="font-size:26px;text-align:center;margin-bottom:3px;">🎭</div><div class="town-char-thumb-name" style="color:'+cd.color+';">'+c+'</div><div style="font-size:7px;color:'+cd.color+';text-align:center;">Lv'+lv+'</div>'+(inTown?'<div style="position:absolute;top:-4px;right:-4px;background:var(--green);border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:8px;">✓</div>':'')+'</div>';}).join('');}
-function toggleCharInTown(charKey){var existing=townData.chars.findIndex(function(c){return c.key===charKey;});if(existing>=0){townData.chars.splice(existing,1);toast(charKey+'を街から外しました');}else{var x=10+Math.random()*75,y=42+Math.random()*40;townData.chars.push({key:charKey,x:x,y:y});toast(charKey+'を街に配置しました！');}renderTownMap();renderTownChars();}
+function renderTownChars(){var el=document.getElementById('town-chars-scroll');if(!el)return;var all=['アガル','ツムギ','ヌクミ','テクル','カゲ'];var h='';all.forEach(function(c){var inT=townData.chars.find(function(tc){return tc.key===c;});var cd=OC[c];var lv=calcClv(charExp[c]||0);h+='<div class="town-char-thumb'+(inT?' in-town':'')+'" onclick="toggleCharInTown(this.dataset.key)" data-key="'+c+'"><div style="font-size:26px;text-align:center;">🎭</div><div class="town-char-thumb-name" style="color:'+cd.color+';">'+c+'</div><div style="font-size:7px;color:'+cd.color+';text-align:center;">Lv'+lv+'</div></div>';});el.innerHTML=h;}
+function toggleCharInTown(charKey){if(charKey&&typeof charKey==='object')charKey=charKey.dataset.key;var existing=townData.chars.findIndex(function(c){return c.key===charKey;});if(existing>=0){townData.chars.splice(existing,1);toast(charKey+'を街から外しました');}else{var x=10+Math.random()*75,y=42+Math.random()*40;townData.chars.push({key:charKey,x:x,y:y});toast(charKey+'を街に配置しました！');}renderTownMap();renderTownChars();}
 function renderTownMap(){var layer=document.getElementById('town-items-layer');var emptyMsg=document.getElementById('town-empty-msg');if(!layer)return;var hasContent=townData.items.length>0||townData.chars.length>0;if(emptyMsg)emptyMsg.style.display=hasContent?'none':'flex';layer.innerHTML='';townData.items.forEach(function(item){var div=document.createElement('div');div.className='town-el';div.style.left=item.x+'%';div.style.top=item.y+'%';div.textContent=item.em;layer.appendChild(div);});townData.chars.forEach(function(tc){var cd=OC[tc.key];if(!cd)return;var div=document.createElement('div');div.className='town-char-el';div.style.left=tc.x+'%';div.style.top=tc.y+'%';div.innerHTML='<div style="font-size:22px;filter:drop-shadow(0 0 8px '+cd.color+');">🎭</div>';div.onclick=function(){openTcm(tc.key);};layer.appendChild(div);});}
-function openTcm(charKey){var cd=OC[charKey];if(!cd)return;document.getElementById('tcm-box').innerHTML='<div style="width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto 18px;"></div><div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;"><div style="font-size:52px;">🎭</div><div><div style="font-family:var(--font-en);font-size:20px;letter-spacing:1px;color:'+cd.color+';">'+charKey+'</div><div style="font-size:12px;color:var(--dim);">Lv'+calcClv(charExp[charKey]||0)+' / '+cd.genre+'担当</div></div></div><div style="background:rgba(255,255,255,0.04);border-radius:var(--r-sm);padding:12px;margin-bottom:16px;font-size:13px;line-height:1.7;font-style:italic;color:rgba(255,255,255,0.7);">'+cd.kuchi+'</div><div class="tcm-acts"><div class="tcm-act" onclick="feedChar(''+charKey+'')"><div class="tcm-act-em">🍎</div><div class="tcm-act-name">えさをあげる</div><div class="tcm-act-cost">30pt</div></div><div class="tcm-act" onclick="playChar(''+charKey+'')"><div class="tcm-act-em">🎮</div><div class="tcm-act-name">遊ぶ</div><div class="tcm-act-cost">50pt</div></div><div class="tcm-act" onclick="closeTcm();toggleCharInTown(''+charKey+'')"><div class="tcm-act-em">👋</div><div class="tcm-act-name">外す</div><div class="tcm-act-cost">無料</div></div></div>';document.getElementById('tcm').classList.add('on');}
+function openTcm(charKey){var cd=OC[charKey];if(!cd)return;var h='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;"><div style="font-size:52px;">🎭</div><div><div style="font-size:20px;color:'+cd.color+';">'+charKey+'</div><div style="font-size:12px;color:var(--dim);">Lv'+calcClv(charExp[charKey]||0)+' / '+cd.genre+'担当</div></div></div>';h+='<div class="tcm-acts"><div class="tcm-act" onclick="feedChar(this.dataset.key)" data-key="'+charKey+'"><div class="tcm-act-em">🍎</div><div class="tcm-act-name">えさをあげる</div><div class="tcm-act-cost">30pt</div></div><div class="tcm-act" onclick="playChar(this.dataset.key)" data-key="'+charKey+'"><div class="tcm-act-em">🎮</div><div class="tcm-act-name">遊ぶ</div><div class="tcm-act-cost">50pt</div></div></div>';document.getElementById('tcm-box').innerHTML=h;document.getElementById('tcm').classList.add('on');}
 function closeTcm(){document.getElementById('tcm').classList.remove('on');}
-function feedChar(charKey){if(!usePt(30,charKey+'にえさをあげる'))return;var oldLv=calcClv(charExp[charKey]||0);charExp[charKey]=(charExp[charKey]||0)+20;var newLv=calcClv(charExp[charKey]);if(newLv>oldLv)showClvup(charKey,newLv);else toast(charKey+'が喜んでいる！ EXP+20');closeTcm();}
-function playChar(charKey){if(!usePt(50,charKey+'と遊ぶ'))return;var oldLv=calcClv(charExp[charKey]||0);charExp[charKey]=(charExp[charKey]||0)+35;var newLv=calcClv(charExp[charKey]);if(newLv>oldLv)showClvup(charKey,newLv);else toast(charKey+'と遊んだ！ EXP+35');closeTcm();}
-
-// ═══════════ ONBOARDING V2 ═══════════
-function goObStep1(){
-  document.getElementById('ob-step0').style.display='none';
-  document.getElementById('ob-step1').style.display='block';
-}
-
-// ═══════════ TODAY WIDGET ═══════════
-function renderTodayWidget(){
-  var tw=document.getElementById('today-widget');
-  if(!tw)return;
-  tw.style.display='block';
-  // キャラメッセージ
-  var msgs={
-    アガル:['やろやろ！今日こそ行ってみよう','躊躇ってる時間がもったいない！'],
-    ツムギ:['本物の体験だけが記憶に残る','今日も審美眼を磨きに行こう'],
-    ヌクミ:['まあ、座りなよ。いい場所あるよ','今日の体験、一緒に探そう'],
-    テクル:['失敗してもいい。とにかくやってみよう','今日は何か新しいこと試す日'],
-    カゲ:['…行けばわかる','縁の下でいい体験が待ってる'],
-    コネル:['面白そうなの、あるかも','没頭できる体験を探しに行こう'],
-    フワリ:['静かに見ているとわかるものがある','今日の体験を丁寧に感じて']
-  };
-  var char=charType||'アガル';
-  var cd=OC[char]||OC['アガル'];
-  var msgPool=msgs[char]||msgs['アガル'];
-  var msg=msgPool[Math.floor(Date.now()/86400000)%msgPool.length];
-  document.getElementById('tw-char-name').textContent=char;
-  document.getElementById('tw-char-name').style.color=cd.color;
-  document.getElementById('tw-char-msg').textContent=msg;
-  document.getElementById('today-widget').style.setProperty('--char-color',cd.color);
-  // 今日のイベント
-  var evs=EVS.filter(function(e){return !e.isOfficial;}).slice(0,4);
-  var gs2=GS;
-  document.getElementById('tw-events').innerHTML=evs.map(function(ev){
-    var g=gs2[ev.g]||gs2.event;
-    return '<div class="today-ev-chip" onclick="openDrw(''+ev.id+'')" style="border-color:'+g.bd+'20;">'+
-      '<div class="today-ev-chip-genre" style="color:'+g.c+';">'+ev.ge+' '+ev.gl+'</div>'+
-      '<div class="today-ev-chip-title">'+ev.title.slice(0,18)+(ev.title.length>18?'…':'')+'</div>'+
-      '<div class="today-ev-chip-loc">📍 '+ev.loc.slice(0,10)+'</div></div>';
-  }).join('');
-}
-
-// ═══════════ SLIDE PROGRESS ═══════════
-function renderSlideProgress(){
-  var el=document.getElementById('slide-progress');
-  if(!el||!fevs.length)return;
-  el.innerHTML=fevs.map(function(_,i){
-    return '<div class="sp-dot'+(i===idx?' cur':'')+'"></div>';
-  }).join('');
-}
-
-// ═══════════ GACHA V2 (CARD FLIP) ═══════════
-var gachaRarity='Common',gachaFlipped=0,gachaResult=null;
-
-function openGacha(){
-  if(gDrawn){toast('本日のガチャは使用済みです');return;}
-  var weights={Common:50,Uncommon:25,Rare:15,Epic:8,Legendary:2};
-  var rarities=Object.keys(weights);
-  var rand=Math.random()*100,rarity='Common',cum=0;
-  for(var i=0;i<rarities.length;i++){cum+=weights[rarities[i]];if(rand<cum){rarity=rarities[i];break;}}
-  var pool=GACHA[rarity];
-  var mission=pool[Math.floor(Math.random()*pool.length)];
-  gMission=mission;gDrawn=true;gachaRarity=rarity;gachaFlipped=0;
-  // カードセットアップ
-  var icons={Common:'🎴',Uncommon:'🌟',Rare:'💎',Epic:'🔮',Legendary:'🌈'};
-  var rarColors={Common:'#606078',Uncommon:'#4d9fff',Rare:'#ffbe00',Epic:'#c084fc',Legendary:'#E63946'};
-  var rarBgs={Common:'rgba(96,96,120,0.3)',Uncommon:'rgba(77,159,255,0.25)',Rare:'rgba(255,190,0,0.25)',Epic:'rgba(156,39,176,0.25)',Legendary:'rgba(230,57,70,0.25)'};
-  var rarLabels={Common:'gr-c',Uncommon:'gr-u',Rare:'gr-r',Epic:'gr-e',Legendary:'gr-l'};
-  // メインカード（ランダムな位置）
-  var mainIdx=Math.floor(Math.random()*3);
-  for(var j=0;j<3;j++){
-    var isMain=(j===mainIdx);
-    var r=isMain?rarity:'Common';
-    var back=document.getElementById('gc-back-'+j);
-    back.style.borderColor=rarColors[r];
-    back.style.background='linear-gradient(135deg,#0e0520,#06101a)';
-    back.innerHTML='<div class="gacha-card-back-icon" style="color:'+rarColors[r]+';">'+icons[r]+'</div>'+
-      '<div class="gacha-card-back-rarity '+rarLabels[r]+'" style="background:'+rarBgs[r]+';">'+r+'</div>'+
-      (isMain?'<div style="font-size:10px;color:rgba(255,255,255,0.5);text-align:center;padding:0 8px;margin-top:4px;">'+mission.text.slice(0,20)+'…</div>':'');
-    // フリップ状態リセット
-    document.querySelectorAll('.gacha-card-flip')[j].classList.remove('flipped');
-    document.querySelectorAll('.gacha-card-flip')[j].dataset.main=(isMain?'1':'0');
-  }
-  gachaResult={rarity,mission,mainIdx,icons,rarColors,rarLabels,rarBgs};
-  document.getElementById('gacha-stage-hint').textContent='カードをタップして開く';
-  document.getElementById('gacha-stage-cta').classList.remove('on');
-  document.getElementById('gacha-cards-stage').classList.add('on');
-}
-
-function flipGachaCard(idx){
-  var card=document.querySelectorAll('.gacha-card-flip')[idx];
-  if(card.classList.contains('flipped'))return;
-  card.classList.add('flipped');
-  gachaFlipped++;
-  var isMain=(card.dataset.main==='1');
-  // フラッシュ
-  if(isMain){
-    var flashCls={Common:'flash-common',Uncommon:'flash-uncommon',Rare:'flash-rare',Epic:'flash-epic',Legendary:'flash-legendary'};
-    var flash=document.getElementById('gacha-flash');
-    flash.className=flashCls[gachaResult.rarity]||'flash-common';
-    flash.classList.add('on');
-    setTimeout(function(){flash.classList.remove('on');},150);
-    // Legendary: 画面揺れ
-    if(gachaResult.rarity==='Legendary'){
-      document.body.classList.add('shake');
-      setTimeout(function(){document.body.classList.remove('shake');},550);
-    }
-    // パーティクル
-    spawnParticles(gachaResult.rarColors[gachaResult.rarity]);
-  }
-  if(gachaFlipped===3){
-    setTimeout(function(){
-      document.getElementById('gacha-stage-hint').textContent='';
-      document.getElementById('gacha-stage-cta').classList.add('on');
-    },400);
-  }
-}
-
-function spawnParticles(color){
-  var el=document.getElementById('gacha-particles');
-  el.innerHTML='';el.classList.add('on');
-  var cx=window.innerWidth/2,cy=window.innerHeight/2;
-  for(var i=0;i<20;i++){
-    var p=document.createElement('div');
-    p.className='particle';
-    var size=4+Math.random()*8;
-    var angle=Math.random()*Math.PI*2;
-    var dist=80+Math.random()*160;
-    var tx=Math.cos(angle)*dist,ty=Math.sin(angle)*dist;
-    p.style.cssText='width:'+size+'px;height:'+size+'px;left:'+cx+'px;top:'+cy+'px;background:'+color+';'+
-      '--tx:'+tx+'px;--ty:'+ty+'px;animation-delay:'+(Math.random()*0.2)+'s;';
-    el.appendChild(p);
-  }
-  setTimeout(function(){el.classList.remove('on');el.innerHTML='';},1200);
-}
-
-function showGachaResult(){
-  if(!gachaResult)return;
-  document.getElementById('gacha-cards-stage').classList.remove('on');
-  // 旧オーバーレイを表示
-  var r=gachaResult;
-  var icons={Common:'🎴',Uncommon:'🌟',Rare:'💎',Epic:'🔮',Legendary:'🌈'};
-  var cls={Common:'gr-c',Uncommon:'gr-u',Rare:'gr-r',Epic:'gr-e',Legendary:'gr-l'};
-  document.getElementById('gr-icon').textContent=icons[r.rarity];
-  document.getElementById('gr-rarity').className='gr-rarity '+cls[r.rarity];
-  document.getElementById('gr-rarity').textContent=r.rarity;
-  document.getElementById('gr-type').textContent=r.mission.type==='家'?'🏠 家でできるミッション':'🌿 外でできるミッション';
-  document.getElementById('gr-text').textContent=r.mission.text;
-  document.getElementById('gr-evidence').textContent='📚 '+r.mission.ev;
-  document.getElementById('gacha-ov').classList.add('on');
-}
-
-function acceptGacha(){
-  if(!gMission)return;
-  addPt('ガチャミッション達成',gMission.pts,false);
-  closeGacha();
-  toast('ミッション受け取り！頑張ろう');
-}
-function closeGacha(){
-  document.getElementById('gacha-ov').classList.remove('on');
-  document.getElementById('gacha-cards-stage').classList.remove('on');
-  gMission=null;gachaResult=null;
-}
-
-// ═══════════ CODE LIGHTS ═══════════
-function updateCodeLights(val){
-  var lights=document.querySelectorAll('#code-lights .code-light');
-  lights.forEach(function(l,i){
-    l.classList.remove('on','ok','ng');
-    if(i<val.length)l.classList.add('on');
-  });
-}
-
-// ═══════════ CHAR SUMMON ═══════════
-function showCharSummon(charKey,ptGained,expGained){
-  var ev=EVS.find(function(e){return e.charKey===charKey;});
-  var cd=OC[charKey];if(!cd)return;
-  var emoji=ev?ev.charEmoji:'🎭';
-  var color=cd.color;
-  document.getElementById('char-summon').style.setProperty('--summon-color',color);
-  document.getElementById('summon-char').textContent=emoji;
-  document.getElementById('summon-name').textContent=charKey;
-  document.getElementById('summon-name').style.color=color;
-  document.getElementById('summon-catch').textContent=cd.catch;
-  document.getElementById('summon-pts').textContent='+'+ptGained+'pt ＋ EXP+'+expGained;
-  document.getElementById('summon-ring').style.borderColor=color;
-  document.getElementById('char-summon').classList.add('on');
-}
-
-function closeSummon(){
-  document.getElementById('char-summon').classList.remove('on');
-}
-
-// ═══════════ WELCOME MODAL ═══════════
-function showWelcomeModal(){
-  var char=charType||'アガル';
-  var cd=OC[char]||OC['アガル'];
-  var ev=EVS.find(function(e){return e.charKey===char;});
-  document.getElementById('wm-char').textContent=ev?ev.charEmoji:'🎭';
-  document.getElementById('welcome-modal').classList.add('on');
-}
-function closeWelcome(){document.getElementById('welcome-modal').classList.remove('on');}
-
-// ═══════════ TOWN V2 ═══════════
-var townArea='center';
-var townAreaData={
-  center:{sky:'linear-gradient(180deg,#02040f,#050d20,#0a1a3a)',ground:'linear-gradient(180deg,#071207,#041008)',label:'中心部'},
-  park:{sky:'linear-gradient(180deg,#021a06,#04280a,#071e0a)',ground:'linear-gradient(180deg,#0a1f07,#061408)',label:'公園'},
-  port:{sky:'linear-gradient(180deg,#020d1a,#041628,#0a1e3a)',ground:'linear-gradient(180deg,#071218,#040d18)',label:'港'},
-  shrine:{sky:'linear-gradient(180deg,#1a0a02,#280d04,#1e0e07)',ground:'linear-gradient(180deg,#1a0d07,#100806)',label:'神社'}
-};
-
-function setTownArea(el,area){
-  document.querySelectorAll('.town-area-tab').forEach(function(t){t.classList.remove('on');});
-  el.classList.add('on');
-  townArea=area;
-  var d=townAreaData[area];
-  var sky=document.querySelector('.town-sky');
-  var ground=document.querySelector('.town-ground');
-  if(sky)sky.style.background=d.sky;
-  if(ground)ground.style.background=d.ground;
-}
-
-function updateTownTimeLabel(){
-  var h=new Date().getHours();
-  var label=h>=5&&h<10?'🌅 MORNING':h>=10&&h<17?'☀️ DAY':h>=17&&h<20?'🌆 EVENING':'🌙 NIGHT';
-  var el=document.getElementById('town-time-ind');
-  if(el)el.textContent=label;
-}
-
-function updateTownLevel(){
-  var total=townData.items.length+townData.chars.length;
-  var levels=[
-    {name:'新しい街',thresh:0},{name:'芽吹く街',thresh:2},{name:'賑わいの街',thresh:5},
-    {name:'活気あふれる街',thresh:9},{name:'伝説の街',thresh:14}
-  ];
-  var lv=1,lvData=levels[0];
-  for(var i=0;i<levels.length;i++){if(total>=levels[i].thresh){lv=i+1;lvData=levels[i];}}
-  var nextThresh=levels[lv]?levels[lv].thresh:levels[levels.length-1].thresh+5;
-  var pct=Math.min(100,Math.round((total-lvData.thresh)/(nextThresh-lvData.thresh)*100));
-  var badge=document.getElementById('town-lv-badge');
-  var name=document.getElementById('town-lv-name');
-  var fill=document.getElementById('town-lv-fill');
-  var sub=document.getElementById('town-lv-sub');
-  if(badge)badge.textContent='LV'+lv;
-  if(name)name.textContent=lvData.name;
-  if(fill)fill.style.width=pct+'%';
-  if(sub)sub.textContent=total+'/'+(nextThresh)+' 建物・キャラ';
-}
-
-// ═══════════ ENHANCED submitPart ═══════════
-function submitPart(){
-  var code=document.getElementById('part-code')&&document.getElementById('part-code').value.trim().toUpperCase();
-  var ev=EVS.find(function(e){return e.id===partEvId;});
-  if(!ev)return;
-  if(!code||code.length<3){toast('参加コードを入力してください');return;}
-  var lights=document.querySelectorAll('#code-lights .code-light');
-  if(code!==ev.qr){
-    // NGライト演出
-    lights.forEach(function(l){l.classList.remove('on');l.classList.add('ng');});
-    setTimeout(function(){lights.forEach(function(l){l.classList.remove('ng');l.classList.add('on');});},500);
-    document.getElementById('partm-content').innerHTML='<div class="part-st ng">❌ コードが正しくありません</div><div class="code-inp-wrap"><input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="もう一度入力" oninput="this.value=this.value.toUpperCase();updateCodeLights(this.value)"><div class="code-inp-lights" id="code-lights"><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div></div></div><button class="part-sub" onclick="submitPart()">再試行</button>';
-    return;
-  }
-  if(parts[partEvId]){
-    document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 参加済みです</div><button class="part-sub" onclick="closePartM()">閉じる</button>';
-    return;
-  }
-  // OKライト
-  lights.forEach(function(l){l.classList.remove('on');l.classList.add('ok');});
-  parts[partEvId]='ok';
-  var ptG=ev.fixed?30:50;
-  addPt('参加証明',ptG,false);
-  if(ev.charKey&&OC[ev.charKey]){
-    var expMap={event:30,cafe:25,vintage:25,learn:30,volunteer:35};
-    var expG=expMap[ev.genre]||30;
-    var oldLv=calcClv(charExp[ev.charKey]||0);
-    charExp[ev.charKey]=(charExp[ev.charKey]||0)+expG;
-    var newLv=calcClv(charExp[ev.charKey]);
-    // キャラ召喚演出
-    setTimeout(function(){
-      closePartM();
-      if(newLv>oldLv)showClvup(ev.charKey,newLv);
-      else showCharSummon(ev.charKey,ptG,expG);
-    },600);
-  }
-  var lc=LC.find(function(c){return c.spotId===partEvId;});
-  if(lc&&!lcChars.has(lc.key)){lcChars.add(lc.key);addPt('キャラ獲得',10,false);}
-  if(firstPart){firstPart=false;addPt('初回参加ボーナス',30,true);}
-  if(!ev.charKey){
-    document.getElementById('partm-content').innerHTML='<div class="part-st ok">✅ 参加証明完了！+'+ptG+'pt</div><div style="margin:10px 0;"><div style="font-size:12px;font-weight:700;color:var(--dim);margin-bottom:7px;">✍️ 振り返りを書く（+20pt）</div><textarea id="rv-input" style="width:100%;padding:11px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--txt);font-size:13px;resize:none;height:72px;font-family:inherit;" placeholder="体験の感想..."></textarea><button class="part-sub" style="margin-top:8px;" onclick="submitRv(''+partEvId+'')">振り返りを送信 +20pt</button></div><button style="width:100%;padding:11px;background:none;border:none;color:var(--dim);cursor:pointer;font-family:inherit;" onclick="closePartM()">閉じる</button>';
-  }
-  updStats();
-}
-
+function feedChar(charKey){if(charKey&&typeof charKey==='object')charKey=charKey.dataset.key;if(!usePt(30,charKey+'にえさをあげる'))return;var oldLv=calcClv(charExp[charKey]||0);charExp[charKey]=(charExp[charKey]||0)+20;var newLv=calcClv(charExp[charKey]);if(newLv>oldLv)showClvup(charKey,newLv);else toast(charKey+'が喜んでいる！ EXP+20');closeTcm();}
+function playChar(charKey){if(charKey&&typeof charKey==='object')charKey=charKey.dataset.key;if(!usePt(50,charKey+'と遊ぶ'))return;var oldLv=calcClv(charExp[charKey]||0);charExp[charKey]=(charExp[charKey]||0)+35;var newLv=calcClv(charExp[charKey]);if(newLv>oldLv)showClvup(charKey,newLv);else toast(charKey+'と遊んだ！ EXP+35');closeTcm();}
 setupSwipe();
 initApp();
 </script>
