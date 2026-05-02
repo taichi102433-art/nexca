@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -1244,7 +1244,7 @@ function updPos(){
   });
   renderSlideProgress();
 }
-function renderSlideProgress(){var st=document.getElementById('stack');if(!st)return;var prog=document.getElementById('slide-prog');if(!prog){prog=document.createElement('div');prog.id='slide-prog';prog.className='slide-progress';st.appendChild(prog);}if(!fevs||fevs.length<=1){prog.style.display='none';return;}prog.style.display='flex';prog.innerHTML=fevs.map(function(_,i){return '<div class="sp-dot'+(i===idx?' cur':')+'"></div>';}).join('');}
+function renderSlideProgress(){var st=document.getElementById('stack');if(!st)return;var prog=document.getElementById('slide-prog');if(!prog){prog=document.createElement('div');prog.id='slide-prog';prog.className='slide-progress';st.appendChild(prog);}if(!fevs||fevs.length<=1){prog.style.display='none';return;}prog.style.display='flex';prog.innerHTML=fevs.map(function(_,i){return '<div class="sp-dot'+(i===idx?' cur':'')+'"></div>';}).join('');}
 function next(){if(busy||idx>=fevs.length-1)return;busy=true;idx++;updPos();if(fevs[idx])setTimeout(function(){trackView(fevs[idx].id);},2000);setTimeout(function(){busy=false;},400);}
 function prev(){if(busy||idx<=0)return;busy=true;idx--;updPos();setTimeout(function(){busy=false;},400);}
 function trackView(id){if(viewed.has(id))return;viewed.add(id);if(viewPts<10){viewPts++;addPt('動画視聴',1,false);}updStats();}
