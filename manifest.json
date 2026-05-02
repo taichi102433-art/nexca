@@ -1,0 +1,33 @@
+{
+  "name": "Nexca | 広島の体験を発見しよう",
+  "short_name": "Nexca",
+  "description": "広島の若者向け体験プラットフォーム。イベント・カフェ・ボランティアを動画で発見し、ポイントを貯めて特典と交換！",
+  "start_url": "/nexca/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070709",
+  "theme_color": "#070709",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "social"],
+  "screenshots": [
+    {
+      "src": "ogp.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}
