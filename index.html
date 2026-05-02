@@ -1,16 +1,34 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#070709">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Nexca">
-<title>Nexca</title>
+<meta name="description" content="広島の若者向け体験プラットフォーム。イベント・カフェ・ボランティアを動画で発見し、ポイントを貯めて特典と交換！">
+<title>Nexca | 広島の体験を発見しよう</title>
+<!-- OGP -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nexca | 広島の体験を発見しよう">
+<meta property="og:description" content="広島の若者向け体験プラットフォーム。イベント・カフェ・ボランティアを動画で発見し、ポイントを貯めて特典と交換！">
+<meta property="og:url" content="https://taichi102433-art.github.io/nexca/">
+<meta property="og:site_name" content="Nexca">
+<meta property="og:image" content="https://taichi102433-art.github.io/nexca/ogp.png">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nexca | 広島の体験を発見しよう">
+<meta name="twitter:description" content="広島の若者向け体験プラットフォーム。イベント・カフェ・ボランティアを動画で発見し、ポイントを貯めて特典と交換！">
+<meta name="twitter:image" content="https://taichi102433-art.github.io/nexca/ogp.png">
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<!-- フォント最適化 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet"></noscript>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{
@@ -23,6 +41,11 @@
   --font-num:'Oswald',sans-serif;
   --font-jp:'Noto Sans JP',sans-serif;
   --r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:24px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --nav-h:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--font-jp);}
@@ -56,10 +79,10 @@ body::after{
 .ob-vp-text{font-size:13px;font-weight:700;line-height:1.4;}
 .ob-vp-sub{font-size:10px;color:var(--dim);margin-top:1px;font-weight:400;}
 /* SCREENS */
-.screen{position:fixed;top:0;left:0;right:0;bottom:var(--nav);display:none;flex-direction:column;overflow:hidden;z-index:1;}
+.screen{position:fixed;top:0;left:0;right:0;bottom:var(--nav-h);display:none;flex-direction:column;overflow:hidden;z-index:1;}
 .screen.on{display:flex;}
 /* NAV */
-#nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(7,7,9,0.94);backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-around;z-index:1000;}
+#nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(7,7,9,0.94);backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-around;z-index:1000;}
 .nb{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;cursor:pointer;border:none;background:none;color:var(--dim);font-family:var(--font-jp);transition:all 0.2s;flex:1;}
 .nb.on{color:var(--txt);}
 .nb-ic{width:22px;height:22px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
@@ -111,7 +134,7 @@ body::after{
 .shint{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0.12);pointer-events:none;animation:bup 2s infinite;letter-spacing:1px;}
 @keyframes bup{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(-4px)}}
 /* FILTER MODAL */
-#fm{position:fixed;inset:0;z-index:600;display:none;align-items:flex-end;padding-bottom:var(--nav);}
+#fm{position:fixed;inset:0;z-index:600;display:none;align-items:flex-end;padding-bottom:var(--nav-h);}
 #fm.on{display:flex;}
 .fmbg{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);}
 .fmbox{position:relative;width:100%;background:rgba(12,12,18,0.98);backdrop-filter:blur(24px);border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,0.07);max-height:82vh;overflow-y:auto;padding-bottom:12px;}
@@ -138,7 +161,7 @@ body::after{
 .scancel{padding:8px 12px;color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;font-family:var(--font-jp);}
 /* DRAWER */
 #drw{position:fixed;left:0;right:0;bottom:calc(-100% - var(--nav));z-index:400;background:rgba(11,11,16,0.98);backdrop-filter:blur(24px);border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,0.07);max-height:90dvh;display:flex;flex-direction:column;transition:bottom 0.36s cubic-bezier(0.4,0,0.2,1);}
-#drw.on{bottom:var(--nav);}
+#drw.on{bottom:var(--nav-h);}
 #drwbg{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:390;display:none;backdrop-filter:blur(3px);}
 #drwbg.on{display:block;}
 .drw-handle{width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:12px auto 0;flex-shrink:0;}
@@ -406,7 +429,7 @@ body::after{
 .town-char-thumb.in-town{border-color:rgba(0,229,160,0.4);}
 .town-char-thumb-name{font-size:8px;font-weight:700;color:var(--dim);margin-top:3px;}
 /* PARTICIPATION */
-#partm{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav);}
+#partm{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav-h);}
 #partm.on{display:flex;}
 .partm-bg{position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);}
 .partm-box{position:relative;width:100%;background:rgba(11,11,16,0.99);backdrop-filter:blur(24px);border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,0.07);padding:14px 16px 32px;}
@@ -421,7 +444,7 @@ body::after{
 .part-st.ok{background:rgba(0,229,160,0.1);color:var(--green);border:1px solid rgba(0,229,160,0.2);}
 .part-st.ng{background:rgba(230,57,70,0.1);color:var(--red);border:1px solid rgba(230,57,70,0.2);}
 /* OVERLAYS */
-#tcm{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav);}
+#tcm{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav-h);}
 #tcm.on{display:flex;}
 .tcm-bg{position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);}
 .tcm-box{position:relative;width:100%;background:rgba(11,11,16,0.99);border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,0.07);padding:16px 16px 32px;}
@@ -434,7 +457,7 @@ body::after{
 #exm{position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);}
 #exm.on{display:flex;}
 .exmbox{background:rgba(13,13,20,0.99);border-radius:var(--r-xl);padding:20px;width:100%;max-width:310px;border:1px solid rgba(255,255,255,0.08);}
-#agem{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav);}
+#agem{position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;padding-bottom:var(--nav-h);}
 #agem.on{display:flex;}
 .agem-bg{position:absolute;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);}
 .agem-box{position:relative;width:100%;background:rgba(11,11,16,0.99);border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,0.07);padding:14px 14px 28px;}
@@ -469,7 +492,7 @@ body::after{
 .prereg-sub{width:100%;padding:14px;background:var(--red);border:none;border-radius:var(--r-md);font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:var(--font-jp);margin-bottom:8px;box-shadow:0 4px 20px rgba(230,57,70,0.35);transition:all 0.2s;}
 .prereg-skip{width:100%;padding:10px;background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;font-family:var(--font-jp);}
 /* TOAST */
-#toast{position:fixed;bottom:calc(var(--nav)+14px);left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,24,0.97);border:1px solid rgba(255,255,255,0.08);border-radius:var(--pill);padding:9px 18px;font-size:12px;font-weight:700;white-space:nowrap;z-index:3000;opacity:0;transition:opacity 0.3s,transform 0.3s;backdrop-filter:blur(16px);}
+#toast{position:fixed;bottom:calc(var(--nav-h)+14px);left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,24,0.97);border:1px solid rgba(255,255,255,0.08);border-radius:var(--pill);padding:9px 18px;font-size:12px;font-weight:700;white-space:nowrap;z-index:3000;opacity:0;transition:opacity 0.3s,transform 0.3s;backdrop-filter:blur(16px);}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center;gap:8px;}
 .empty-ic{font-size:40px;opacity:0.18;}
@@ -480,6 +503,13 @@ body::after{
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:1px;}
 .ob-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:rgba(255,255,255,0.06);}
 
+/* ═══════ LOADING SCREEN ═══════ */
+#app-loading{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.5s;}
+#app-loading.fade{opacity:0;pointer-events:none;}
+.app-load-logo{font-family:var(--font-en);font-size:52px;letter-spacing:4px;line-height:1;}
+.app-load-logo span{color:var(--red);text-shadow:0 0 20px var(--red-glow);}
+/* ═══════ ERROR FALLBACK ═══════ */
+#app-error{position:fixed;inset:0;z-index:99998;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px;text-align:center;}
 /* ═══════════════════════════════ PHASE 2: GACHA EFFECTS ═══ */
 
 /* パーティクルコンテナ */
@@ -705,7 +735,7 @@ body::after{
 .sinfo-want{font-family:var(--font-num);font-size:10px;color:var(--yellow);margin-left:auto;}
 /* スライドプログレスバー */
 .slide-progress{
-  position:absolute;bottom:var(--nav);left:0;right:0;z-index:50;
+  position:absolute;bottom:var(--nav-h);left:0;right:0;z-index:50;
   display:flex;gap:3px;padding:0 14px 8px;pointer-events:none;
 }
 .sp-dot{height:2px;flex:1;background:rgba(255,255,255,0.2);border-radius:1px;transition:background 0.3s;}
@@ -795,7 +825,7 @@ body::after{
 
 #welcome-modal{
   position:fixed;inset:0;z-index:8500;display:none;
-  align-items:flex-end;padding-bottom:var(--nav);
+  align-items:flex-end;padding-bottom:var(--nav-h);
   background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
 }
 #welcome-modal.on{display:flex;}
@@ -1059,8 +1089,68 @@ body::after{
   </div>
 </div>
 
+<!-- ローディング画面 -->
+<div id="app-loading">
+  <div class="app-load-logo">NE<span>X</span>CA</div>
+  <div class="load-dots"><div class="load-dot"></div><div class="load-dot"></div><div class="load-dot"></div></div>
+  <div style="font-size:11px;color:var(--dim);">読み込み中...</div>
+</div>
+<!-- エラーフォールバック -->
+<div id="app-error">
+  <div style="font-size:40px;">⚠️</div>
+  <div style="font-size:18px;font-weight:900;">接続エラー</div>
+  <div style="font-size:13px;color:var(--dim);line-height:1.7;">ネットワーク接続を確認してください</div>
+  <button onclick="location.reload()" style="margin-top:8px;padding:13px 28px;background:var(--red);border:none;border-radius:var(--r-md);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-jp);">再読み込み</button>
+</div>
 <div id="toast"></div>
 <script>
+// ═══ ユーティリティ ═══
+function sanitize(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
+function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e||''));}
+// ローディング制御
+function hideLoading(){var el=document.getElementById('app-loading');if(el){el.classList.add('fade');setTimeout(function(){el.style.display='none';},500);}}
+function showError(){var el=document.getElementById('app-error');if(el)el.style.display='flex';}
+// ポイント二重防止キー（localStorage永続化）
+var ptDedup;try{ptDedup=new Set(JSON.parse(localStorage.getItem('nx_pt_dedup')||'[]'));}catch(e){ptDedup=new Set();}
+function savePtDedup(){try{localStorage.setItem('nx_pt_dedup',JSON.stringify([...ptDedup]));}catch(e){}}
+// ディープリンク処理
+function handleDeepLink(){
+  var h=location.hash;if(!h)return;
+  var m=h.match(/^#\/event\/(.+)$/);
+  if(m){setTimeout(function(){openDrw(m[1]);},900);return;}
+  if(h==='#/points'){var nb=document.querySelectorAll('.nb')[3];if(nb)goTab('points',nb);}
+  else if(h==='#/diag'){var nb2=document.querySelectorAll('.nb')[2];if(nb2)goTab('diag',nb2);}
+  else if(h==='#/flyer'){var nb3=document.querySelectorAll('.nb')[1];if(nb3)goTab('flyer',nb3);}
+}
+// AI推薦スコア計算
+function getRecScore(ev){
+  var score=Math.random()*5;
+  if(charType&&OC[charType]&&OC[charType].genre===ev.genre)score+=30;
+  if(charType&&OC[charType]&&OC[charType].genre===ev.g)score+=25;
+  if(!viewed.has(ev.id))score+=15;
+  if(age&&ev.age&&ev.age.includes(age))score+=10;
+  return score;
+}
+// Supabase動的イベント読み込み
+async function loadDBEvents(){
+  try{
+    var r=await sb.from('events').select('*').eq('is_active',true).order('created_at',{ascending:false}).limit(30);
+    if(r.data&&r.data.length>0){
+      var dbEvs=r.data.map(function(e){return {
+        id:'db_'+e.id,g:e.genre||'event',gl:e.genre_label||'イベント',ge:e.genre_emoji||'🎉',
+        title:e.title||'',ds:e.date_start||'',ts:e.time_range||'',
+        loc:e.location||'',addr:e.address||e.location||'',price:e.price||'無料',
+        desc:e.description||'',em:e.emoji||'🎉',bg:e.bg_gradient||'linear-gradient(135deg,#1a0a2e,#0a1428)',
+        tags:Array.isArray(e.tags)?e.tags:[],age:Array.isArray(e.age_groups)?e.age_groups:['中学生','高校生','大学生','社会人'],
+        fixed:!!e.is_fixed,isOfficial:!!e.is_official,wantCount:e.want_count||0,
+        charKey:e.char_key||'',charEmoji:e.char_emoji||'',charName:e.char_name||'',
+        charDesc:e.char_desc||'',qr:e.participation_code||'',genre:e.genre||'event',ig:e.instagram_url||''
+      };});
+      dbEvs.forEach(function(ev){if(!EVS.find(function(e){return e.id===ev.id;}))EVS.unshift(ev);});
+    }
+  }catch(e){console.warn('loadDBEvents error',e);}
+}
+window.addEventListener('error',function(e){console.error('App error:',e);});
 const SURL='https://umbscalpmmofbzfpmhhr.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtYnNjYWxwbW1vZmJ6ZnBtaGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTIwNDMsImV4cCI6MjA5MDI4ODA0M30.lgI836TkVP8EqxgIVH8FHCz8iQ87cJZikkw9S9W49Ic';
 let sb;
@@ -1114,7 +1204,7 @@ function startApp(){
   document.getElementById('ob').classList.add('hide');
   document.getElementById('ab').style.display='flex';
   updateAB();boot();
-  addPt('初回登録完了',30,false);
+  addPt('初回登録完了',30,false,'reg_first');
   renderTodayWidget();
   updateTownTimeLabel();
   updateTownLevel();
@@ -1138,14 +1228,14 @@ function initApp(){
 }
 sb.auth.onAuthStateChange(function(_,s){user=s?s.user:null;renderMP();});
 sb.auth.getSession().then(function(r){if(r.data.session){user=r.data.session.user;renderMP();}});
-async function submitPreReg(){var e=document.getElementById('prereg-email').value.trim();if(!e||!e.includes('@')){toast('メールアドレスを正しく入力してください');return;}try{await sb.from('pre_registrations').insert({email:e,age_group:age,city:city,created_at:new Date().toISOString()});}catch(err){}localStorage.setItem('nx_prereg','1');preReg=true;document.getElementById('prereg-modal').classList.remove('on');toast('事前登録完了！サービス開始時に500pt付与');}
+async function submitPreReg(){var e=document.getElementById('prereg-email').value.trim();if(!isValidEmail(e)){toast('有効なメールアドレスを入力してください');return;}var btn=document.querySelector('.prereg-sub');if(btn){btn.disabled=true;btn.textContent='確認中...';}try{var chk=await sb.from('pre_registrations').select('id').eq('email',e).maybeSingle();if(chk&&chk.data){toast('このメールアドレスはすでに登録されています');if(btn){btn.disabled=false;btn.textContent='事前登録する';}return;}await sb.from('pre_registrations').insert({email:e,age_group:age,city:city,created_at:new Date().toISOString()});}catch(err){console.warn('prereg error',err);}localStorage.setItem('nx_prereg','1');preReg=true;document.getElementById('prereg-modal').classList.remove('on');toast('事前登録完了！サービス開始時に500pt付与');}
 function skipPreReg(){document.getElementById('prereg-modal').classList.remove('on');}
 function goTab(tab,btn){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});document.getElementById(tab).classList.add('on');if(btn)btn.classList.add('on');if(tab==='mypage')renderMP();if(tab==='flyer')renderFlyer();if(tab==='points'){renderPtHero();renderEarn();}if(tab==='diag'&&document.getElementById('diag-result').style.display!=='block'){document.getElementById('diag-start').style.display='flex';document.getElementById('diag-q').style.display='none';}}
 function openAgeMod(){document.getElementById('agem').classList.add('on');}
 function closeAgeMod(){document.getElementById('agem').classList.remove('on');}
 function swAge(el,a){age=a;updateAB();closeAgeMod();localStorage.setItem('nx_age',a);var labels={中学生:'📚 中学生',高校生:'🎒 高校生',大学生:'🎓 大学生',社会人:'💼 社会人'};document.getElementById('mpage').textContent=labels[a]||a;renderFeed();renderFlyer();renderFlyerTabs();renderGenreOpts();toast(a+'モードに変更しました');}
 function setFeedTab(mode,el){document.querySelectorAll('.feed-tab').forEach(function(b){b.classList.remove('on');});el.classList.add('on');feedMode=mode;renderFeed();}
-function renderFeed(){var src=feedMode==='official'?EVS.filter(function(e){return e.isOfficial;}):EVS.filter(function(e){return !e.isOfficial&&(!e.age||e.age.includes(age));});if(feedMode!=='official'&&genre!=='all')src=src.filter(function(e){return e.g===genre;});fevs=src;idx=0;var st=document.getElementById('stack');st.innerHTML='';if(!fevs.length){st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}fevs.forEach(function(ev,i){st.appendChild(mkSlide(ev,i));});updPos();if(fevs.length)setTimeout(function(){trackView(fevs[0].id);},2000);}
+function renderFeed(){var src=feedMode==='official'?EVS.filter(function(e){return e.isOfficial;}):EVS.filter(function(e){return !e.isOfficial&&(!e.age||e.age.includes(age));});if(feedMode!=='official'&&genre!=='all')src=src.filter(function(e){return e.g===genre;});if(feedMode==='recommend')src=src.slice().sort(function(a,b){return getRecScore(b)-getRecScore(a);});fevs=src;idx=0;var st=document.getElementById('stack');st.innerHTML='';if(!fevs.length){st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}fevs.forEach(function(ev,i){st.appendChild(mkSlide(ev,i));});updPos();if(fevs.length)setTimeout(function(){trackView(fevs[0].id);},2000);}
 function mkSlide(ev,i){var s=document.createElement('div');s.className='slide dn';s.dataset.i=i;var gs=GS[ev.g]||GS.event;var lk=likes.has(ev.id);var wnt=wants.has(ev.id);var id=ev.id;s.innerHTML='<div class="sbg" style="background:'+ev.bg+';"><div class="sbg-em">'+ev.em+'</div></div><div class="sovl"></div><div class="srt"><button class="sact'+(lk?' lk':'')+'" id="lb-'+id+'" onclick="toggleLike(&quot;'+id+'&quot;)"><div class="sact-c">'+(lk?'❤️':'🤍')+'</div><div class="sact-l">いいね</div></button><button class="sact'+(wnt?' wnt':'')+'" id="wb-'+id+'" onclick="toggleWant(&quot;'+id+'&quot;)"><div class="sact-c">'+(wnt?'⭐':'☆')+'</div><div class="sact-l">行きたい</div></button><button class="sact" onclick="shareEv(&quot;'+id+'&quot;)"><div class="sact-c">📤</div><div class="sact-l">シェア</div></button></div><div class="sbot">'+(ev.charKey?'<div class="schar-badge"><span style="font-size:14px;">'+ev.charEmoji+'</span><span style="font-size:10px;font-weight:700;">'+ev.charName+'</span></div>':'')+'<div class="sgtag" style="background:'+gs.bg+';border-color:'+gs.bd+';color:'+gs.c+';">'+ev.ge+' '+ev.gl+'</div><div class="stitle">'+ev.title+'</div><div class="smeta"><span class="smeta-i">📅 '+(ev.ds||ev.ts||'随時')+'</span><span class="smeta-i">📍 '+ev.loc+'</span></div><button class="sdbtn" onclick="openDrw(&quot;'+id+'&quot;)">詳細情報・参加コード</button></div><div class="shint">↑ スワイプで次へ</div>';return s;}
 function updPos(){
   document.querySelectorAll('.slide').forEach(function(s){
@@ -1179,17 +1269,44 @@ function closeSearch(){document.getElementById('search-modal').classList.remove(
 function doSearch(q){var el=document.getElementById('search-results');if(!q.trim()){el.innerHTML='<div class="empty">キーワードを入力</div>';return;}var res=EVS.filter(function(e){return !e.isOfficial&&(e.title.includes(q)||e.loc.includes(q));});if(!res.length){el.innerHTML='<div class="empty">結果がありません</div>';return;}var h='';res.forEach(function(e){h+='<div style="padding:13px;background:rgba(255,255,255,0.04);border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;" onclick="closeSearch();openDrw(this.dataset.id)" data-id="'+e.id+'">'+e.em+' <strong>'+e.title+'</strong><br><small>📍 '+e.loc+'</small></div>';});el.innerHTML=h;}
 function toggleLike(id){if(likes.has(id)){likes.delete(id);toast('いいねを取り消しました');}else{likes.add(id);toast('❤️ いいねしました');addPt('いいね',2,false);}var b=document.getElementById('lb-'+id);if(b){b.classList.toggle('lk',likes.has(id));b.querySelector('.sact-c').textContent=likes.has(id)?'❤️':'🤍';}updStats();}
 function toggleWant(id){if(wants.has(id)){wants.delete(id);toast('行きたいを取り消しました');}else{wants.add(id);toast('⭐ 行きたい登録しました');addPt('行きたい登録',2,false);}var b=document.getElementById('wb-'+id);if(b){b.classList.toggle('wnt',wants.has(id));b.querySelector('.sact-c').textContent=wants.has(id)?'⭐':'☆';}updStats();}
-function shareEv(id){var ev=EVS.find(function(e){return e.id===id;});if(!ev)return;addPt('SNSシェア',5,false);var txt='【'+ev.title+'】\n📅 '+(ev.ds||ev.ts||'随時')+'\n#Nexca広島';if(navigator.share)navigator.share({title:ev.title,text:txt,url:location.href});else{navigator.clipboard&&navigator.clipboard.writeText(txt);toast('コピーしました！');}}
+function shareEv(id){var ev=EVS.find(function(e){return e.id===id;});if(!ev)return;addPt('SNSシェア',5,false,'share_'+id);var url=location.href.split('#')[0]+'#/event/'+id;var txt='【'+ev.title+'】\n📅 '+(ev.ds||ev.ts||'随時')+'\n'+url+'\n#Nexca広島';if(navigator.share)navigator.share({title:ev.title,text:txt,url:url});else{navigator.clipboard&&navigator.clipboard.writeText(txt);toast('コピーしました！');}}
 function openPartM(evId){if(evId&&typeof evId==='object')evId=evId.dataset?evId.dataset.id:String(evId);var ev=EVS.find(function(e){return e.id===evId;});if(!ev)return;partEvId=evId;document.getElementById('partm-ev').textContent=ev.title;document.getElementById('partm-s').textContent=ev.fixed?'📍 固定掲載店舗':'🎉 イベント参加証明';var h='<div class="code-inp-wrap"><input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="XXXXXXXX" oninput="this.value=this.value.toUpperCase();updateCodeLights(this.value)"><div class="code-inp-lights" id="code-lights"><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div></div></div><button class="part-sub" onclick="submitPart()">'+(ev.fixed?'訪問証明する +30pt':'参加証明する +50pt')+'</button>';document.getElementById('partm-content').innerHTML=h;document.getElementById('partm').classList.add('on');}
 function closePartM(){document.getElementById('partm').classList.remove('on');partEvId=null;}
-function submitPart(){var code=document.getElementById('part-code')&&document.getElementById('part-code').value.trim().toUpperCase();var ev=EVS.find(function(e){return e.id===partEvId;});if(!ev)return;if(!code||code.length<3){toast('参加コードを入力してください');return;}if(code!==ev.qr){var nh='<div style="color:var(--red);font-weight:700;font-size:13px;margin-bottom:10px;">❌ コードが正しくありません</div><div class="code-inp-wrap"><input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="もう一度入力" oninput="this.value=this.value.toUpperCase();updateCodeLights(this.value)"><div class="code-inp-lights" id="code-lights"><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div></div></div><button class="part-sub" onclick="submitPart()">再試行</button>';document.getElementById('partm-content').innerHTML=nh;return;}if(parts[partEvId]){document.getElementById('partm-content').innerHTML='<div style="color:var(--green);font-weight:700;text-align:center;padding:20px;">✅ 参加済みです</div><button class="part-sub" onclick="closePartM()">閉じる</button>';return;}parts[partEvId]='ok';var ptG=ev.fixed?30:50;addPt('参加証明',ptG,false);if(ev.charKey&&OC[ev.charKey]){var expG=30;var oldLv=calcClv(charExp[ev.charKey]||0);charExp[ev.charKey]=(charExp[ev.charKey]||0)+expG;var newLv=calcClv(charExp[ev.charKey]);setTimeout(function(){closePartM();if(newLv>oldLv)showClvup(ev.charKey,newLv);else showCharSummon(ev.charKey,ptG,expG);},600);}if(firstPart){firstPart=false;addPt('初回参加ボーナス',30,true);}if(!ev.charKey){var rh='<div style="color:var(--green);font-weight:700;font-size:13px;margin-bottom:10px;">✅ 参加証明完了！+'+ptG+'pt</div><textarea id="rv-input" style="width:100%;padding:11px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--txt);font-size:13px;resize:none;height:72px;" placeholder="体験の感想..."></textarea><button class="part-sub" style="margin-top:8px;" onclick="submitRv(this.dataset.id)" data-id="'+partEvId+'">振り返りを送信 +20pt</button><button style="width:100%;padding:11px;background:none;border:none;color:var(--dim);cursor:pointer;" onclick="closePartM()">閉じる</button>';document.getElementById('partm-content').innerHTML=rh;}updStats();}
+async function submitPart(){
+  var code=document.getElementById('part-code')&&document.getElementById('part-code').value.trim().toUpperCase();
+  var ev=EVS.find(function(e){return e.id===partEvId;});
+  if(!ev)return;
+  if(!code||code.length<3){toast('参加コードを入力してください');return;}
+  if(code!==ev.qr){
+    var nh='<div style="color:var(--red);font-weight:700;font-size:13px;margin-bottom:10px;">❌ コードが正しくありません</div><div class="code-inp-wrap"><input class="code-inp" id="part-code" type="text" maxlength="8" placeholder="もう一度入力" oninput="this.value=this.value.toUpperCase();updateCodeLights(this.value)"><div class="code-inp-lights" id="code-lights"><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div><div class="code-light"></div></div></div><button class="part-sub" onclick="submitPart()">再試行</button>';
+    document.getElementById('partm-content').innerHTML=nh;return;
+  }
+  if(parts[partEvId]){
+    document.getElementById('partm-content').innerHTML='<div style="color:var(--green);font-weight:700;text-align:center;padding:20px;">✅ 参加済みです</div><button class="part-sub" onclick="closePartM()">閉じる</button>';
+    return;
+  }
+  if(user){
+    try{
+      var chk=await sb.from('participations').select('id').eq('user_id',user.id).eq('event_id',partEvId).maybeSingle();
+      if(chk&&chk.data){parts[partEvId]='ok';document.getElementById('partm-content').innerHTML='<div style="color:var(--green);font-weight:700;text-align:center;padding:20px;">✅ 参加済みです</div><button class="part-sub" onclick="closePartM()">閉じる</button>';return;}
+    }catch(e){}
+  }
+  parts[partEvId]='ok';
+  var ptG=ev.fixed?30:50;
+  if(user){try{await sb.from('participations').insert({user_id:user.id,event_id:partEvId,code:code,points:ptG,created_at:new Date().toISOString()});}catch(e){}}
+  addPt('参加証明',ptG,false,'part_'+partEvId);
+  if(ev.charKey&&OC[ev.charKey]){var expG=30;var oldLv=calcClv(charExp[ev.charKey]||0);charExp[ev.charKey]=(charExp[ev.charKey]||0)+expG;var newLv=calcClv(charExp[ev.charKey]);setTimeout(function(){closePartM();if(newLv>oldLv)showClvup(ev.charKey,newLv);else showCharSummon(ev.charKey,ptG,expG);},600);}
+  if(firstPart){firstPart=false;addPt('初回参加ボーナス',30,true,'part_first_bonus');}
+  if(!ev.charKey){var rh='<div style="color:var(--green);font-weight:700;font-size:13px;margin-bottom:10px;">✅ 参加証明完了！+'+ptG+'pt</div><textarea id="rv-input" style="width:100%;padding:11px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--txt);font-size:13px;resize:none;height:72px;" placeholder="体験の感想..."></textarea><button class="part-sub" style="margin-top:8px;" onclick="submitRv(this.dataset.id)" data-id="'+partEvId+'">振り返りを送信 +20pt</button><button style="width:100%;padding:11px;background:none;border:none;color:var(--dim);cursor:pointer;" onclick="closePartM()">閉じる</button>';document.getElementById('partm-content').innerHTML=rh;}
+  updStats();
+}
 async function submitRv(evId){var text=document.getElementById('rv-input')&&document.getElementById('rv-input').value;if(!text||text.length<5){toast('感想を5文字以上書いてください');return;}addPt('振り返り投稿',20,false);if(user){try{await sb.from('reviews').insert({event_id:evId,user_id:user.id,text:text,stars:5,age_group:age,city:city,created_at:new Date().toISOString()});}catch(e){}}closePartM();toast('振り返り完了！ +20pt');}
 async function collectChar(code){if(!code){toast('コードを入力してください');return;}var map={CHAR_AGARU:'アガル',CHAR_TSUMUGI:'ツムギ',CHAR_NUKUMI:'ヌクミ',CHAR_TEKURU:'テクル',CHAR_KAGE:'カゲ'};var name=map[code];if(!name){toast('無効なコードです');return;}if(ocChars.has(code)){toast(name+'は既に獲得済みです');return;}ocChars.add(code);addPt('キャラ獲得：'+name,10,false);toast(name+'を獲得！ +10pt');renderOcGrid();document.getElementById('char-code-input').value='';}
 function renderOcGrid(){var keys=['CHAR_AGARU','CHAR_TSUMUGI','CHAR_NUKUMI','CHAR_TEKURU','CHAR_KAGE'];var names=['アガル','ツムギ','ヌクミ','テクル','カゲ'];var el=document.getElementById('official-char-grid');if(!el)return;el.innerHTML=names.map(function(c,i){var has=ocChars.has(keys[i]);var cd=OC[c];return '<div class="char-cell '+(has?'got':'')+'"><div class="char-cell-img '+(has?'':'locked')+'">'+(has?'🎭':'❓')+'</div><div class="char-cell-name '+(has?'got':'')+'" style="'+(has?'color:'+cd.color+';':'')+'">'+( has?c:'???')+'</div>'+(has?'<div style="font-size:7px;color:'+cd.color+';">Lv'+calcClv(charExp[c]||0)+'</div>':'')+'</div>';}).join('');}
 function renderLcGrid(){var el=document.getElementById('lchar-grid');var cnt=document.getElementById('lchar-count');if(!el)return;var acquired=LC.filter(function(c){return lcChars.has(c.key);}).length;if(cnt)cnt.textContent=acquired+'/'+LC.length;el.innerHTML=LC.map(function(c){var has=lcChars.has(c.key);return '<div class="lchar-cell '+(has?'got':'')+'"><div class="lchar-em">'+(has?c.emoji:'❓')+'</div><div class="lchar-name '+(has?'got':'')+'">'+( has?c.name.slice(0,6):'???')+'</div></div>';}).join('');}
 function showClvup(charKey,newLv){var cd=OC[charKey];if(!cd)return;var lvData=cd.lvUp&&cd.lvUp[newLv-2];var box=document.getElementById('clvup-box');box.style.borderColor=cd.color;document.getElementById('clvup-em').textContent='🎭';document.getElementById('clvup-lbl').style.color=cd.color;document.getElementById('clvup-lv').style.color=cd.color;document.getElementById('clvup-lv').textContent='Lv'+newLv;document.getElementById('clvup-name').textContent=charKey+' '+(lvData&&lvData.name||'');document.getElementById('clvup-sub').textContent=(lvData&&lvData.unlock)||'新しいレベルに到達！';document.getElementById('clvup-btn').style.background=cd.color;document.getElementById('clvup-btn').style.color='white';document.getElementById('clvup').classList.add('on');}
 function closeClvup(){document.getElementById('clvup').classList.remove('on');}
-function addPt(reason,amt,camp){var old=ptt;var a=camp?amt*2:amt;pts+=a;ptt+=a;ptm+=a;phist.unshift({reason:reason,amt:a,date:new Date().toLocaleDateString('ja-JP'),camp:camp});var ol=calcLv(old),nl=calcLv(ptt);if(nl.lv>ol.lv){document.getElementById('lvup-lv').textContent='Lv'+nl.lv;document.getElementById('lvup-name').textContent=nl.name;document.getElementById('lvup').classList.add('on');}updStats();renderPtHero();renderPtHist();}
+function addPt(reason,amt,camp,onceKey){if(onceKey){if(ptDedup.has(onceKey))return;ptDedup.add(onceKey);savePtDedup();}var old=ptt;var a=camp?amt*2:amt;pts+=a;ptt+=a;ptm+=a;phist.unshift({reason:reason,amt:a,date:new Date().toLocaleDateString('ja-JP'),camp:camp});var ol=calcLv(old),nl=calcLv(ptt);if(nl.lv>ol.lv){document.getElementById('lvup-lv').textContent='Lv'+nl.lv;document.getElementById('lvup-name').textContent=nl.name;document.getElementById('lvup').classList.add('on');}updStats();renderPtHero();renderPtHist();if(user){try{sb.from('point_history').insert({user_id:user.id,reason:reason,amount:a,camp:!!camp,created_at:new Date().toISOString()}).then(function(){}).catch(function(){});}catch(e){}}}
 function usePt(amt,reason){if(pts<amt)return false;pts-=amt;ptu+=amt;phist.unshift({reason:reason,amt:-amt,date:new Date().toLocaleDateString('ja-JP'),camp:false});updStats();renderPtHero();renderPtHist();return true;}
 function closeLvUp(){document.getElementById('lvup').classList.remove('on');}
 function updStats(){var v=Math.floor(pts);['ph-val','mp-ptv','st-pt'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=v;});var els=[document.getElementById('ph-month'),document.getElementById('ph-total'),document.getElementById('ph-used')];[ptm,ptt,ptu].forEach(function(val,i){if(els[i])els[i].textContent=Math.floor(val);});if(document.getElementById('st-lk'))document.getElementById('st-lk').textContent=likes.size;if(document.getElementById('st-wnt'))document.getElementById('st-wnt').textContent=wants.size;if(document.getElementById('st-vi'))document.getElementById('st-vi').textContent=viewed.size;if(document.getElementById('town-pts-val'))document.getElementById('town-pts-val').textContent=Math.floor(pts);}
@@ -1212,7 +1329,7 @@ function renderQ(){var q=dQ[cQ];document.getElementById('q-prog-fill').style.wid
 function selQ(oi){var q=dQ[cQ];var o=q.opts[oi];if(o.s&&Object.keys(o.s).length)Object.entries(o.s).forEach(function(kv){dScores[kv[0]]=(dScores[kv[0]]||0)+kv[1];});dAnswers[cQ]=oi;document.querySelectorAll('.q-opt').forEach(function(el,i){el.classList.toggle('sel',i===oi);});setTimeout(function(){cQ++;if(cQ>=dQ.length)showDiagResult();else renderQ();},350);}
 function diagBack(){if(cQ<=0){document.getElementById('diag-q').style.display='none';document.getElementById('diag-start').style.display='flex';return;}cQ--;renderQ();}
 function calcResult(){var e=dScores.e||0,a=dScores.a||0,c=dScores.c||0,r=dScores.r||0;var isE=e>=3;var mx=Math.max(a,c,r);var tr=a===mx?'a':(c===mx?'c':'r');var map={true:{a:'アガル',c:'ツムギ',r:'ヌクミ'},false:{a:'テクル',c:'コネル',r:'フワリ'}};return map[isE][tr];}
-function showDiagResult(){document.getElementById('diag-q').style.display='none';document.getElementById('diag-load').style.display='flex';setTimeout(function(){document.getElementById('diag-load').style.display='none';var type=calcResult();charType=type;renderResult(type);document.getElementById('diag-result').style.display='block';addPt('診断完了',15,false);var m=MISSIONS.find(function(x){return x.id==='m3';});if(m&&!m.done){m.progress=1;m.done=true;addPt('ミッション達成：'+m.name,m.pt,false);toast('🏆 ミッション達成！ +'+m.pt+'pt');}if(user)sb.from('diagnosis_results').upsert({user_id:user.id,character:type,created_at:new Date().toISOString()},{onConflict:'user_id'}).then(function(){}).catch(function(){});
+function showDiagResult(){document.getElementById('diag-q').style.display='none';document.getElementById('diag-load').style.display='flex';setTimeout(function(){document.getElementById('diag-load').style.display='none';var type=calcResult();charType=type;renderResult(type);document.getElementById('diag-result').style.display='block';addPt('診断完了',15,false,'diag_first');var m=MISSIONS.find(function(x){return x.id==='m3';});if(m&&!m.done){m.progress=1;m.done=true;addPt('ミッション達成：'+m.name,m.pt,false);toast('🏆 ミッション達成！ +'+m.pt+'pt');}if(user)sb.from('diagnosis_results').upsert({user_id:user.id,character:type,created_at:new Date().toISOString()},{onConflict:'user_id'}).then(function(){}).catch(function(){});
     renderTodayWidget();
   },2500);}
 function renderResult(type){var d=OC[type];if(!d)return;var mbti=d.mbti||{E:50,N:50,F:50,P:50};var h='<div style="font-size:10px;text-align:center;color:var(--dim);margin-bottom:14px;">NEXTREET DIAGNOSIS RESULT</div>';h+='<div style="font-size:80px;text-align:center;margin-bottom:18px;">🎭</div>';h+='<div class="res-name" style="color:'+d.color+';">'+type+'</div>';h+='<div style="font-size:13px;text-align:center;color:var(--dim);margin-bottom:5px;">'+d.genre+'タイプ</div>';h+='<div style="font-size:13px;text-align:center;font-style:italic;margin-bottom:18px;">'+d.kuchi+'</div>';h+='<div class="res-catch" style="background:'+d.color+'18;color:'+d.color+';">'+d.catch+'</div>';h+='<div class="mbti-card"><div class="mbti-title">PERSONALITY ANALYSIS</div><div style="font-size:13px;line-height:1.85;color:rgba(255,255,255,0.72);margin-bottom:12px;">'+d.pers+'</div>';h+='<div class="mbti-grid"><div class="mbti-item"><div class="mbti-lbl">外向性(E)</div><div class="mbti-val" style="color:'+(mbti.E>50?'#ff8fa0':'#4d9fff')+';">'+mbti.E+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.E+'%;background:'+(mbti.E>50?'var(--red)':'var(--blue)')+';"></div></div></div>';h+='<div class="mbti-item"><div class="mbti-lbl">直感力(N)</div><div class="mbti-val" style="color:#c084fc;">'+mbti.N+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.N+'%;background:#9c27b0;"></div></div></div>';h+='<div class="mbti-item"><div class="mbti-lbl">感情優先(F)</div><div class="mbti-val" style="color:#ff8fa0;">'+mbti.F+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+mbti.F+'%;background:var(--red);"></div></div></div>';h+='<div class="mbti-item"><div class="mbti-lbl">柔軟性(P)</div><div class="mbti-val" style="color:var(--green);">'+(mbti.P||50)+'%</div><div class="mbti-bar"><div class="mbti-fill" style="width:'+(mbti.P||50)+'%;background:var(--green);"></div></div></div>';h+='</div><div class="str-tags">'+d.strengths.map(function(s){return '<span class="str-tag">'+s+'</span>';}).join('')+'</div>';h+='<div class="grow-box"><span style="color:var(--yellow);font-weight:700;">🌱 成長ポイント：</span>'+d.growth+'</div></div>';h+='<div class="res-card"><div class="res-card-t">WEAKNESS</div><div class="res-card-v">'+d.weak+'</div></div>';h+='<div class="res-card"><div class="res-card-t">COMPATIBLE · '+d.compat+'</div><div class="res-card-v">'+d.cd+'</div></div>';h+='<div style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px;"><button style="padding:14px;border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;cursor:pointer;color:white;background:'+d.color+';" onclick="goTab(this.dataset.tab,document.querySelector(this.dataset.sel))" data-tab="feed" data-sel=".nb">体験を探しに行く</button><button style="padding:13px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;color:var(--txt);" onclick="shareDiag(this.dataset.type)" data-type="'+type+'">📤 診断結果をシェア</button></div><div style="text-align:center;font-size:13px;color:var(--dim);cursor:pointer;text-decoration:underline;margin-bottom:22px;" onclick="retryDiag()">もう一度診断する</div>';document.getElementById('res-wrap').innerHTML=h;}
@@ -1242,6 +1359,19 @@ function feedChar(charKey){if(charKey&&typeof charKey==='object')charKey=charKey
 function playChar(charKey){if(charKey&&typeof charKey==='object')charKey=charKey.dataset.key;if(!usePt(50,charKey+'と遊ぶ'))return;var oldLv=calcClv(charExp[charKey]||0);charExp[charKey]=(charExp[charKey]||0)+35;var newLv=calcClv(charExp[charKey]);if(newLv>oldLv)showClvup(charKey,newLv);else toast(charKey+'と遊んだ！ EXP+35');closeTcm();}
 setupSwipe();
 initApp();
+// Service Worker登録
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').then(function(r){console.log('SW registered',r.scope);}).catch(function(e){console.warn('SW registration failed',e);});
+  });
+}
+// ローディング非表示 + 動的イベント + ディープリンク
+window.addEventListener('DOMContentLoaded',function(){
+  setTimeout(hideLoading,800);
+  loadDBEvents();
+  handleDeepLink();
+  window.addEventListener('hashchange',handleDeepLink);
+});
 </script>
 </body>
 </html>
