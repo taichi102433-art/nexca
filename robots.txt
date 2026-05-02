@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://taichi102433-art.github.io/nexca/sitemap.xml
