@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -73,7 +73,7 @@ body::after{
 .ob-item-sub{font-size:10px;color:var(--dim);font-weight:400;margin-top:1px;}
 .ob-btn{width:100%;max-width:300px;padding:15px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:var(--r-md);font-size:15px;font-weight:700;color:rgba(255,255,255,0.3);cursor:default;margin-top:18px;font-family:var(--font-jp);}
 .ob-btn.on{background:var(--red);color:white;cursor:pointer;box-shadow:0 4px 24px rgba(230,57,70,0.4);border-color:var(--red);}
-.ob-start-btn{width:100%;max-width:300px;padding:16px;background:var(--red);border:none;border-radius:var(--r-md);font-size:16px;font-weight:700;color:white;cursor:pointer;font-family:var(--font-jp);box-shadow:0 4px 28px rgba(230,57,70,0.4);margin-top:8px;}
+.ob-start-btn{width:100%;max-width:300px;padding:16px;background:var(--red);border:none;border-radius:var(--r-md);font-size:16px;font-weight:700;color:white;cursor:pointer;font-family:var(--font-jp);box-shadow:0 4px 28px rgba(230,57,70,0.4);margin-top:8px;animation:none;opacity:1;pointer-events:all;}
 .ob-vp{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-md);padding:12px 14px;margin-bottom:8px;}
 .ob-vp-icon{font-size:24px;flex-shrink:0;}
 .ob-vp-text{font-size:13px;font-weight:700;line-height:1.4;}
@@ -813,12 +813,7 @@ body::after{
 .ob-vp-icon{font-size:24px;flex-shrink:0;}
 .ob-vp-text{font-size:13px;font-weight:700;line-height:1.4;}
 .ob-vp-sub{font-size:10px;color:var(--dim);margin-top:1px;font-weight:400;}
-.ob-start-btn{
-  width:100%;padding:16px;background:var(--red);border:none;border-radius:var(--r-md);
-  font-size:16px;font-weight:700;color:white;cursor:pointer;font-family:var(--font-jp);
-  box-shadow:0 4px 28px rgba(230,57,70,0.4);transition:all 0.2s;
-  opacity:1;pointer-events:all;
-}
+/* ob-start-btn: see base definition above */
 .ob-start-btn:active{transform:scale(0.97);}
 
 /* ═══════════════════════════════ ROOT: POST-ONBOARD CTA ═══ */
