@@ -1244,6 +1244,7 @@ function updPos(){
   });
   renderSlideProgress();
 }
+function renderSlideProgress(){var st=document.getElementById('stack');if(!st)return;var prog=document.getElementById('slide-prog');if(!prog){prog=document.createElement('div');prog.id='slide-prog';prog.className='slide-progress';st.appendChild(prog);}if(!fevs||fevs.length<=1){prog.style.display='none';return;}prog.style.display='flex';prog.innerHTML=fevs.map(function(_,i){return '<div class="sp-dot'+(i===idx?' cur':')+'"></div>';}).join('');}
 function next(){if(busy||idx>=fevs.length-1)return;busy=true;idx++;updPos();if(fevs[idx])setTimeout(function(){trackView(fevs[idx].id);},2000);setTimeout(function(){busy=false;},400);}
 function prev(){if(busy||idx<=0)return;busy=true;idx--;updPos();setTimeout(function(){busy=false;},400);}
 function trackView(id){if(viewed.has(id))return;viewed.add(id);if(viewPts<10){viewPts++;addPt('動画視聴',1,false);}updStats();}
@@ -1357,8 +1358,10 @@ function openTcm(charKey){var cd=OC[charKey];if(!cd)return;var h='<div style="di
 function closeTcm(){document.getElementById('tcm').classList.remove('on');}
 function feedChar(charKey){if(charKey&&typeof charKey==='object')charKey=charKey.dataset.key;if(!usePt(30,charKey+'にえさをあげる'))return;var oldLv=calcClv(charExp[charKey]||0);charExp[charKey]=(charExp[charKey]||0)+20;var newLv=calcClv(charExp[charKey]);if(newLv>oldLv)showClvup(charKey,newLv);else toast(charKey+'が喜んでいる！ EXP+20');closeTcm();}
 function playChar(charKey){if(charKey&&typeof charKey==='object')charKey=charKey.dataset.key;if(!usePt(50,charKey+'と遊ぶ'))return;var oldLv=calcClv(charExp[charKey]||0);charExp[charKey]=(charExp[charKey]||0)+35;var newLv=calcClv(charExp[charKey]);if(newLv>oldLv)showClvup(charKey,newLv);else toast(charKey+'と遊んだ！ EXP+35');closeTcm();}
-setupSwipe();
-initApp();
+try{setupSwipe();}catch(e){console.warn('setupSwipe error',e);}
+try{initApp();}catch(e){console.warn('initApp error',e);}
+// 念のためローディング解除保証（initApp失敗でも1.5秒後に消す）
+setTimeout(function(){try{hideLoading();}catch(e){}},1500);
 // Service Worker登録
 if('serviceWorker' in navigator){
   window.addEventListener('load',function(){
@@ -1367,10 +1370,11 @@ if('serviceWorker' in navigator){
 }
 // ローディング非表示 + 動的イベント + ディープリンク
 window.addEventListener('DOMContentLoaded',function(){
-  setTimeout(hideLoading,800);
-  loadDBEvents();
-  handleDeepLink();
-  window.addEventListener('hashchange',handleDeepLink);
+  // initApp/bootが失敗してもローディングを確実に消す
+  setTimeout(function(){try{hideLoading();}catch(e){}},1200);
+  try{loadDBEvents();}catch(e){console.warn(e);}
+  try{handleDeepLink();}catch(e){}
+  window.addEventListener('hashchange',function(){try{handleDeepLink();}catch(e){}});
 });
 </script>
 </body>
