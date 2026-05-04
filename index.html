@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -1192,7 +1192,7 @@ function calcLv(p){let l=LVC[0];for(const x of LVC){if(p>=x.pt)l=x;else break;}r
 function calcClv(exp){let lv=1;for(let i=1;i<LVT.length;i++){if(exp>=LVT[i])lv=i+1;}return lv;}
 function calcCprog(exp){const lv=calcClv(exp);const cur=LVT[lv-1];const nxt=LVT[lv]||cur+1000;return{lv,pct:Math.min(100,Math.round((exp-cur)/(nxt-cur)*100)),cur:exp-cur,need:nxt-cur};}
 function goObStep1(){var s0=document.getElementById('ob-step0'),s1=document.getElementById('ob-step1');if(s0)s0.style.display='none';if(s1)s1.style.display='block';}
-function renderTodayWidget(){var w=document.getElementById('today-widget');if(!w)return;var evs=(window.EVS||[]).filter(function(e){return !e.isOfficial&&(!age||!e.age||e.age.includes(age));}).slice(0,3);if(!evs.length){w.style.display='none';return;}w.style.display='block';var cn=document.getElementById('tw-char-name'),cm=document.getElementById('tw-char-msg'),ci=document.getElementById('tw-char-icon'),list=document.getElementById('tw-events');if(cn)cn.textContent=charType||'NEXTREET';if(cm)cm.textContent='今日の広島で、ひとつ新しい体験を見つけよう';if(ci)ci.textContent='🎭';if(list)list.innerHTML=evs.map(function(e){return '<div class="today-ev-chip" onclick="openDrw(this.dataset.id)" data-id="'+e.id+'"><div class="today-ev-chip-genre">'+sanitize(e.gl||e.genre||'イベント')+'</div><div>'+sanitize(e.title)+'</div></div>';}).join('');}
+function renderTodayWidget(){var w=document.getElementById('today-widget');if(!w)return;var evs=EVS.filter(function(e){return !e.isOfficial&&(!age||!e.age||e.age.includes(age));}).slice(0,3);if(!evs.length){w.style.display='none';return;}w.style.display='block';var cn=document.getElementById('tw-char-name'),cm=document.getElementById('tw-char-msg'),ci=document.getElementById('tw-char-icon'),list=document.getElementById('tw-events');if(cn)cn.textContent=charType||'NEXTREET';if(cm)cm.textContent='今日の広島で、ひとつ新しい体験を見つけよう';if(ci)ci.textContent='🎭';if(list)list.innerHTML=evs.map(function(e){return '<div class="today-ev-chip" onclick="openDrw(this.dataset.id)" data-id="'+e.id+'"><div class="today-ev-chip-genre">'+sanitize(e.gl||e.genre||'イベント')+'</div><div>'+sanitize(e.title)+'</div></div>';}).join('');}
 function updateTownTimeLabel(){var el=document.getElementById('town-time-label');if(!el)return;var h=new Date().getHours();el.textContent=h<6?'深夜':h<11?'朝':h<16?'昼':h<19?'夕方':'夜';}
 function updateTownLevel(){var el=document.getElementById('town-level');if(el)el.textContent='Lv'+Math.max(1,Math.floor(((townData.items||[]).length+(townData.chars||[]).length)/3)+1);}
 function showWelcomeModal(){var el=document.getElementById('welcome-modal');if(el&&!localStorage.getItem('nx_welcome_seen'))el.classList.add('on');}
@@ -1387,4 +1387,5 @@ window.addEventListener('DOMContentLoaded',function(){
 <script src="nexca-v2.js?v=3"></script>
 </body>
 </html>
+
 
