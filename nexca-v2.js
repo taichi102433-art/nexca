@@ -103,17 +103,39 @@
   function installNexcaGameLayer(){
     const gameCss=document.createElement('style');
     gameCss.textContent=`
-      .nx-char-svg{width:44px;height:44px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);box-shadow:0 0 22px var(--c,rgba(255,255,255,.2));overflow:hidden}
+      .nx-char-svg{width:44px;height:44px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.04));box-shadow:0 0 22px var(--c,rgba(255,255,255,.2));overflow:hidden;position:relative}
+      .nx-char-card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px rgba(255,255,255,.14),0 10px 24px rgba(0,0,0,.28)}
       .nx-summon-stage{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,var(--c,rgba(255,255,255,.3)),transparent 34%),rgba(0,0,0,.92);animation:nxSummonBg 2.4s ease both;z-index:-1}
       @keyframes nxSummonBg{0%{filter:brightness(.2)}45%{filter:brightness(1.8)}100%{filter:brightness(1)}}
       .nx-evo-title{font-family:var(--font-en);font-size:13px;letter-spacing:3px;color:var(--yellow);margin-bottom:8px;text-align:center}
-      .nx-town-road{position:absolute;left:0;right:0;bottom:20%;height:34%;background:linear-gradient(120deg,transparent 0 18%,rgba(255,255,255,.08) 18% 24%,transparent 24% 45%,rgba(255,255,255,.07) 45% 52%,transparent 52%);opacity:.7}
-      .nx-town-building{position:absolute;transform:translate(-50%,-50%);font-size:28px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
-      .nx-town-chat{position:absolute;left:50%;top:-22px;transform:translateX(-50%);white-space:nowrap;background:rgba(0,0,0,.68);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:3px 8px;font-size:9px;color:white}
+      #char-summon.on .summon-char{animation:nxSummonJump 1.4s cubic-bezier(.17,.84,.44,1) both}@keyframes nxSummonJump{0%{transform:translateY(26px) scale(.2) rotate(-16deg);filter:brightness(3) blur(8px)}45%{transform:translateY(-18px) scale(1.28) rotate(8deg);filter:brightness(1.8)}100%{transform:translateY(0) scale(1);filter:brightness(1)}}
+      .town-map{height:min(64vh,520px)!important;border-radius:18px!important;background:#10151e;box-shadow:0 18px 45px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,255,255,.08)}
+      .nx-town-road{position:absolute;left:-8%;right:-8%;bottom:18%;height:38%;background:linear-gradient(116deg,transparent 0 22%,rgba(255,255,255,.08) 22% 27%,rgba(42,47,52,.88) 27% 43%,rgba(255,255,255,.08) 43% 47%,transparent 47% 100%);opacity:.96}
+      .nx-town-river{position:absolute;left:-10%;right:-10%;top:37%;height:15%;background:linear-gradient(90deg,rgba(64,170,255,.78),rgba(138,215,255,.94),rgba(64,170,255,.72));transform:rotate(-8deg);box-shadow:0 0 22px rgba(80,190,255,.25)}
+      .nx-town-plaza{position:absolute;left:50%;top:61%;width:96px;height:58px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,222,137,.55),rgba(148,101,41,.32) 62%,transparent 64%);border:1px solid rgba(255,255,255,.16)}
+      .nx-town-building{position:absolute;transform:translate(-50%,-50%);font-size:26px;filter:drop-shadow(0 9px 10px rgba(0,0,0,.45));background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:9px 10px;min-width:48px;text-align:center}
+      .nx-town-building span{display:block;font-size:7px;font-weight:900;color:rgba(255,255,255,.72);margin-top:3px;white-space:nowrap}
+      .nx-town-chat{position:absolute;left:50%;top:-25px;transform:translateX(-50%);white-space:nowrap;background:rgba(7,7,9,.82);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:4px 9px;font-size:9px;color:white;box-shadow:0 8px 18px rgba(0,0,0,.25)}
+      .town-char-el{animation:nxTownWalk 5.8s ease-in-out infinite!important}.town-char-el:nth-child(odd){animation-duration:6.9s!important}@keyframes nxTownWalk{0%,100%{transform:translate(-50%,-50%) translateX(-6px) translateY(0)}35%{transform:translate(-50%,-50%) translateX(7px) translateY(-4px)}65%{transform:translate(-50%,-50%) translateX(2px) translateY(4px)}}
+      .nx-town-pin{position:absolute;transform:translate(-50%,-100%);background:rgba(0,0,0,.58);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900;backdrop-filter:blur(8px);box-shadow:0 8px 18px rgba(0,0,0,.22);cursor:pointer}
+      .nx-town-life{position:absolute;left:10px;right:10px;bottom:9px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.nx-town-life div{background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:7px;font-size:9px;color:rgba(255,255,255,.78);text-align:center}
       .nx-gacha-cinema{position:fixed;inset:0;z-index:920;display:none;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,190,0,.18),rgba(0,0,0,.96) 56%);font-family:var(--font-en);font-size:26px;letter-spacing:4px;color:var(--yellow)}
-      .nx-gacha-cinema.on{display:flex;animation:nxCine 2.3s ease both}@keyframes nxCine{0%{opacity:0;transform:scale(1.1)}25%,80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.96)}}`;
+      .nx-gacha-cinema.on{display:flex;animation:nxCine 2.3s ease both}@keyframes nxCine{0%{opacity:0;transform:scale(1.1)}25%,80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.96)}}
+      .nx-premium-gacha{position:fixed;inset:0;z-index:980;display:none;overflow:hidden;background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.16),transparent 22%),linear-gradient(180deg,#05060b,#110515 48%,#020207);color:white}.nx-premium-gacha.on{display:block}.nx-pg-sky{position:absolute;inset:-20%;background:conic-gradient(from 0deg,rgba(230,57,70,.18),rgba(255,190,0,.24),rgba(77,159,255,.18),rgba(192,132,252,.2),rgba(230,57,70,.18));animation:nxPortal 3s linear infinite;filter:blur(8px)}@keyframes nxPortal{to{transform:rotate(360deg)}}
+      .nx-pg-core{position:absolute;left:50%;top:44%;width:164px;height:164px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff 0 9%,var(--pg,#ffbe00) 10% 32%,rgba(0,0,0,.2) 33% 42%,transparent 43%);box-shadow:0 0 42px var(--pg,#ffbe00),0 0 100px rgba(255,255,255,.22);animation:nxCore 1.1s ease-in-out infinite alternate}@keyframes nxCore{to{transform:translate(-50%,-50%) scale(1.12);filter:brightness(1.6)}}
+      .nx-pg-orbit{position:absolute;left:50%;top:44%;width:260px;height:260px;margin:-130px;border:1px solid rgba(255,255,255,.28);border-radius:50%;animation:nxOrbit 1.6s linear infinite}.nx-pg-orbit.o2{width:328px;height:328px;margin:-164px;animation-duration:2.3s;transform:rotate(38deg)}@keyframes nxOrbit{to{transform:rotate(360deg)}}
+      .nx-pg-card{position:absolute;left:50%;top:44%;width:118px;height:166px;margin-left:-59px;margin-top:-83px;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.28);box-shadow:0 18px 60px rgba(0,0,0,.45),0 0 38px var(--pg,#ffbe00);display:flex;align-items:center;justify-content:center;font-family:var(--font-en);font-size:17px;letter-spacing:2px;font-weight:900;animation:nxCardDrop 5.2s cubic-bezier(.17,.84,.44,1) both}@keyframes nxCardDrop{0%{transform:translateY(-260px) rotateY(0) scale(.55);opacity:0}28%{opacity:1}58%{transform:translateY(0) rotateY(720deg) scale(1)}78%{transform:translateY(0) rotateY(900deg) scale(1.05);filter:brightness(2)}100%{transform:translateY(0) rotateY(1080deg) scale(1)}}
+      .nx-pg-cut{position:absolute;left:0;right:0;top:44%;height:2px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 30px #fff;opacity:0;animation:nxCut 5.2s ease both}@keyframes nxCut{62%,72%{opacity:1;transform:scaleY(12)}100%{opacity:0}}
+      .nx-pg-text{position:absolute;left:20px;right:20px;bottom:12%;text-align:center}.nx-pg-phase{font-family:var(--font-en);font-size:12px;letter-spacing:3px;color:var(--pg,#ffbe00);margin-bottom:9px}.nx-pg-title{font-size:24px;font-weight:1000;line-height:1.25;text-shadow:0 0 22px rgba(255,255,255,.35)}.nx-pg-sub{margin-top:10px;font-size:12px;color:rgba(255,255,255,.72);line-height:1.7}
+      .nx-pg-particle{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--pg,#ffbe00);box-shadow:0 0 14px var(--pg,#ffbe00);animation:nxParticle 2.4s ease-in infinite}@keyframes nxParticle{0%{transform:translateY(20vh) scale(.2);opacity:0}20%,70%{opacity:1}100%{transform:translateY(-90vh) scale(1.2);opacity:0}}
+      .nx-gacha-result-sigil{width:94px;height:94px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,255,255,.9),var(--pg,#ffbe00) 42%,rgba(0,0,0,.3));box-shadow:0 0 44px var(--pg,#ffbe00);font-size:46px;animation:nxResultPop .7s cubic-bezier(.17,.84,.44,1) both}@keyframes nxResultPop{0%{transform:scale(.2);filter:brightness(3)}70%{transform:scale(1.16)}100%{transform:scale(1)}}`;
     document.head.appendChild(gameCss);
     if(!document.getElementById('nx-gacha-cinema')){const g=document.createElement('div');g.id='nx-gacha-cinema';g.className='nx-gacha-cinema';g.textContent='NEXCA FATE DROP';document.body.appendChild(g);}
+    if(!document.getElementById('nx-premium-gacha')){
+      const p=document.createElement('div');p.id='nx-premium-gacha';p.className='nx-premium-gacha';
+      p.innerHTML='<div class="nx-pg-sky"></div><div class="nx-pg-orbit"></div><div class="nx-pg-orbit o2"></div><div class="nx-pg-core"></div><div class="nx-pg-card">NEXCA</div><div class="nx-pg-cut"></div><div class="nx-pg-text"><div class="nx-pg-phase" id="nx-pg-phase">CONNECTING FATE</div><div class="nx-pg-title" id="nx-pg-title">広島の体験運命線を接続中</div><div class="nx-pg-sub" id="nx-pg-sub">街の記憶、今日の気分、まだ知らない一歩を合成しています。</div></div>';
+      document.body.appendChild(p);
+    }
   }
   const OFFICIAL_CHARS={
     'アガル':{genre:'event',color:'#ff4d4d',icon:'🔥',evo:['火花のアガル','熱風のアガル','爆祭のアガル'],line:['よし、今日を動かすぞ。','その一歩、ちゃんと熱になってる。','街ごと上げていこう。']},
@@ -126,7 +148,30 @@
     'カゲ':{genre:'event',color:'#9aa0ff',icon:'🌙',evo:['月影のカゲ','静守のカゲ','夜導のカゲ'],line:['静かな参加も、ちゃんと力だ。','見えないところで街は育つ。','君の一歩、誰かを支えてる。']}
   };
   function charForEvent(ev){if(ev.charKey&&OFFICIAL_CHARS[ev.charKey])return ev.charKey;if(ev.g==='vintage'||ev.genre==='vintage')return 'ツムギ';if(ev.g==='cafe'||ev.genre==='cafe')return 'ヌクミ';const pool=['アガル','ネクスケ','コネル','テクル','カゲ'];return pool[Math.abs(String(ev.id||ev.title).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%pool.length];}
-  function charSvg(name,size=72){const c=OFFICIAL_CHARS[name]||OFFICIAL_CHARS.ネクスケ;const label=encodeURIComponent(c.icon);return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-label="${safe(name)}"><defs><radialGradient id="g"><stop offset="0" stop-color="#fff"/><stop offset=".42" stop-color="${c.color}"/><stop offset="1" stop-color="#111"/></radialGradient></defs><circle cx="60" cy="60" r="54" fill="url(#g)" opacity=".95"/><circle cx="42" cy="52" r="7" fill="#08080a"/><circle cx="78" cy="52" r="7" fill="#08080a"/><path d="M42 76 Q60 91 78 76" fill="none" stroke="#08080a" stroke-width="7" stroke-linecap="round"/><text x="60" y="35" text-anchor="middle" font-size="24">${decodeURIComponent(label)}</text><path d="M20 88 Q60 112 100 88" fill="none" stroke="${c.color}" stroke-width="9" stroke-linecap="round"/></svg>`;}
+  function charSvg(name,size=72){
+    const c=OFFICIAL_CHARS[name]||OFFICIAL_CHARS.ネクスケ, icon=c.icon, hue=c.color;
+    const parts={
+      'アガル':'<path d="M42 22 C48 4 58 15 60 3 C66 17 82 9 76 29" fill="#ffbe00" opacity=".9"/><path d="M35 88 C44 108 78 108 86 88" fill="none" stroke="#ff8c00" stroke-width="8" stroke-linecap="round"/>',
+      'ツムギ':'<path d="M24 42 C12 24 35 18 43 36" fill="#fff4bf"/><path d="M96 42 C108 24 85 18 77 36" fill="#fff4bf"/><path d="M31 86 C44 76 75 76 89 86" fill="none" stroke="#8b5e34" stroke-width="4" stroke-dasharray="4 5"/>',
+      'ヌクミ':'<path d="M28 34 C18 18 39 18 45 35" fill="#d7ffe7"/><path d="M75 27 C93 17 101 35 84 43" fill="#d7ffe7"/><path d="M37 84 C45 93 76 93 84 84" fill="none" stroke="#5a3b20" stroke-width="5" stroke-linecap="round"/>',
+      'テクル':'<path d="M24 55 h-12 M108 55 h-12 M60 18 v-12" stroke="#dce7ff" stroke-width="6" stroke-linecap="round"/><circle cx="60" cy="60" r="48" fill="none" stroke="#dce7ff" stroke-width="3" stroke-dasharray="7 8"/>',
+      'コネル':'<path d="M22 72 C34 46 47 46 60 72 C73 98 86 98 98 72" fill="none" stroke="#f0d7ff" stroke-width="7" stroke-linecap="round"/><circle cx="30" cy="34" r="8" fill="#f0d7ff" opacity=".9"/><circle cx="91" cy="33" r="6" fill="#f0d7ff" opacity=".75"/>',
+      'フワリ':'<path d="M20 58 C24 30 48 37 52 57 C41 62 31 64 20 58Z" fill="#e2f8ff"/><path d="M100 58 C96 30 72 37 68 57 C79 62 89 64 100 58Z" fill="#e2f8ff"/><path d="M41 91 C54 99 68 99 81 91" fill="none" stroke="#dff9ff" stroke-width="5" stroke-linecap="round"/>',
+      'ネクスケ':'<path d="M60 10 L71 34 L60 29 L49 34 Z" fill="#fff"/><path d="M60 99 L72 78 L60 84 L48 78 Z" fill="#fff" opacity=".85"/><path d="M35 35 L85 85 M85 35 L35 85" stroke="#fff" stroke-width="3" opacity=".55"/>',
+      'カゲ':'<path d="M84 26 C62 28 50 46 54 66 C58 84 75 92 92 86 C82 102 44 96 34 70 C25 45 48 20 84 26Z" fill="#e9eaff" opacity=".9"/><circle cx="36" cy="30" r="4" fill="#fff" opacity=".8"/>'
+    };
+    return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-label="${safe(name)}">
+      <defs><radialGradient id="nxBody${safe(name)}"><stop offset="0" stop-color="#fff"/><stop offset=".18" stop-color="#fff"/><stop offset=".55" stop-color="${hue}"/><stop offset="1" stop-color="#12131a"/></radialGradient><filter id="nxGlow${safe(name)}"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      ${parts[name]||parts.ネクスケ}
+      <ellipse cx="60" cy="66" rx="40" ry="42" fill="url(#nxBody${safe(name)})" filter="url(#nxGlow${safe(name)})"/>
+      <ellipse cx="44" cy="62" rx="6" ry="8" fill="#08080a"/><ellipse cx="76" cy="62" rx="6" ry="8" fill="#08080a"/>
+      <circle cx="46" cy="59" r="2" fill="#fff"/><circle cx="78" cy="59" r="2" fill="#fff"/>
+      <ellipse cx="36" cy="75" rx="7" ry="4" fill="#ff9fb5" opacity=".55"/><ellipse cx="84" cy="75" rx="7" ry="4" fill="#ff9fb5" opacity=".55"/>
+      <path d="M50 82 Q60 90 70 82" fill="none" stroke="#08080a" stroke-width="4" stroke-linecap="round"/>
+      <text x="60" y="47" text-anchor="middle" font-size="20">${icon}</text>
+      <path d="M26 99 C42 111 78 111 94 99" fill="none" stroke="${hue}" stroke-width="7" stroke-linecap="round" opacity=".9"/>
+    </svg>`;
+  }
   function stageForExp(exp){return exp>=900?2:exp>=350?1:0;}
   function persistCharState(){try{localStorage.setItem('nx_char_exp',JSON.stringify(charExp));localStorage.setItem('nx_owned_chars',JSON.stringify(Array.from(ocChars||[])));}catch(e){}if((typeof user!=='undefined'&&user)){try{sb.from('profiles').upsert({user_id:user.id,char_exp:charExp,updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(()=>{}).catch(()=>{});}catch(e){}}}
   window.showCharSummon=function(charKey,pt,exp,mode){
@@ -169,22 +214,143 @@
   }
   function enhanceGacha(){
     if(typeof GACHA==='undefined')return;
-    GACHA.Common=[{text:'いまいる場所から徒歩10分以内で、入ったことのない店を1つ保存する',ev:'小さな新規探索は継続しやすい',type:'外',pts:40},{text:'気になったイベントを1つ「行きたい」に入れる',ev:'意思表示は行動率を上げる',type:'家',pts:35}];
-    GACHA.Uncommon=[{text:'カフェか古着のスポットを1つ友達に送る',ev:'共有は参加のハードルを下げる',type:'家',pts:60},{text:'今日の広島で見つけた“いい違和感”を写真に残す',ev:'観察の習慣は街への愛着を高める',type:'外',pts:70}];
-    GACHA.Rare=[{text:'Nexca掲載スポットを1つ開いて、地図まで確認する',ev:'移動イメージは実参加率を上げる',type:'外',pts:100}];
-    GACHA.Epic=[{text:'半日で「カフェ→古着→川沿い」を1本の物語として回る',ev:'複数体験の連結は記憶に残りやすい',type:'外',pts:160}];
-    GACHA.Legendary=[{text:'今日、Nexcaで見つけた体験を本当に1つやる。証明コードまで取りに行く',ev:'行動完了は自己効力感を大きく伸ばす',type:'外',pts:260}];
+    GACHA.Common=[
+      {text:'気になったスポットを1つ「行きたい」に入れて、ネクスケに報告する',ev:'小さな意思決定は次の行動を起こしやすくする',type:'家',pts:55,char:'ネクスケ'},
+      {text:'今日の気分に合うカフェを1つ保存して、休憩予定を作る',ev:'休憩の予定化は外出の心理的負担を下げる',type:'家',pts:60,char:'ヌクミ'},
+      {text:'古着ジャンルを見て、今の自分にない色を1つ決める',ev:'選択肢の拡張は自己表現の幅を広げる',type:'家',pts:60,char:'ツムギ'}
+    ];
+    GACHA.Uncommon=[
+      {text:'徒歩10分以内で入ったことのない店の前まで行く',ev:'近距離の新奇探索は継続しやすい',type:'外',pts:90,char:'アガル'},
+      {text:'友達に「ここ一緒に行かん？」を1件送る',ev:'共有は参加ハードルを下げ、行動を現実に近づける',type:'家',pts:95,char:'コネル'},
+      {text:'今日見つけた広島の“いい違和感”を写真で残す',ev:'観察の習慣は街への愛着を高める',type:'外',pts:100,char:'フワリ'}
+    ];
+    GACHA.Rare=[
+      {text:'Nexca掲載スポットを開いて、地図・料金・参加方法まで確認する',ev:'具体的な移動イメージは実参加率を高める',type:'外',pts:150,char:'テクル'},
+      {text:'カフェ→古着→川沿いを90分の小さな旅として回る',ev:'連続した体験は記憶に残りやすい',type:'外',pts:170,char:'ツムギ'}
+    ];
+    GACHA.Epic=[
+      {text:'今日の広島を「朝・昼・夕方」の3枚で記録して、1本の物語にする',ev:'体験を物語化すると満足度と継続意欲が上がる',type:'外',pts:240,char:'フワリ'},
+      {text:'Nexcaで見つけた場所に実際に行き、参加コード獲得まで狙う',ev:'完了体験は自己効力感を強く伸ばす',type:'外',pts:280,char:'ネクスケ'}
+    ];
+    GACHA.Legendary=[
+      {text:'午前は街歩き、昼は地元ごはん、午後はイベント、夜は駅周辺で締める「広島1日クエスト」を達成する',ev:'長時間の新奇体験は街への愛着と自己効力感を大きく刺激する',type:'外',pts:420,char:'アガル'},
+      {text:'誰かを1人誘って、Nexca掲載体験を本当に1つやり切る',ev:'共同達成は記憶の強度を高め、次の参加につながる',type:'外',pts:460,char:'コネル'}
+    ];
   }
-  const prevOpenGacha=window.openGacha;
-  window.openGacha=async function(){const cine=document.getElementById('nx-gacha-cinema');if(cine){cine.classList.add('on');setTimeout(()=>cine.classList.remove('on'),2300);}setTimeout(()=>prevOpenGacha(),900);};
+  function rarityColor(r){return {Common:'#cdd3df',Uncommon:'#62d6a1',Rare:'#4d9fff',Epic:'#c084fc',Legendary:'#ffbe00'}[r]||'#ffbe00';}
+  function drawPremiumMission(){
+    const weights={Common:42,Uncommon:28,Rare:18,Epic:9,Legendary:3};let rand=Math.random()*100,rarity='Common',cum=0;
+    for(const r of Object.keys(weights)){cum+=weights[r];if(rand<cum){rarity=r;break;}}
+    const pool=GACHA[rarity]||GACHA.Common, mission={...pool[Math.floor(Math.random()*pool.length)]};
+    mission.rarity=rarity; mission.char=mission.char||(['アガル','ツムギ','ヌクミ','テクル','コネル','フワリ','ネクスケ','カゲ'][Math.floor(Math.random()*8)]);
+    return mission;
+  }
+  function showPremiumResult(mission){
+    const ch=OFFICIAL_CHARS[mission.char]||OFFICIAL_CHARS.ネクスケ, color=rarityColor(mission.rarity), icons={Common:'🎴',Uncommon:'🌿',Rare:'💎',Epic:'🔮',Legendary:'🌈'};
+    const ov=$('#gacha-ov'); if(!ov)return;
+    ov.style.setProperty('--pg',color);
+    $('#gr-icon').innerHTML=`<div class="nx-gacha-result-sigil">${icons[mission.rarity]||'🎴'}</div>`;
+    $('#gr-rarity').className='gr-rarity '+({Common:'gr-c',Uncommon:'gr-u',Rare:'gr-r',Epic:'gr-e',Legendary:'gr-l'}[mission.rarity]||'gr-c');
+    $('#gr-rarity').textContent=mission.rarity==='Legendary'?'LEGENDARY DROP':mission.rarity+' DROP';
+    $('#gr-type').innerHTML=`<div style="margin:8px auto 10px;width:96px;height:96px;display:flex;align-items:center;justify-content:center;">${charSvg(mission.char,92)}</div><div style="color:${ch.color};font-weight:1000;">${safe(mission.char)}からのクエスト</div>`;
+    $('#gr-text').textContent=mission.text;
+    $('#gr-evidence').textContent='📚 '+mission.ev+' / 報酬 '+mission.pts+'pt';
+    ov.classList.add('on');
+    if(mission.rarity==='Legendary'){document.body.classList.add('gacha-legendary-burst');setTimeout(()=>document.body.classList.remove('gacha-legendary-burst'),1800);}
+  }
+  window.openGacha=async function(){
+    if(await hasGachaToday()){toast('本日のガチャは使用済みです');return;}
+    if(typeof GACHA==='undefined')return;
+    const mission=drawPremiumMission(); window.gMission=mission; gMission=mission; await recordGachaToday();
+    const p=$('#nx-premium-gacha'), color=rarityColor(mission.rarity);
+    if(!p){showPremiumResult(mission);return;}
+    p.style.setProperty('--pg',color);
+    p.querySelector('#nx-pg-phase').textContent='FATE LINE CONNECTED';
+    p.querySelector('#nx-pg-title').textContent='広島の体験運命線を接続中';
+    p.querySelector('#nx-pg-sub').textContent='街の記憶、今日の気分、キャラの導きを合成しています。';
+    p.querySelectorAll('.nx-pg-particle').forEach(x=>x.remove());
+    for(let i=0;i<42;i++){const s=document.createElement('i');s.className='nx-pg-particle';s.style.left=Math.random()*100+'%';s.style.bottom=(-10+Math.random()*30)+'%';s.style.animationDelay=(Math.random()*1.8)+'s';s.style.animationDuration=(1.6+Math.random()*1.7)+'s';p.appendChild(s);}
+    p.classList.add('on'); if(navigator.vibrate)navigator.vibrate([80,50,120,50,220]);
+    setTimeout(()=>{p.querySelector('#nx-pg-phase').textContent='CHARACTER SIGNAL';p.querySelector('#nx-pg-title').textContent=(mission.char||'ネクスケ')+'が反応している';p.querySelector('#nx-pg-sub').textContent='このクエストは、キャラEXPにもつながる特別な一歩です。';},1700);
+    setTimeout(()=>{p.querySelector('#nx-pg-phase').textContent=mission.rarity+' DROP';p.querySelector('#nx-pg-title').textContent=mission.rarity==='Legendary'?'激レア、来る。':'カードが開く。';p.querySelector('#nx-pg-sub').textContent='結果を確定しています。';if(navigator.vibrate)navigator.vibrate([240,80,240]);},3600);
+    setTimeout(()=>{p.classList.remove('on');showPremiumResult(mission);},5400);
+  };
   const oldSelQ=window.selQ;
   window.selQ=function(oi){try{if((typeof user!=='undefined'&&user)&&typeof dQ!=='undefined'&&dQ[cQ]){const q=dQ[cQ];sb.from('diagnosis_answers').insert({user_id:user.id,question_no:q.n||cQ+1,answer_index:oi,age_group:age,city:city,created_at:new Date().toISOString()}).then(()=>{}).catch(()=>{});}}catch(e){}oldSelQ(oi);};
   const oldRenderOc=window.renderOcGrid;
   window.renderOcGrid=function(){const el=document.getElementById('official-char-grid');if(!el)return oldRenderOc&&oldRenderOc();el.innerHTML=Object.keys(OFFICIAL_CHARS).map(k=>{const exp=charExp[k]||0, st=stageForExp(exp), got=exp>0||ocChars.has('CHAR_'+k);return `<div class="char-cell ${got?'got':''}" onclick="charExp['${k}']=(charExp['${k}']||0)+80;persistCharState&&persistCharState();showCharSummon('${k}',0,80,'owned');renderOcGrid();"><div class="nx-char-svg" style="--c:${OFFICIAL_CHARS[k].color};">${got?charSvg(k,42):'?'}</div><div class="char-cell-name ${got?'got':''}" style="${got?'color:'+OFFICIAL_CHARS[k].color:''}">${got?OFFICIAL_CHARS[k].evo[st]:'???'}</div><div style="font-size:7px;color:${OFFICIAL_CHARS[k].color};">EXP ${exp}</div></div>`;}).join('');};
   const oldTownChars=window.renderTownChars;
-  window.renderTownChars=function(){const el=document.getElementById('town-chars-scroll');if(!el)return;el.innerHTML=Object.keys(OFFICIAL_CHARS).map(k=>{const exp=charExp[k]||0, active=(townData.chars||[]).some(c=>c.key===k);return `<div class="town-char-thumb ${active?'in-town':''}" onclick="toggleCharInTown('${k}')"><div class="nx-char-svg" style="--c:${OFFICIAL_CHARS[k].color};">${charSvg(k,38)}</div><div class="town-char-thumb-name" style="color:${OFFICIAL_CHARS[k].color};">${k}</div><div style="font-size:7px;color:${OFFICIAL_CHARS[k].color};">EXP ${exp}</div></div>`;}).join('');};
-  window.renderTownMap=function(){const layer=document.getElementById('town-items-layer'),empty=document.getElementById('town-empty-msg');if(!layer)return;const hour=new Date().getHours(),night=hour>=19||hour<6;const sky=document.querySelector('.town-sky'),ground=document.querySelector('.town-ground');if(sky)sky.style.background=night?'linear-gradient(180deg,#02040f,#07133a)':'linear-gradient(180deg,#77c7ff,#f8d37c)';if(ground)ground.style.background='linear-gradient(180deg,#1d5f33,#083018)';const has=(townData.items||[]).length||(townData.chars||[]).length;if(empty)empty.style.display=has?'none':'flex';layer.innerHTML='<div class="nx-town-road"></div>';const defaults=[['🏪',18,70],['☕',36,62],['👗',58,68],['🎪',78,58],['⛩️',82,78]];defaults.forEach(b=>layer.insertAdjacentHTML('beforeend',`<div class="nx-town-building" style="left:${b[1]}%;top:${b[2]}%">${b[0]}</div>`));(townData.items||[]).forEach(item=>layer.insertAdjacentHTML('beforeend',`<div class="town-el" style="left:${item.x}%;top:${item.y}%">${safe(item.em)}</div>`));(townData.chars||[]).forEach((tc,i)=>{const k=tc.key,ch=OFFICIAL_CHARS[k]||OFFICIAL_CHARS.ネクスケ,x=tc.x||20+i*12,y=tc.y||55+(i%3)*9;layer.insertAdjacentHTML('beforeend',`<div class="town-char-el" style="left:${x}%;top:${y}%;--c:${ch.color};animation-delay:${i*.3}s" onclick="openTcm('${k}')"><div class="nx-town-chat">${safe(ch.line[stageForExp(charExp[k]||0)])}</div><div class="nx-char-svg" style="--c:${ch.color};">${charSvg(k,42)}</div></div>`);});updateTownLevel&&updateTownLevel();};
-  window.updateTownLevel=function(){const n=(townData.items||[]).length+(townData.chars||[]).length,lv=Math.max(1,Math.floor(n/2)+1),pct=Math.min(100,(n%2)*50+20);const b=document.getElementById('town-lv-badge'),name=document.getElementById('town-lv-name'),sub=document.getElementById('town-lv-sub'),fill=document.getElementById('town-lv-fill');if(b)b.textContent='LV'+lv;if(name)name.textContent=lv>=5?'にぎわうNexcaタウン':lv>=3?'育ちはじめた街':'新しい街';if(sub)sub.textContent='キャラと建物を増やすほど街がにぎわう';if(fill)fill.style.width=pct+'%';};
+  window.renderTownChars=function(){
+    const el=document.getElementById('town-chars-scroll');if(!el)return;
+    el.innerHTML=Object.keys(OFFICIAL_CHARS).map(k=>{
+      const exp=charExp[k]||0, active=(townData.chars||[]).some(c=>c.key===k), st=stageForExp(exp), locked=exp<=0&&!ocChars.has('CHAR_'+k);
+      return `<div class="town-char-thumb ${active?'in-town':''}" onclick="${locked?`toast('参加コードで${k}を仲間にしよう')`:`toggleCharInTown('${k}')`}"><div class="nx-char-svg nx-char-card" style="--c:${OFFICIAL_CHARS[k].color};opacity:${locked?.38:1};">${locked?'?':charSvg(k,42)}</div><div class="town-char-thumb-name" style="color:${OFFICIAL_CHARS[k].color};">${locked?'???':OFFICIAL_CHARS[k].evo[st]}</div><div style="font-size:7px;color:${OFFICIAL_CHARS[k].color};">EXP ${exp}</div></div>`;
+    }).join('');
+  };
+  function persistTownState(){
+    try{localStorage.setItem('nx_town_data',JSON.stringify(townData));}catch(e){}
+    if((typeof user!=='undefined'&&user)){try{sb.from('profiles').upsert({user_id:user.id,town_data:townData,updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(()=>{}).catch(()=>{});}catch(e){}}
+  }
+  const oldOpenTown=window.openTown;
+  window.openTown=function(){oldOpenTown&&oldOpenTown();renderTownMap&&renderTownMap();renderTownChars&&renderTownChars();renderTownShop&&renderTownShop();};
+  const oldBuyTownItem=window.buyTownItem;
+  window.buyTownItem=function(itemId){oldBuyTownItem&&oldBuyTownItem(itemId);persistTownState();setTimeout(()=>{renderTownMap&&renderTownMap();renderTownShop&&renderTownShop();},50);};
+  const oldToggleCharInTown=window.toggleCharInTown;
+  window.toggleCharInTown=function(charKey){
+    if(charKey&&typeof charKey==='object')charKey=charKey.dataset.key;
+    if(!townData.chars)townData.chars=[];
+    const exists=townData.chars.findIndex(c=>c.key===charKey);
+    if(exists>=0){townData.chars.splice(exists,1);toast(charKey+'を街から外しました');}
+    else{
+      const pos=[[24,67],[42,58],[58,70],[72,55],[34,78],[83,72]][townData.chars.length%6];
+      townData.chars.push({key:charKey,x:pos[0]+Math.random()*4,y:pos[1]+Math.random()*4});
+      toast(charKey+'がマイ広島に来ました');
+    }
+    persistTownState();renderTownMap();renderTownChars();updateTownLevel();
+  };
+  window.renderTownMap=function(){
+    const layer=document.getElementById('town-items-layer'),empty=document.getElementById('town-empty-msg');if(!layer)return;
+    if(!townData.items)townData.items=[]; if(!townData.chars)townData.chars=[];
+    const hour=new Date().getHours(),night=hour>=19||hour<6,evening=hour>=16&&hour<19,morning=hour>=5&&hour<10;
+    const sky=document.querySelector('.town-sky'),ground=document.querySelector('.town-ground'),time=document.getElementById('town-time-ind');
+    if(sky)sky.style.background=night?'linear-gradient(180deg,#050615,#101c43 62%,#2c1d3a)':evening?'linear-gradient(180deg,#fb9f6d,#ffd27a 52%,#6aa0c8)':'linear-gradient(180deg,#73c8ff,#bfeaff 58%,#ffe5a4)';
+    if(ground)ground.style.background=night?'linear-gradient(180deg,#142813,#061509)':'linear-gradient(180deg,#4b9a48,#1f6231)';
+    if(time)time.textContent=night?'🌙 NIGHT':evening?'🌆 EVENING':morning?'🌅 MORNING':'☀️ DAY';
+    if(empty)empty.style.display='none';
+    const area=(townData.area||'center');
+    const buildings={
+      center:[['🏪','コンビニ',17,72],['☕','喫茶',35,60],['👗','古着',58,68],['🎪','イベント',78,58],['🚉','駅前',86,78],['🍜','ごはん',47,82]],
+      park:[['🌳','木陰',18,70],['🛝','広場',38,62],['🥤','売店',62,72],['🎪','野外',78,58],['🌼','花壇',84,78]],
+      port:[['⚓','港',16,72],['⛴️','フェリー',38,59],['☕','海カフェ',62,69],['🌉','夜景',80,54],['🍋','島店',86,78]],
+      shrine:[['⛩️','参道',18,70],['🍡','茶屋',36,61],['🌲','杜',58,70],['🦌','広場',76,57],['🧧','願い',86,78]]
+    }[area]||[];
+    layer.innerHTML='<div class="nx-town-river"></div><div class="nx-town-road"></div><div class="nx-town-plaza"></div>';
+    buildings.forEach(b=>layer.insertAdjacentHTML('beforeend',`<div class="nx-town-building" style="left:${b[2]}%;top:${b[3]}%" onclick="showTownAreaEvents('${safe(b[1])}')">${b[0]}<span>${safe(b[1])}</span></div>`));
+    townData.items.forEach((item,i)=>layer.insertAdjacentHTML('beforeend',`<div class="town-el" style="left:${item.x}%;top:${item.y}%;font-size:${24+(i%3)*3}px;filter:drop-shadow(0 8px 8px rgba(0,0,0,.35));">${safe(item.em)}</div>`));
+    const activeChars=townData.chars.length?townData.chars:Object.keys(OFFICIAL_CHARS).filter(k=>(charExp[k]||0)>0||ocChars.has('CHAR_'+k)).slice(0,3).map((k,i)=>({key:k,x:30+i*18,y:66+(i%2)*10}));
+    activeChars.forEach((tc,i)=>{
+      const k=tc.key,ch=OFFICIAL_CHARS[k]||OFFICIAL_CHARS.ネクスケ,x=tc.x||30+i*14,y=tc.y||62+(i%3)*8,st=stageForExp(charExp[k]||0);
+      layer.insertAdjacentHTML('beforeend',`<div class="town-char-el" style="left:${x}%;top:${y}%;--c:${ch.color};animation-delay:${i*.4}s" onclick="openTcm('${k}')"><div class="nx-town-chat">${safe(ch.line[st])}</div><div class="nx-char-svg nx-char-card" style="--c:${ch.color};width:54px;height:54px;">${charSvg(k,54)}</div></div>`);
+    });
+    (typeof EVS!=='undefined'?EVS:[]).filter(e=>!e.isOfficial).slice(0,3).forEach((ev,i)=>layer.insertAdjacentHTML('beforeend',`<div class="nx-town-pin" style="left:${22+i*27}%;top:${31+i%2*6}%" onclick="openDrw('${ev.id}')">${safe(ev.ge||'🎉')} ${safe(String(ev.title).slice(0,7))}</div>`));
+    const owned=Object.keys(OFFICIAL_CHARS).filter(k=>(charExp[k]||0)>0||ocChars.has('CHAR_'+k)).length;
+    layer.insertAdjacentHTML('beforeend',`<div class="nx-town-life"><div>仲間 ${owned}/8</div><div>建物 ${townData.items.length}</div><div>街EXP ${owned*80+townData.items.length*45}</div></div>`);
+    updateTownLevel&&updateTownLevel();
+  };
+  window.showTownAreaEvents=function(label){
+    const list=(typeof EVS!=='undefined'?EVS:[]).filter(e=>!e.isOfficial).slice(0,3);
+    toast(label+'周辺のイベントを表示します');
+    if(list[0])openDrw(list[0].id);
+  };
+  window.updateTownLevel=function(){
+    const owned=Object.keys(OFFICIAL_CHARS).filter(k=>(charExp[k]||0)>0||ocChars.has('CHAR_'+k)).length;
+    const n=(townData.items||[]).length+owned,lv=Math.max(1,Math.floor(n/2)+1),pct=Math.min(100,20+(n%4)*24);
+    const b=document.getElementById('town-lv-badge'),name=document.getElementById('town-lv-name'),sub=document.getElementById('town-lv-sub'),fill=document.getElementById('town-lv-fill');
+    if(b)b.textContent='LV'+lv;
+    if(name)name.textContent=lv>=8?'Nexcaキャラタウン':lv>=5?'にぎわう育成タウン':lv>=3?'キャラが暮らす街':'はじまりのマイ広島';
+    if(sub)sub.textContent='キャラを仲間にして、建物を置いて、街を育てる';
+    if(fill)fill.style.width=pct+'%';
+  };
   window.persistCharState=persistCharState;
   function bootGameLayer(){installNexcaGameLayer();tuneEconomy();enhanceGacha();installCharSystem();renderOcGrid&&renderOcGrid();renderTownChars&&renderTownChars();}
   window.addEventListener('DOMContentLoaded',()=>{bootGameLayer();setTimeout(()=>{bootGameLayer();renderFeed&&renderFeed();renderShop&&renderShop();renderEarn&&renderEarn();},900);});
