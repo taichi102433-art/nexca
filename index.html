@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -1191,6 +1191,18 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 function calcLv(p){let l=LVC[0];for(const x of LVC){if(p>=x.pt)l=x;else break;}return l;}
 function calcClv(exp){let lv=1;for(let i=1;i<LVT.length;i++){if(exp>=LVT[i])lv=i+1;}return lv;}
 function calcCprog(exp){const lv=calcClv(exp);const cur=LVT[lv-1];const nxt=LVT[lv]||cur+1000;return{lv,pct:Math.min(100,Math.round((exp-cur)/(nxt-cur)*100)),cur:exp-cur,need:nxt-cur};}
+function goObStep1(){var s0=document.getElementById('ob-step0'),s1=document.getElementById('ob-step1');if(s0)s0.style.display='none';if(s1)s1.style.display='block';}
+function renderTodayWidget(){var w=document.getElementById('today-widget');if(!w)return;var evs=(window.EVS||[]).filter(function(e){return !e.isOfficial&&(!age||!e.age||e.age.includes(age));}).slice(0,3);if(!evs.length){w.style.display='none';return;}w.style.display='block';var cn=document.getElementById('tw-char-name'),cm=document.getElementById('tw-char-msg'),ci=document.getElementById('tw-char-icon'),list=document.getElementById('tw-events');if(cn)cn.textContent=charType||'NEXTREET';if(cm)cm.textContent='今日の広島で、ひとつ新しい体験を見つけよう';if(ci)ci.textContent='🎭';if(list)list.innerHTML=evs.map(function(e){return '<div class="today-ev-chip" onclick="openDrw(this.dataset.id)" data-id="'+e.id+'"><div class="today-ev-chip-genre">'+sanitize(e.gl||e.genre||'イベント')+'</div><div>'+sanitize(e.title)+'</div></div>';}).join('');}
+function updateTownTimeLabel(){var el=document.getElementById('town-time-label');if(!el)return;var h=new Date().getHours();el.textContent=h<6?'深夜':h<11?'朝':h<16?'昼':h<19?'夕方':'夜';}
+function updateTownLevel(){var el=document.getElementById('town-level');if(el)el.textContent='Lv'+Math.max(1,Math.floor(((townData.items||[]).length+(townData.chars||[]).length)/3)+1);}
+function showWelcomeModal(){var el=document.getElementById('welcome-modal');if(el&&!localStorage.getItem('nx_welcome_seen'))el.classList.add('on');}
+function closeWelcome(){localStorage.setItem('nx_welcome_seen','1');var el=document.getElementById('welcome-modal');if(el)el.classList.remove('on');}
+function updateCodeLights(v){var lights=document.querySelectorAll('#code-lights .code-light');lights.forEach(function(el,i){el.classList.toggle('on',i<String(v||'').length);});}
+function closeSummon(){var el=document.getElementById('char-summon');if(el)el.classList.remove('on');}
+function showCharSummon(charKey,pt,exp){var cd=OC[charKey]||{};var el=document.getElementById('char-summon');if(!el){toast(charKey+' EXP+'+exp);return;}var c=document.getElementById('summon-char'),n=document.getElementById('summon-name'),ca=document.getElementById('summon-catch'),p=document.getElementById('summon-pts');if(c)c.textContent='🎭';if(n)n.textContent=charKey;if(ca)ca.textContent=cd.catch||'キャラEXPを獲得しました';if(p)p.textContent='+'+pt+'pt ＋ EXP+'+exp;el.classList.add('on');}
+function flipGachaCard(i){var card=document.querySelector('.gacha-card-flip[data-idx="'+i+'"]');if(card)card.classList.add('flipped');var cta=document.getElementById('gacha-stage-cta');if(cta)cta.classList.add('on');}
+function showGachaResult(){document.getElementById('gacha-cards-stage')&&document.getElementById('gacha-cards-stage').classList.remove('on');openGacha();}
+function setTownArea(el,area){document.querySelectorAll('.town-area-tab').forEach(function(t){t.classList.remove('on');});if(el)el.classList.add('on');var label=document.getElementById('town-area-label');if(label)label.textContent=area||'center';}
 function pickAge(el,a){document.querySelectorAll('#ob-step1 .ob-item').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');age=a;document.getElementById('ob-btn1').classList.add('on');}
 function goObStep2(){document.getElementById('ob-step1').style.display='none';document.getElementById('ob-step2').style.display='block';}
 function pickCity(el,c){document.querySelectorAll('#ob-step2 .ob-item').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');city=c;document.getElementById('ob-btn2').classList.add('on');}
@@ -1302,7 +1314,7 @@ function renderOcGrid(){var keys=['CHAR_AGARU','CHAR_TSUMUGI','CHAR_NUKUMI','CHA
 function renderLcGrid(){var el=document.getElementById('lchar-grid');var cnt=document.getElementById('lchar-count');if(!el)return;var acquired=LC.filter(function(c){return lcChars.has(c.key);}).length;if(cnt)cnt.textContent=acquired+'/'+LC.length;el.innerHTML=LC.map(function(c){var has=lcChars.has(c.key);return '<div class="lchar-cell '+(has?'got':'')+'"><div class="lchar-em">'+(has?c.emoji:'❓')+'</div><div class="lchar-name '+(has?'got':'')+'">'+( has?c.name.slice(0,6):'???')+'</div></div>';}).join('');}
 function showClvup(charKey,newLv){var cd=OC[charKey];if(!cd)return;var lvData=cd.lvUp&&cd.lvUp[newLv-2];var box=document.getElementById('clvup-box');box.style.borderColor=cd.color;document.getElementById('clvup-em').textContent='🎭';document.getElementById('clvup-lbl').style.color=cd.color;document.getElementById('clvup-lv').style.color=cd.color;document.getElementById('clvup-lv').textContent='Lv'+newLv;document.getElementById('clvup-name').textContent=charKey+' '+(lvData&&lvData.name||'');document.getElementById('clvup-sub').textContent=(lvData&&lvData.unlock)||'新しいレベルに到達！';document.getElementById('clvup-btn').style.background=cd.color;document.getElementById('clvup-btn').style.color='white';document.getElementById('clvup').classList.add('on');}
 function closeClvup(){document.getElementById('clvup').classList.remove('on');}
-function addPt(reason,amt,camp,onceKey){if(onceKey){if(ptDedup.has(onceKey))return;ptDedup.add(onceKey);savePtDedup();}var old=ptt;var a=camp?amt*2:amt;pts+=a;ptt+=a;ptm+=a;phist.unshift({reason:reason,amt:a,date:new Date().toLocaleDateString('ja-JP'),camp:camp});var ol=calcLv(old),nl=calcLv(ptt);if(nl.lv>ol.lv){document.getElementById('lvup-lv').textContent='Lv'+nl.lv;document.getElementById('lvup-name').textContent=nl.name;document.getElementById('lvup').classList.add('on');}updStats();renderPtHero();renderPtHist();if(user){try{sb.from('point_history').insert({user_id:user.id,reason:reason,amount:a,camp:!!camp,created_at:new Date().toISOString()}).then(function(){}).catch(function(){});}catch(e){}}}
+function addPt(reason,amt,camp,onceKey){if(onceKey){if(ptDedup.has(onceKey))return;ptDedup.add(onceKey);savePtDedup();}var old=ptt;var a=camp?amt*2:amt;pts+=a;ptt+=a;ptm+=a;phist.unshift({reason:reason,amt:a,date:new Date().toLocaleDateString('ja-JP'),camp:camp});var ol=calcLv(old),nl=calcLv(ptt);if(nl.lv>ol.lv){document.getElementById('lvup-lv').textContent='Lv'+nl.lv;document.getElementById('lvup-name').textContent=nl.name;document.getElementById('lvup').classList.add('on');}updStats();renderPtHero();renderPtHist();try{localStorage.setItem('nx_point_history',JSON.stringify(phist.slice(0,80)));}catch(e){} if(user){try{sb.from('profiles').upsert({user_id:user.id,total_points:ptt,updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(function(){}).catch(function(){});}catch(e){}}}
 function usePt(amt,reason){if(pts<amt)return false;pts-=amt;ptu+=amt;phist.unshift({reason:reason,amt:-amt,date:new Date().toLocaleDateString('ja-JP'),camp:false});updStats();renderPtHero();renderPtHist();return true;}
 function closeLvUp(){document.getElementById('lvup').classList.remove('on');}
 function updStats(){var v=Math.floor(pts);['ph-val','mp-ptv','st-pt'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=v;});var els=[document.getElementById('ph-month'),document.getElementById('ph-total'),document.getElementById('ph-used')];[ptm,ptt,ptu].forEach(function(val,i){if(els[i])els[i].textContent=Math.floor(val);});if(document.getElementById('st-lk'))document.getElementById('st-lk').textContent=likes.size;if(document.getElementById('st-wnt'))document.getElementById('st-wnt').textContent=wants.size;if(document.getElementById('st-vi'))document.getElementById('st-vi').textContent=viewed.size;if(document.getElementById('town-pts-val'))document.getElementById('town-pts-val').textContent=Math.floor(pts);}
@@ -1372,6 +1384,7 @@ window.addEventListener('DOMContentLoaded',function(){
   window.addEventListener('hashchange',function(){try{handleDeepLink();}catch(e){}});
 });
 </script>
-<script src="nexca-v2.js?v=2"></script>
+<script src="nexca-v2.js?v=3"></script>
 </body>
 </html>
+
