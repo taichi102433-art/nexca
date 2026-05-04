@@ -100,6 +100,94 @@
   async function applyProfile(){if((typeof user!=='undefined'&&user)){try{const p=await sb.from('profiles').select('age_group,city,town_data,char_exp,total_points').eq('user_id',user.id).maybeSingle();if(p.data){if(p.data.age_group){age=p.data.age_group;localStorage.setItem('nx_age',age);}if(p.data.city){city=p.data.city;localStorage.setItem('nx_city',city);}if(p.data.town_data)townData=p.data.town_data;if(p.data.char_exp)charExp=Object.assign(charExp||{},p.data.char_exp);localStorage.setItem('nx_onboarding_done','1');$('#ob')&&$('#ob').classList.add('hide');$('#ab')&&($('#ab').style.display='flex');updateAB&&updateAB();boot&&boot();renderMP&&renderMP();}}catch(e){}}else if(!localStorage.getItem('nx_onboarding_done')&&!localStorage.getItem('nx_prereg')){$('#ob')&&$('#ob').classList.remove('hide');}}
   const oldStart=window.startApp; window.startApp=function(){localStorage.setItem('nx_onboarding_done','1');oldStart&&oldStart();if((typeof user!=='undefined'&&user))saveProfilePrefs();};
   const oldPre=window.submitPreReg; window.submitPreReg=async function(){await (oldPre&&oldPre());localStorage.setItem('nx_onboarding_done','1');};
+  function installNexcaGameLayer(){
+    const gameCss=document.createElement('style');
+    gameCss.textContent=`
+      .nx-char-svg{width:44px;height:44px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);box-shadow:0 0 22px var(--c,rgba(255,255,255,.2));overflow:hidden}
+      .nx-summon-stage{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,var(--c,rgba(255,255,255,.3)),transparent 34%),rgba(0,0,0,.92);animation:nxSummonBg 2.4s ease both;z-index:-1}
+      @keyframes nxSummonBg{0%{filter:brightness(.2)}45%{filter:brightness(1.8)}100%{filter:brightness(1)}}
+      .nx-evo-title{font-family:var(--font-en);font-size:13px;letter-spacing:3px;color:var(--yellow);margin-bottom:8px;text-align:center}
+      .nx-town-road{position:absolute;left:0;right:0;bottom:20%;height:34%;background:linear-gradient(120deg,transparent 0 18%,rgba(255,255,255,.08) 18% 24%,transparent 24% 45%,rgba(255,255,255,.07) 45% 52%,transparent 52%);opacity:.7}
+      .nx-town-building{position:absolute;transform:translate(-50%,-50%);font-size:28px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
+      .nx-town-chat{position:absolute;left:50%;top:-22px;transform:translateX(-50%);white-space:nowrap;background:rgba(0,0,0,.68);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:3px 8px;font-size:9px;color:white}
+      .nx-gacha-cinema{position:fixed;inset:0;z-index:920;display:none;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,190,0,.18),rgba(0,0,0,.96) 56%);font-family:var(--font-en);font-size:26px;letter-spacing:4px;color:var(--yellow)}
+      .nx-gacha-cinema.on{display:flex;animation:nxCine 2.3s ease both}@keyframes nxCine{0%{opacity:0;transform:scale(1.1)}25%,80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.96)}}`;
+    document.head.appendChild(gameCss);
+    if(!document.getElementById('nx-gacha-cinema')){const g=document.createElement('div');g.id='nx-gacha-cinema';g.className='nx-gacha-cinema';g.textContent='NEXCA FATE DROP';document.body.appendChild(g);}
+  }
+  const OFFICIAL_CHARS={
+    'アガル':{genre:'event',color:'#ff4d4d',icon:'🔥',evo:['火花のアガル','熱風のアガル','爆祭のアガル'],line:['よし、今日を動かすぞ。','その一歩、ちゃんと熱になってる。','街ごと上げていこう。']},
+    'ツムギ':{genre:'vintage',color:'#ffd54a',icon:'🧵',evo:['目利きのツムギ','記憶編みのツムギ','時装のツムギ'],line:['その服、物語を持ってる。','好きはちゃんと積み重なる。','君の審美眼、進化してる。']},
+    'ヌクミ':{genre:'cafe',color:'#6ee7a8',icon:'☕',evo:['ひだまりのヌクミ','深煎りのヌクミ','憩界のヌクミ'],line:['まあ座って、息をしよう。','休むのも前に進むこと。','ここが君の充電スポット。']},
+    'テクル':{genre:'event',color:'#7c8cff',icon:'⚙️',evo:['試作のテクル','発明のテクル','未来図のテクル'],line:['失敗はデータ。次いこ。','発見、ちゃんと記録した？','君の工夫が街を変える。']},
+    'コネル':{genre:'event',color:'#c084fc',icon:'🫧',evo:['糸口のコネル','結び目のコネル','縁環のコネル'],line:['つながりは小さく始まる。','話してみる価値、あるかも。','その縁、育ってきたね。']},
+    'フワリ':{genre:'cafe',color:'#67d8ff',icon:'🪽',evo:['そよぎのフワリ','雲間のフワリ','風詠みのフワリ'],line:['急がなくていいよ。','見えてるもの、言葉にしてみて。','軽やかに、でも確かに。']},
+    'ネクスケ':{genre:'event',color:'#e63946',icon:'🧭',evo:['案内人ネクスケ','開拓者ネクスケ','Nexcaの羅針盤'],line:['次の広島、見つけに行こ。','今日の選択が地図になる。','君がNexcaを進めてる。']},
+    'カゲ':{genre:'event',color:'#9aa0ff',icon:'🌙',evo:['月影のカゲ','静守のカゲ','夜導のカゲ'],line:['静かな参加も、ちゃんと力だ。','見えないところで街は育つ。','君の一歩、誰かを支えてる。']}
+  };
+  function charForEvent(ev){if(ev.charKey&&OFFICIAL_CHARS[ev.charKey])return ev.charKey;if(ev.g==='vintage'||ev.genre==='vintage')return 'ツムギ';if(ev.g==='cafe'||ev.genre==='cafe')return 'ヌクミ';const pool=['アガル','ネクスケ','コネル','テクル','カゲ'];return pool[Math.abs(String(ev.id||ev.title).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%pool.length];}
+  function charSvg(name,size=72){const c=OFFICIAL_CHARS[name]||OFFICIAL_CHARS.ネクスケ;const label=encodeURIComponent(c.icon);return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" aria-label="${safe(name)}"><defs><radialGradient id="g"><stop offset="0" stop-color="#fff"/><stop offset=".42" stop-color="${c.color}"/><stop offset="1" stop-color="#111"/></radialGradient></defs><circle cx="60" cy="60" r="54" fill="url(#g)" opacity=".95"/><circle cx="42" cy="52" r="7" fill="#08080a"/><circle cx="78" cy="52" r="7" fill="#08080a"/><path d="M42 76 Q60 91 78 76" fill="none" stroke="#08080a" stroke-width="7" stroke-linecap="round"/><text x="60" y="35" text-anchor="middle" font-size="24">${decodeURIComponent(label)}</text><path d="M20 88 Q60 112 100 88" fill="none" stroke="${c.color}" stroke-width="9" stroke-linecap="round"/></svg>`;}
+  function stageForExp(exp){return exp>=900?2:exp>=350?1:0;}
+  function persistCharState(){try{localStorage.setItem('nx_char_exp',JSON.stringify(charExp));localStorage.setItem('nx_owned_chars',JSON.stringify(Array.from(ocChars||[])));}catch(e){}if((typeof user!=='undefined'&&user)){try{sb.from('profiles').upsert({user_id:user.id,char_exp:charExp,updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(()=>{}).catch(()=>{});}catch(e){}}}
+  window.showCharSummon=function(charKey,pt,exp,mode){
+    const ch=OFFICIAL_CHARS[charKey]||OFFICIAL_CHARS.ネクスケ, oldStage=stageForExp(Math.max(0,(charExp[charKey]||0)-exp)), newStage=stageForExp(charExp[charKey]||0), evo=newStage>oldStage;
+    const el=document.getElementById('char-summon');if(!el){toast(charKey+' EXP+'+exp);return;}
+    el.style.setProperty('--summon-color',ch.color);el.style.setProperty('--c',ch.color);
+    if(!el.querySelector('.nx-summon-stage'))el.insertAdjacentHTML('afterbegin','<div class="nx-summon-stage"></div>');
+    document.getElementById('summon-char').innerHTML=charSvg(charKey,106);
+    document.getElementById('summon-name').textContent=(evo?'EVOLUTION · ':'')+ch.evo[newStage];
+    document.getElementById('summon-catch').innerHTML=(evo?'<div class="nx-evo-title">CHARACTER EVOLUTION</div>':'')+safe(ch.line[newStage]||ch.line[0]);
+    document.getElementById('summon-pts').textContent=(mode==='owned'?'EXP+':'+'+pt+'pt ＋ EXP+')+exp;
+    document.getElementById('summon-close').textContent=evo?'進化した！':'仲間になった！';
+    el.classList.add('on');
+  };
+  function installCharSystem(){
+    if(typeof OC!=='undefined')Object.keys(OFFICIAL_CHARS).forEach(k=>{if(!OC[k])OC[k]={color:OFFICIAL_CHARS[k].color,genre:OFFICIAL_CHARS[k].genre,kuchi:OFFICIAL_CHARS[k].line[0],pers:'Nexca公式キャラクター。体験参加でEXPを集めて進化する。',weak:'まだ未知の体験が足りない。',compat:'ネクスケ',cd:'一緒に街を広げる相棒。',catch:OFFICIAL_CHARS[k].line[0],mbti:{E:60,N:70,F:65,P:70},strengths:['発見','参加','成長'],growth:'参加コードで体験を証明すると進化に近づく。',lvUp:[]};});
+    if(typeof EVS!=='undefined')EVS.forEach(ev=>{const k=charForEvent(ev);ev.charKey=k;ev.charEmoji=OFFICIAL_CHARS[k].icon;ev.charName=ev.charName||OFFICIAL_CHARS[k].evo[stageForExp(charExp[k]||0)];ev.charDesc=OFFICIAL_CHARS[k].line[stageForExp(charExp[k]||0)];});
+  }
+  const oldSubmitPart=window.submitPart;
+  window.submitPart=async function(){
+    const code=document.getElementById('part-code')&&document.getElementById('part-code').value.trim().toUpperCase();
+    const ev=EVS.find(e=>e.id===partEvId); if(!ev)return;
+    if(!code||code.length<3){toast('参加コードを入力してください');return;}
+    if(code!==String(ev.qr||'').toUpperCase()){document.getElementById('partm-content').innerHTML=`<div style="color:var(--red);font-weight:900;text-align:center;padding:18px;">コードが違います。主催者の画面に表示されている参加コードを確認してください。</div><button class="part-sub" onclick="openPartM('${ev.id}')">もう一度入力する</button>`;return;}
+    const eid=publicId(ev.id), key='part_'+eid;
+    if(parts[ev.id]||localStorage.getItem(key)==='1'){document.getElementById('partm-content').innerHTML='<div style="color:var(--green);font-weight:900;text-align:center;padding:20px;">この参加コードは使用済みです。キャラはもう仲間になっています。</div><button class="part-sub" onclick="closePartM()">閉じる</button>';return;}
+    if((typeof user!=='undefined'&&user)){
+      try{const chk=await sb.from('participations').select('id').eq('user_id',user.id).eq('event_id',eid).maybeSingle();if(chk.data){parts[ev.id]='ok';localStorage.setItem(key,'1');document.getElementById('partm-content').innerHTML='<div style="color:var(--green);font-weight:900;text-align:center;padding:20px;">この参加コードは使用済みです。</div><button class="part-sub" onclick="closePartM()">閉じる</button>';return;}}catch(e){}
+    }
+    parts[ev.id]='ok';localStorage.setItem(key,'1');
+    const charKey=charForEvent(ev), owned=!!(charExp[charKey]&&charExp[charKey]>0), ptG=ev.fixed?80:120, expG=owned?90:140;
+    if((typeof user!=='undefined'&&user)){try{await sb.from('participations').insert({user_id:user.id,event_id:eid,code:code,points:ptG,created_at:new Date().toISOString(),age_group:age,city:city,character:charKey});}catch(e){}}
+    addPt('参加証明：'+ev.title,ptG,false,'part_'+eid);
+    const before=charExp[charKey]||0; charExp[charKey]=before+expG; ocChars.add('CHAR_'+charKey); persistCharState();
+    setTimeout(()=>{closePartM();showCharSummon(charKey,ptG,expG,owned?'owned':'new');renderOcGrid&&renderOcGrid();renderTownChars&&renderTownChars();},450);
+  };
+  function tuneEconomy(){
+    if(typeof SHOP!=='undefined'){const costs={g1:120,g2:180,g3:280,g4:420,g5:900};SHOP.forEach(s=>{if(costs[s.id])s.cost=costs[s.id];});}
+    if(typeof EARN!=='undefined'){EARN.forEach(e=>{if(e.name==='動画視聴')e.pt=5;if(e.name==='いいね')e.pt=8;if(e.name==='行きたい登録')e.pt=8;if(e.name==='診断完了')e.pt=60;if(e.name==='参加証明')e.pt=120;if(e.name==='振り返り投稿')e.pt=50;if(e.name==='ログイン')e.pt=10;});}
+  }
+  function enhanceGacha(){
+    if(typeof GACHA==='undefined')return;
+    GACHA.Common=[{text:'いまいる場所から徒歩10分以内で、入ったことのない店を1つ保存する',ev:'小さな新規探索は継続しやすい',type:'外',pts:40},{text:'気になったイベントを1つ「行きたい」に入れる',ev:'意思表示は行動率を上げる',type:'家',pts:35}];
+    GACHA.Uncommon=[{text:'カフェか古着のスポットを1つ友達に送る',ev:'共有は参加のハードルを下げる',type:'家',pts:60},{text:'今日の広島で見つけた“いい違和感”を写真に残す',ev:'観察の習慣は街への愛着を高める',type:'外',pts:70}];
+    GACHA.Rare=[{text:'Nexca掲載スポットを1つ開いて、地図まで確認する',ev:'移動イメージは実参加率を上げる',type:'外',pts:100}];
+    GACHA.Epic=[{text:'半日で「カフェ→古着→川沿い」を1本の物語として回る',ev:'複数体験の連結は記憶に残りやすい',type:'外',pts:160}];
+    GACHA.Legendary=[{text:'今日、Nexcaで見つけた体験を本当に1つやる。証明コードまで取りに行く',ev:'行動完了は自己効力感を大きく伸ばす',type:'外',pts:260}];
+  }
+  const prevOpenGacha=window.openGacha;
+  window.openGacha=async function(){const cine=document.getElementById('nx-gacha-cinema');if(cine){cine.classList.add('on');setTimeout(()=>cine.classList.remove('on'),2300);}setTimeout(()=>prevOpenGacha(),900);};
+  const oldSelQ=window.selQ;
+  window.selQ=function(oi){try{if((typeof user!=='undefined'&&user)&&typeof dQ!=='undefined'&&dQ[cQ]){const q=dQ[cQ];sb.from('diagnosis_answers').insert({user_id:user.id,question_no:q.n||cQ+1,answer_index:oi,age_group:age,city:city,created_at:new Date().toISOString()}).then(()=>{}).catch(()=>{});}}catch(e){}oldSelQ(oi);};
+  const oldRenderOc=window.renderOcGrid;
+  window.renderOcGrid=function(){const el=document.getElementById('official-char-grid');if(!el)return oldRenderOc&&oldRenderOc();el.innerHTML=Object.keys(OFFICIAL_CHARS).map(k=>{const exp=charExp[k]||0, st=stageForExp(exp), got=exp>0||ocChars.has('CHAR_'+k);return `<div class="char-cell ${got?'got':''}" onclick="charExp['${k}']=(charExp['${k}']||0)+80;persistCharState&&persistCharState();showCharSummon('${k}',0,80,'owned');renderOcGrid();"><div class="nx-char-svg" style="--c:${OFFICIAL_CHARS[k].color};">${got?charSvg(k,42):'?'}</div><div class="char-cell-name ${got?'got':''}" style="${got?'color:'+OFFICIAL_CHARS[k].color:''}">${got?OFFICIAL_CHARS[k].evo[st]:'???'}</div><div style="font-size:7px;color:${OFFICIAL_CHARS[k].color};">EXP ${exp}</div></div>`;}).join('');};
+  const oldTownChars=window.renderTownChars;
+  window.renderTownChars=function(){const el=document.getElementById('town-chars-scroll');if(!el)return;el.innerHTML=Object.keys(OFFICIAL_CHARS).map(k=>{const exp=charExp[k]||0, active=(townData.chars||[]).some(c=>c.key===k);return `<div class="town-char-thumb ${active?'in-town':''}" onclick="toggleCharInTown('${k}')"><div class="nx-char-svg" style="--c:${OFFICIAL_CHARS[k].color};">${charSvg(k,38)}</div><div class="town-char-thumb-name" style="color:${OFFICIAL_CHARS[k].color};">${k}</div><div style="font-size:7px;color:${OFFICIAL_CHARS[k].color};">EXP ${exp}</div></div>`;}).join('');};
+  window.renderTownMap=function(){const layer=document.getElementById('town-items-layer'),empty=document.getElementById('town-empty-msg');if(!layer)return;const hour=new Date().getHours(),night=hour>=19||hour<6;const sky=document.querySelector('.town-sky'),ground=document.querySelector('.town-ground');if(sky)sky.style.background=night?'linear-gradient(180deg,#02040f,#07133a)':'linear-gradient(180deg,#77c7ff,#f8d37c)';if(ground)ground.style.background='linear-gradient(180deg,#1d5f33,#083018)';const has=(townData.items||[]).length||(townData.chars||[]).length;if(empty)empty.style.display=has?'none':'flex';layer.innerHTML='<div class="nx-town-road"></div>';const defaults=[['🏪',18,70],['☕',36,62],['👗',58,68],['🎪',78,58],['⛩️',82,78]];defaults.forEach(b=>layer.insertAdjacentHTML('beforeend',`<div class="nx-town-building" style="left:${b[1]}%;top:${b[2]}%">${b[0]}</div>`));(townData.items||[]).forEach(item=>layer.insertAdjacentHTML('beforeend',`<div class="town-el" style="left:${item.x}%;top:${item.y}%">${safe(item.em)}</div>`));(townData.chars||[]).forEach((tc,i)=>{const k=tc.key,ch=OFFICIAL_CHARS[k]||OFFICIAL_CHARS.ネクスケ,x=tc.x||20+i*12,y=tc.y||55+(i%3)*9;layer.insertAdjacentHTML('beforeend',`<div class="town-char-el" style="left:${x}%;top:${y}%;--c:${ch.color};animation-delay:${i*.3}s" onclick="openTcm('${k}')"><div class="nx-town-chat">${safe(ch.line[stageForExp(charExp[k]||0)])}</div><div class="nx-char-svg" style="--c:${ch.color};">${charSvg(k,42)}</div></div>`);});updateTownLevel&&updateTownLevel();};
+  window.updateTownLevel=function(){const n=(townData.items||[]).length+(townData.chars||[]).length,lv=Math.max(1,Math.floor(n/2)+1),pct=Math.min(100,(n%2)*50+20);const b=document.getElementById('town-lv-badge'),name=document.getElementById('town-lv-name'),sub=document.getElementById('town-lv-sub'),fill=document.getElementById('town-lv-fill');if(b)b.textContent='LV'+lv;if(name)name.textContent=lv>=5?'にぎわうNexcaタウン':lv>=3?'育ちはじめた街':'新しい街';if(sub)sub.textContent='キャラと建物を増やすほど街がにぎわう';if(fill)fill.style.width=pct+'%';};
+  window.persistCharState=persistCharState;
+  function bootGameLayer(){installNexcaGameLayer();tuneEconomy();enhanceGacha();installCharSystem();renderOcGrid&&renderOcGrid();renderTownChars&&renderTownChars();}
+  window.addEventListener('DOMContentLoaded',()=>{bootGameLayer();setTimeout(()=>{bootGameLayer();renderFeed&&renderFeed();renderShop&&renderShop();renderEarn&&renderEarn();},900);});
   window.addEventListener('DOMContentLoaded',()=>{extendData();overrideCore();hydrateGroupGacha();renderGenreOpts&&renderGenreOpts();renderFlyerTabs&&renderFlyerTabs();renderFeed&&renderFeed();applyProfile();const ob=$('#ob');if(ob&&(localStorage.getItem('nx_onboarding_done')==='1'||localStorage.getItem('nx_prereg')==='1')&&localStorage.getItem('nx_age'))ob.classList.add('hide');});
 })();
 
