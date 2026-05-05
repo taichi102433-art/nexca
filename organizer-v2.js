@@ -3,6 +3,9 @@
   const $=s=>document.querySelector(s);
   const $$=s=>Array.from(document.querySelectorAll(s));
   const safe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const ADMIN_EMAILS=['taichi102433@gmail.com','taichi102433-art@gmail.com','taichi102433.art@gmail.com'];
+  let reviewQueue=[];
+  let isNexcaAdmin=false;
   const css=document.createElement('style');
   css.textContent=`
   .founding-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:rgba(255,190,0,.12);border:1px solid rgba(255,190,0,.25);color:var(--yellow);font-size:9px;font-weight:900;margin-left:6px}
@@ -11,7 +14,9 @@
   .mini-bar span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:9px;color:var(--dim);margin-bottom:4px}
   .plan-price strong{font-size:18px;color:var(--green)}
   .code-row{display:flex;gap:8px}.code-row input{flex:1}.danger-note{font-size:10px;color:var(--dim);line-height:1.6;margin-top:4px}
-  .seg-title{font-size:11px;font-weight:900;color:var(--dim);letter-spacing:1px;margin:14px 0 8px}.seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.seg-card{background:var(--s2);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px}.seg-name{font-size:12px;font-weight:900}.seg-num{font-size:18px;font-weight:900;color:var(--yellow);margin-top:3px}.paid-lock{margin-top:10px;border:1px solid rgba(255,190,0,.25);background:rgba(255,190,0,.08);border-radius:12px;padding:12px;font-size:11px;color:rgba(255,190,0,.85);line-height:1.7}`;
+  .seg-title{font-size:11px;font-weight:900;color:var(--dim);letter-spacing:1px;margin:14px 0 8px}.seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.seg-card{background:var(--s2);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px}.seg-name{font-size:12px;font-weight:900}.seg-num{font-size:18px;font-weight:900;color:var(--yellow);margin-top:3px}.paid-lock{margin-top:10px;border:1px solid rgba(255,190,0,.25);background:rgba(255,190,0,.08);border-radius:12px;padding:12px;font-size:11px;color:rgba(255,190,0,.85);line-height:1.7}
+  .status-pending{background:rgba(255,190,0,.12);color:var(--yellow)}.status-rejected{background:rgba(255,23,68,.12);color:var(--red)}.status-draft{background:rgba(255,255,255,.06);color:var(--dim)}
+  .review-panel{margin:14px;border:1px solid rgba(255,190,0,.24);background:linear-gradient(160deg,rgba(255,190,0,.09),rgba(255,255,255,.025));border-radius:18px;padding:14px}.review-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.review-title{font-size:14px;font-weight:1000}.review-sub{font-size:11px;color:var(--dim);line-height:1.6}.review-list{display:flex;flex-direction:column;gap:10px}.review-card{background:var(--s2);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px}.review-meta{font-size:10px;color:var(--dim);line-height:1.7;margin:6px 0}.review-video{font-size:10px;word-break:break-all;color:var(--blue);margin-top:6px}.review-actions{display:flex;gap:8px;margin-top:10px}.review-actions button{flex:1;border:0;border-radius:10px;padding:11px 8px;font-size:12px;font-weight:900;color:white;font-family:inherit}.approve-btn{background:var(--green)}.reject-btn{background:var(--red)}.review-empty{font-size:12px;color:var(--dim);text-align:center;padding:16px}`;
   document.head.appendChild(css);
   function normGenre(g){return g==='furugiya'?'vintage':g;}
   function extendGenres(){
@@ -30,8 +35,16 @@
       ds:e.date_start||'',de:e.date_end||'',ts:e.time_info||e.time_range||'',loc:e.location||'',addr:e.address||'',price:e.price||'',desc:e.description||'',vid:e.video_url||'',ig:e.instagram_url||'',hp:e.website_url||e.homepage_url||'',rev:e.booking_url||e.reservation_url||'',
       code:e.participation_code||'',hasRev:!!(e.booking_url||e.reservation_url),fixed:!!e.is_fixed,official:!!e.is_official,expired:!!e.is_expired,bg:e.background||e.bg_gradient||'linear-gradient(135deg,#1a1a2e,#16213e)',em:e.emoji||(g==='vintage'?'👗':g==='cafe'?'☕':'🎉'),age:e.age_groups||[],tags:e.tags||[],wantCount:e.want_count||0,
       char_image_url:e.char_image_url||'',char_name:e.char_name||'',char_desc:e.char_desc||'',
+      status:e.status||((e.is_active&&e.show_in_feed)?'published':'pending_review'),submitted_by_role:e.submitted_by_role||'organizer',review_note:e.review_note||'',reviewed_at:e.reviewed_at||'',rejection_reason:e.rejection_reason||'',
       date_start:e.date_start,date_end:e.date_end
     };
+  }
+  function statusLabel(ev){
+    const s=ev.status||'pending_review';
+    if(s==='published')return ['status-active','掲載中'];
+    if(s==='rejected')return ['status-rejected','差戻し'];
+    if(s==='draft')return ['status-draft','下書き'];
+    return ['status-pending','審査待ち'];
   }
   if(window.loadMyEvents){
     window.loadMyEvents=async function(){
@@ -39,7 +52,9 @@
       try{
         const {data,error}=await sb.from('events').select('*').eq('organizer_id',user.id).order('created_at',{ascending:false});
         if(error)throw error;
-        window.myEvents=(data||[]).map(mapEvent);
+        const mapped=(data||[]).map(mapEvent);
+        window.myEvents=mapped;
+        try{myEvents=mapped;}catch(e){}
       }catch(e){showToast('掲載データを取得できませんでした');window.myEvents=[];}
     };
   }
@@ -62,7 +77,15 @@
     const list=$('#home-ev-list');
     if(!list)return;
     if(!myEvents.length){list.innerHTML='<div class="empty"><div class="empty-ic">📌</div><div class="empty-t">まだ掲載がありません<br>「新規掲載」から追加してください</div></div>';return;}
-    list.innerHTML=myEvents.slice(0,3).map(ev=>`<div class="ev-card" onclick="openEditModal('${ev.id}')"><div class="ev-card-top"><div class="ev-card-em" style="background:${safe(ev.bg)};">${safe(ev.em)}</div><div style="flex:1;"><div class="ev-card-t">${safe(ev.title)}</div><div class="ev-card-s">${safe(ev.ge)} ${safe(ev.gl)} · ${ev.fixed?'固定掲載':(ev.ds?ev.ds.replace(/-/g,'/'):'常時')}</div></div><span class="status-tag ${ev.expired?'status-expired':ev.fixed?'status-fixed':'status-active'}">${ev.expired?'終了':ev.fixed?'固定':'掲載中'}</span></div><div class="ev-stats"><div class="ev-stat"><div class="ev-stat-n" style="color:var(--blue);">${views}</div><div class="ev-stat-l">視聴</div></div><div class="ev-stat"><div class="ev-stat-n" style="color:var(--red);">${likes}</div><div class="ev-stat-l">いいね</div></div><div class="ev-stat"><div class="ev-stat-n" style="color:var(--green);">${parts}</div><div class="ev-stat-l">参加証明</div></div></div></div>`).join('');
+    list.innerHTML=myEvents.slice(0,3).map(ev=>{const st=statusLabel(ev);return `<div class="ev-card" onclick="openEditModal('${ev.id}')"><div class="ev-card-top"><div class="ev-card-em" style="background:${safe(ev.bg)};">${safe(ev.em)}</div><div style="flex:1;"><div class="ev-card-t">${safe(ev.title)}</div><div class="ev-card-s">${safe(ev.ge)} ${safe(ev.gl)} · ${ev.fixed?'固定掲載':(ev.ds?ev.ds.replace(/-/g,'/'):'常時')}</div></div><span class="status-tag ${st[0]}">${st[1]}</span></div><div class="ev-stats"><div class="ev-stat"><div class="ev-stat-n" style="color:var(--blue);">${views}</div><div class="ev-stat-l">視聴</div></div><div class="ev-stat"><div class="ev-stat-n" style="color:var(--red);">${likes}</div><div class="ev-stat-l">いいね</div></div><div class="ev-stat"><div class="ev-stat-n" style="color:var(--green);">${parts}</div><div class="ev-stat-l">参加証明</div></div></div></div>`}).join('');
+    renderReviewPanel();
+  };
+  window.renderEventList=function(){
+    const el=$('#event-list'), label=$('#ev-count-label'); if(!el)return;
+    const events=window.myEvents||[];
+    if(label){const pub=events.filter(e=>e.status==='published').length,pending=events.filter(e=>e.status!=='published').length;label.textContent=`掲載中 ${pub}件 / 審査中 ${pending}件`;}
+    if(!events.length){el.innerHTML='<div class="empty"><div class="empty-ic">📌</div><div class="empty-t">まだ掲載がありません<br>「新規掲載」から追加してください</div></div>';return;}
+    el.innerHTML=events.map(ev=>{const st=statusLabel(ev);return `<div class="eli"><div class="eli-top"><div class="eli-em" style="background:${safe(ev.bg)};">${safe(ev.em)}</div><div style="flex:1;min-width:0;"><div class="eli-t">${safe(ev.title)}</div><div class="eli-s">${safe(ev.ge)} ${safe(ev.gl)} · ${ev.ds?ev.ds.replace(/-/g,'/'):ev.fixed?'固定掲載':'常時'}</div>${ev.status==='rejected'?`<div class="danger-note">差戻し理由: ${safe(ev.rejection_reason||'内容を確認してください')}</div>`:''}</div><span class="status-tag ${st[0]}">${st[1]}</span></div><div class="eli-stats"><div class="ev-stat"><div class="ev-stat-n" style="color:var(--blue);">${ev.status==='published'?'公開':'-'}</div><div class="ev-stat-l">状態</div></div><div class="ev-stat"><div class="ev-stat-n" style="color:var(--yellow);">${safe(ev.code||'-')}</div><div class="ev-stat-l">参加コード</div></div><div class="ev-stat"><div class="ev-stat-n" style="color:var(--green);">${ev.char_name?'あり':'-'}</div><div class="ev-stat-l">独自キャラ</div></div></div><div class="eli-btns"><button class="eli-btn eli-btn-edit" onclick="openEditModal('${ev.id}')">✏️ 編集</button><button class="eli-btn eli-btn-stat" onclick="goToData('${ev.id}')">📊 データ</button><button class="eli-btn eli-btn-del" onclick="confirmDelete('${ev.id}')">🗑️</button></div></div>`}).join('')+'<div style="height:80px;"></div>';
   };
   const oldBuild=window.buildForm;
   window.buildForm=function(ev){
@@ -85,7 +108,9 @@
       date_start:$('#f-period-start')?.value||$('#f-ds')?.value||null,date_end:$('#f-period-end')?.value||$('#f-de')?.value||null,time_info:$('#f-ts')?.value.trim()||'',
       location:loc,address:$('#f-addr')?.value.trim()||'',price:$('#f-price')?.value.trim()||'',description:$('#f-desc')?.value.trim()||'',
       video_url:$('#f-vid')?.value.trim()||null,instagram_url:$('#f-ig')?.value.trim()||null,website_url:$('#f-hp')?.value.trim()||null,booking_url:$('#f-rev')?.value.trim()||null,has_reservation:!!$('#f-rev')?.value.trim(),
-      participation_code:$('#f-code')?.value.trim().toUpperCase()||null,char_image_url:$('#f-char-img')?.value.trim()||null,char_name:$('#f-char-name')?.value.trim()||null,char_desc:$('#f-char-desc')?.value.trim()||null,age_groups:ages,is_fixed:$('#f-fixed')?.checked||false,show_in_feed:true,is_active:true,organizer_id:user.id,emoji:genreRaw[3]||(g==='vintage'?'👗':g==='cafe'?'☕':'🎉'),background:'linear-gradient(135deg,#1a1a2e,#16213e)'
+      participation_code:$('#f-code')?.value.trim().toUpperCase()||null,char_image_url:$('#f-char-img')?.value.trim()||null,char_name:$('#f-char-name')?.value.trim()||null,char_desc:$('#f-char-desc')?.value.trim()||null,age_groups:ages,is_fixed:$('#f-fixed')?.checked||false,
+      status:'pending_review',submitted_by_role:'organizer',submitted_at:new Date().toISOString(),review_note:null,rejection_reason:null,show_in_feed:false,is_active:false,
+      organizer_id:user.id,emoji:genreRaw[3]||(g==='vintage'?'👗':g==='cafe'?'☕':'🎉'),background:'linear-gradient(135deg,#1a1a2e,#16213e)'
     };
     const savePayload=async (body)=>{
       if(window.editingId)return sb.from('events').update(body).eq('id',editingId);
@@ -95,16 +120,74 @@
       let res=await savePayload(payload);
       if(res.error){
         const msg=String(res.error.message||'');
-        if(msg.includes('char_image_url')||msg.includes('char_name')||msg.includes('char_desc')){
+        if(msg.includes('char_image_url')||msg.includes('char_name')||msg.includes('char_desc')||msg.includes('status')||msg.includes('submitted_by_role')||msg.includes('submitted_at')||msg.includes('review_note')||msg.includes('rejection_reason')){
           const slim={...payload};
           delete slim.char_image_url; delete slim.char_name; delete slim.char_desc;
+          delete slim.status; delete slim.submitted_by_role; delete slim.submitted_at; delete slim.review_note; delete slim.rejection_reason;
           res=await savePayload(slim);
         }
       }
       if(res.error)throw res.error;
-      showToast(window.editingId?'✅ 更新しました':'🎉 掲載しました！');
+      showToast(window.editingId?'✅ 更新しました。Nexca運営の再審査に送信しました':'📨 Nexca運営に審査依頼を送りました');
       closeModal(); await loadMyEvents(); renderHome(); renderEventList(); populateSelects();
     }catch(e){showToast('エラーが発生しました: '+e.message);}
+  };
+  async function detectAdmin(){
+    if(!window.user){isNexcaAdmin=false;return false;}
+    const email=String(user.email||'').toLowerCase();
+    isNexcaAdmin=ADMIN_EMAILS.includes(email);
+    try{
+      const r=await sb.from('profiles').select('role,is_admin').eq('user_id',user.id).maybeSingle();
+      if(r.data&&(r.data.role==='admin'||r.data.is_admin===true))isNexcaAdmin=true;
+    }catch(e){}
+    return isNexcaAdmin;
+  }
+  async function loadReviewQueue(){
+    if(!isNexcaAdmin)return [];
+    try{
+      let r=await sb.from('events').select('*').eq('status','pending_review').order('submitted_at',{ascending:true}).limit(40);
+      if(r.error)throw r.error;
+      reviewQueue=(r.data||[]).map(mapEvent);
+    }catch(e){
+      try{
+        const r=await sb.from('events').select('*').eq('is_active',false).eq('show_in_feed',false).order('created_at',{ascending:false}).limit(40);
+        reviewQueue=(r.data||[]).map(mapEvent);
+      }catch(err){reviewQueue=[];}
+    }
+    return reviewQueue;
+  }
+  function renderReviewPanel(){
+    const homeList=$('#home-ev-list'); if(!homeList||!isNexcaAdmin)return;
+    let panel=$('#nexca-review-panel');
+    if(!panel){
+      homeList.parentElement.insertAdjacentHTML('beforebegin','<div class="review-panel" id="nexca-review-panel"><div class="review-head"><div><div class="review-title">Nexca運営 審査キュー</div><div class="review-sub">主催者から送信された動画・詳細情報・独自キャラを確認して公開します。</div></div><button class="eli-btn eli-btn-stat" onclick="refreshReviewQueue()">更新</button></div><div class="review-list" id="review-list"><div class="review-empty">読み込み中...</div></div></div>');
+      panel=$('#nexca-review-panel');
+    }
+    const list=$('#review-list'); if(!list)return;
+    if(!reviewQueue.length){list.innerHTML='<div class="review-empty">審査待ちはありません</div>';return;}
+    list.innerHTML=reviewQueue.map(ev=>`<div class="review-card"><div style="display:flex;gap:10px;align-items:flex-start;"><div class="eli-em" style="background:${safe(ev.bg)};">${safe(ev.em)}</div><div style="flex:1;min-width:0;"><div class="eli-t">${safe(ev.title)}</div><div class="review-meta">${safe(ev.ge)} ${safe(ev.gl)} / ${safe(ev.loc)} / ${safe(ev.price||'料金未設定')}<br>${safe(ev.desc).slice(0,120)}${ev.desc&&ev.desc.length>120?'...':''}</div>${ev.vid?`<div class="review-video">動画: ${safe(ev.vid)}</div>`:''}${ev.char_name||ev.char_image_url?`<div class="review-video">独自キャラ: ${safe(ev.char_name||'名称未設定')} ${safe(ev.char_desc||'')}</div>`:''}</div></div><div class="review-actions"><button class="approve-btn" onclick="approveEvent('${ev.id}')">承認して公開</button><button class="reject-btn" onclick="rejectEvent('${ev.id}')">差戻し</button></div></div>`).join('');
+  }
+  window.refreshReviewQueue=async function(){await detectAdmin();await loadReviewQueue();renderReviewPanel();};
+  window.approveEvent=async function(id){
+    if(!isNexcaAdmin){showToast('運営権限がありません');return;}
+    try{
+      let r=await sb.from('events').update({status:'published',is_active:true,show_in_feed:true,reviewed_at:new Date().toISOString(),reviewed_by:user.id,rejection_reason:null}).eq('id',id);
+      if(r.error&&String(r.error.message||'').includes('status'))r=await sb.from('events').update({is_active:true,show_in_feed:true}).eq('id',id);
+      if(r.error)throw r.error;
+      showToast('✅ 公開しました');
+      await refreshReviewQueue(); await loadMyEvents(); renderEventList(); populateSelects();
+    }catch(e){showToast('承認に失敗しました: '+e.message);}
+  };
+  window.rejectEvent=async function(id){
+    if(!isNexcaAdmin){showToast('運営権限がありません');return;}
+    const reason=prompt('差戻し理由を入力してください','内容を確認して再送信してください')||'内容を確認して再送信してください';
+    try{
+      let r=await sb.from('events').update({status:'rejected',is_active:false,show_in_feed:false,rejection_reason:reason,reviewed_at:new Date().toISOString(),reviewed_by:user.id}).eq('id',id);
+      if(r.error&&String(r.error.message||'').includes('status'))r=await sb.from('events').update({is_active:false,show_in_feed:false}).eq('id',id);
+      if(r.error)throw r.error;
+      showToast('差戻しにしました');
+      await refreshReviewQueue(); await loadMyEvents(); renderEventList(); populateSelects();
+    }catch(e){showToast('差戻しに失敗しました: '+e.message);}
   };
   window.loadEventData=async function(){
     const id=$('#data-ev-select')?.value, el=$('#data-content'); if(!el)return;
@@ -137,5 +220,5 @@
     const logo=$('.hd-logo'); if(logo&&!$('.founding-badge'))logo.insertAdjacentHTML('afterend','<span class="founding-badge">Founding</span>');
     const plan=$('.plan-price'); if(plan)plan.innerHTML='2026年7月〜12月無料 / 2027年1月から <strong>月3,300円</strong>';
   }
-  window.addEventListener('DOMContentLoaded',()=>{decorate();setTimeout(()=>{renderHome&&renderHome();renderEventList&&renderEventList();},700);});
+  window.addEventListener('DOMContentLoaded',()=>{decorate();setTimeout(async()=>{await detectAdmin();await loadReviewQueue();renderHome&&renderHome();renderEventList&&renderEventList();renderReviewPanel();},700);});
 })();
