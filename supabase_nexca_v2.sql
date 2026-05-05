@@ -8,6 +8,8 @@ alter table public.profiles
   add column if not exists is_admin boolean not null default false,
   add column if not exists town_data jsonb not null default '{}'::jsonb,
   add column if not exists char_exp jsonb not null default '{}'::jsonb,
+  add column if not exists last_lat double precision,
+  add column if not exists last_lng double precision,
   add column if not exists total_points integer not null default 0;
 
 alter table public.events
@@ -137,6 +139,11 @@ create policy "users read own diagnosis answers"
   on public.diagnosis_answers for select
   using (auth.uid() = user_id);
 
+drop policy if exists "owner reads all diagnosis answers" on public.diagnosis_answers;
+create policy "owner reads all diagnosis answers"
+  on public.diagnosis_answers for select
+  using ((auth.jwt() ->> 'email') = 'taichi102433@gmail.com');
+
 drop policy if exists "users insert own event views" on public.event_views;
 create policy "users insert own event views"
   on public.event_views for insert
@@ -167,9 +174,5 @@ drop policy if exists "admins read contract acceptances" on public.contract_acce
 create policy "admins read contract acceptances"
   on public.contract_acceptances for select
   using (
-    exists (
-      select 1 from public.profiles p
-      where p.user_id = auth.uid()
-      and (p.role = 'admin' or p.is_admin = true)
-    )
+    (auth.jwt() ->> 'email') = 'taichi102433@gmail.com'
   );
