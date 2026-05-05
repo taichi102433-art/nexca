@@ -1,10 +1,11 @@
-const CACHE_NAME = 'nexca-v10';
+const CACHE_NAME = 'nexca-v11';
 const STATIC_ASSETS = [
   '/nexca/',
   '/nexca/index.html',
   '/nexca/nexca-v2.js',
   '/nexca/organizer.html',
   '/nexca/organizer-v2.js',
+  '/nexca/admin.html',
   '/nexca/manifest.json',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
 ];
