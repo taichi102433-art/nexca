@@ -21,6 +21,7 @@ alter table public.events
   add column if not exists reviewed_by uuid,
   add column if not exists review_note text,
   add column if not exists rejection_reason text,
+  add column if not exists data_plan text not null default 'free',
   add column if not exists website_url text,
   add column if not exists booking_url text,
   add column if not exists participation_code text,
@@ -36,6 +37,20 @@ begin
     alter table public.events
       add constraint events_status_check
       check (status in ('draft','pending_review','published','rejected','archived'))
+      not valid;
+  end if;
+end $$;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'events_data_plan_check'
+      and conrelid = 'public.events'::regclass
+  ) then
+    alter table public.events
+      add constraint events_data_plan_check
+      check (data_plan in ('free','paid'))
       not valid;
   end if;
 end $$;
