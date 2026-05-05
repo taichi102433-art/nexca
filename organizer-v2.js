@@ -3,7 +3,7 @@
   const $=s=>document.querySelector(s);
   const $$=s=>Array.from(document.querySelectorAll(s));
   const safe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const ADMIN_EMAILS=['taichi102433@gmail.com','taichi102433-art@gmail.com','taichi102433.art@gmail.com'];
+  const OWNER_EMAIL='taichi102433@gmail.com';
   let reviewQueue=[];
   let isNexcaAdmin=false;
   const css=document.createElement('style');
@@ -140,11 +140,7 @@
   async function detectAdmin(){
     if(!window.user){isNexcaAdmin=false;return false;}
     const email=String(user.email||'').toLowerCase();
-    isNexcaAdmin=ADMIN_EMAILS.includes(email);
-    try{
-      const r=await sb.from('profiles').select('role,is_admin').eq('user_id',user.id).maybeSingle();
-      if(r.data&&(r.data.role==='admin'||r.data.is_admin===true))isNexcaAdmin=true;
-    }catch(e){}
+    isNexcaAdmin=email===OWNER_EMAIL;
     return isNexcaAdmin;
   }
   async function loadReviewQueue(){
