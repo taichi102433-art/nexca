@@ -43,24 +43,25 @@ main{overflow-y:auto;padding:12px 14px 80px}
 </head>
 <body>
 <div id="auth"><div class="auth-card"><div class="logo">NEX<span>CA</span></div><div class="sub">運営管理画面。主催者から届いた掲載申請を確認し、承認・差戻し・データプラン設定を行います。</div><button class="gbtn" onclick="login()">Googleでログイン</button></div></div>
-<div id="denied" style="display:none;"><div class="auth-card"><div class="logo">ACCESS <span>DENIED</span></div><div class="sub">このアカウントにはNexca運営権限がありません。Supabaseのprofilesでrole=adminまたはis_admin=trueを設定してください。</div><button class="main-btn" onclick="logout()">ログアウト</button></div></div>
+<div id="denied" style="display:none;"><div class="auth-card"><div class="logo">ACCESS <span>DENIED</span></div><div class="sub">この画面はNexca代表アカウント専用です。別アカウントでは運営データを表示しません。</div><button class="main-btn" onclick="logout()">ログアウト</button></div></div>
 <div id="app">
   <header><div class="logo" style="font-size:20px;">NEX<span>CA</span></div><div class="badge">ADMIN</div><div class="spacer"></div><div class="user" id="admin-email"></div><button class="logout" onclick="logout()">ログアウト</button></header>
-  <div class="tabs"><button class="tab on" onclick="tab('pending',this)">審査待ち</button><button class="tab" onclick="tab('published',this)">公開中</button><button class="tab" onclick="tab('rejected',this)">差戻し</button><button class="tab" onclick="tab('all',this)">全体</button></div>
+  <div class="tabs"><button class="tab on" onclick="tab('pending',this)">審査待ち</button><button class="tab" onclick="tab('published',this)">公開中</button><button class="tab" onclick="tab('rejected',this)">差戻し</button><button class="tab" onclick="tab('diag',this)">診断データ</button><button class="tab" onclick="tab('all',this)">全体</button></div>
   <main>
     <div class="kpis"><div class="kpi"><div class="kpi-n" id="k-pending">0</div><div class="kpi-l">審査待ち</div></div><div class="kpi"><div class="kpi-n" id="k-published">0</div><div class="kpi-l">公開中</div></div><div class="kpi"><div class="kpi-n" id="k-paid">0</div><div class="kpi-l">有料データ</div></div><div class="kpi"><div class="kpi-n" id="k-total">0</div><div class="kpi-l">総申請</div></div></div>
     <section id="screen-pending" class="screen on"></section>
     <section id="screen-published" class="screen"></section>
     <section id="screen-rejected" class="screen"></section>
+    <section id="screen-diag" class="screen"></section>
     <section id="screen-all" class="screen"></section>
   </main>
 </div>
 <script>
 const SUPABASE_URL='https://umbscalpmmofbzfpmhhr.supabase.co';
 const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtYnNjYWxwbW1vZmJ6ZnBtaGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTIwNDMsImV4cCI6MjA5MDI4ODA0M30.lgI836TkVP8EqxgIVH8FHCz8iQ87cJZikkw9S9W49Ic';
-const ADMIN_EMAILS=['taichi102433@gmail.com','taichi102433-art@gmail.com','taichi102433.art@gmail.com'];
+const OWNER_EMAIL='taichi102433@gmail.com';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
-let user=null, rows=[], realtime=null;
+let user=null, rows=[], diagRows=[], realtime=null;
 const $=s=>document.querySelector(s);
 const safe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function statusOf(e){return e.status||((e.is_active&&e.show_in_feed)?'published':'pending_review')}
@@ -69,8 +70,7 @@ async function login(){await sb.auth.signInWithOAuth({provider:'google',options:
 async function logout(){await sb.auth.signOut();location.reload()}
 async function isAdmin(){
   if(!user)return false;
-  if(ADMIN_EMAILS.includes(String(user.email||'').toLowerCase()))return true;
-  try{const r=await sb.from('profiles').select('role,is_admin').eq('user_id',user.id).maybeSingle();return !!(r.data&&(r.data.role==='admin'||r.data.is_admin===true));}catch(e){return false}
+  return String(user.email||'').toLowerCase()===OWNER_EMAIL;
 }
 async function boot(session){
   user=session?.user||null;
@@ -78,7 +78,7 @@ async function boot(session){
   $('#auth').style.display='none';$('#admin-email').textContent=user.email||'';
   if(!await isAdmin()){$('#denied').style.display='flex';return}
   $('#denied').style.display='none';$('#app').classList.add('on');
-  await load(); subscribe();
+  await load(); await loadDiagnosis(); subscribe();
 }
 async function load(){
   try{const r=await sb.from('events').select('*').order('created_at',{ascending:false}).limit(200);rows=r.data||[];}catch(e){rows=[]}
@@ -97,7 +97,18 @@ function render(){
   renderList('pending',rows.filter(e=>statusOf(e)==='pending_review'));
   renderList('published',rows.filter(e=>statusOf(e)==='published'));
   renderList('rejected',rows.filter(e=>statusOf(e)==='rejected'));
+  renderDiagnosis();
   renderList('all',rows);
+}
+async function loadDiagnosis(){
+  try{const r=await sb.from('diagnosis_answers').select('*').order('created_at',{ascending:false}).limit(500);diagRows=r.data||[];}catch(e){diagRows=[]}
+}
+function renderDiagnosis(){
+  const el=$('#screen-diag'); if(!el)return;
+  if(!diagRows.length){el.innerHTML='<div class="empty">診断回答データはまだありません。SQLのRLSで代表アカウントの閲覧許可も確認してください。</div>';return}
+  const grouped={}; diagRows.forEach(r=>{const q=r.question_no||0,a=r.answer_index||0,k=q+'-'+a;grouped[k]=(grouped[k]||0)+1;});
+  const qs=Array.from(new Set(diagRows.map(r=>r.question_no))).sort((a,b)=>a-b);
+  el.innerHTML=qs.map(q=>`<div class="card"><div class="title">Q${q}</div><div class="info-grid">${[0,1,2,3].map(a=>`<div class="info-box"><div class="info-l">回答 ${a+1}</div><div class="info-v">${grouped[q+'-'+a]||0}件</div></div>`).join('')}</div></div>`).join('');
 }
 function renderList(name,list){
   const el=$('#screen-'+name);
