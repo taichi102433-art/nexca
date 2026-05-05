@@ -4,6 +4,8 @@
 alter table public.profiles
   add column if not exists age_group text,
   add column if not exists city text,
+  add column if not exists role text,
+  add column if not exists is_admin boolean not null default false,
   add column if not exists town_data jsonb not null default '{}'::jsonb,
   add column if not exists char_exp jsonb not null default '{}'::jsonb,
   add column if not exists total_points integer not null default 0;
@@ -12,10 +14,37 @@ alter table public.events
   add column if not exists char_image_url text,
   add column if not exists char_name text,
   add column if not exists char_desc text,
+  add column if not exists status text not null default 'pending_review',
+  add column if not exists submitted_by_role text not null default 'organizer',
+  add column if not exists submitted_at timestamptz not null default now(),
+  add column if not exists reviewed_at timestamptz,
+  add column if not exists reviewed_by uuid,
+  add column if not exists review_note text,
+  add column if not exists rejection_reason text,
   add column if not exists website_url text,
   add column if not exists booking_url text,
   add column if not exists participation_code text,
   add column if not exists is_active boolean not null default true;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'events_status_check'
+      and conrelid = 'public.events'::regclass
+  ) then
+    alter table public.events
+      add constraint events_status_check
+      check (status in ('draft','pending_review','published','rejected','archived'))
+      not valid;
+  end if;
+end $$;
+
+update public.events
+set status = 'published'
+where status = 'pending_review'
+  and is_active = true
+  and coalesce(show_in_feed, true) = true;
 
 alter table public.participations
   add column if not exists code text,
@@ -60,6 +89,8 @@ create index if not exists likes_event_created_idx on public.likes(event_id, cre
 create index if not exists event_clicks_event_clicked_idx on public.event_link_clicks(event_id, clicked_at);
 create index if not exists views_event_viewed_idx on public.event_views(event_id, viewed_at);
 create index if not exists diagnosis_user_created_idx on public.diagnosis_answers(user_id, created_at);
+create index if not exists events_status_submitted_idx on public.events(status, submitted_at);
+create index if not exists events_organizer_status_idx on public.events(organizer_id, status);
 
 alter table public.diagnosis_answers enable row level security;
 alter table public.event_views enable row level security;
