@@ -102,6 +102,26 @@
   }
   window.trackLinkClick=async function(id,type){try{await sb.from('event_link_clicks').insert({event_id:publicId(id),link_type:type,click_type:type,user_id:(typeof user!=='undefined'&&user)?user.id:null,clicked_at:new Date().toISOString()});}catch(e){}};
   window.shareLine=function(id){const ev=EVS.find(e=>e.id===id);if(!ev)return;trackLinkClick(id,'line_share');window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href.split('#')[0]+'#/event/'+id)}&text=${encodeURIComponent(ev.title+'｜Nexcaで見つけた広島の体験')}`,'_blank');};
+  window.loadDBEvents=async function(){
+    try{
+      let r=await sb.from('events').select('*').eq('status','published').eq('is_active',true).order('created_at',{ascending:false}).limit(40);
+      if(r.error&&String(r.error.message||'').includes('status'))r=await sb.from('events').select('*').eq('is_active',true).eq('show_in_feed',true).order('created_at',{ascending:false}).limit(40);
+      if(r.error)throw r.error;
+      if(r.data&&r.data.length>0){
+        const dbEvs=r.data.map(e=>({
+          id:'db_'+e.id,g:e.genre||'event',gl:e.genre_label||'イベント・体験',ge:e.genre_emoji||'🎉',
+          title:e.title||'',ds:e.date_start||'',ts:e.time_info||e.time_range||'',loc:e.location||'',addr:e.address||e.location||'',price:e.price||'無料',
+          desc:e.description||'',em:e.emoji||'🎉',bg:e.background||e.bg_gradient||'linear-gradient(135deg,#1a0a2e,#0a1428)',
+          tags:Array.isArray(e.tags)?e.tags:[],age:Array.isArray(e.age_groups)?e.age_groups:['中学生','高校生','大学生','社会人'],
+          fixed:!!e.is_fixed,isOfficial:!!e.is_official,wantCount:e.want_count||0,
+          charKey:e.char_key||'',charEmoji:e.char_emoji||'',charName:e.char_name||'',charDesc:e.char_desc||'',
+          qr:e.participation_code||'',genre:e.genre||'event',ig:e.instagram_url||'',website_url:e.website_url||e.homepage_url||'',booking_url:e.booking_url||e.reservation_url||'',video_url:e.video_url||''
+        }));
+        dbEvs.forEach(ev=>{if(!EVS.find(e=>e.id===ev.id))EVS.unshift(ev);});
+        installCharSystem&&installCharSystem();renderFeed&&renderFeed();renderFlyer&&renderFlyer();renderTodayWidget&&renderTodayWidget();
+      }
+    }catch(e){console.warn('loadDBEvents error',e);}
+  };
   const originalSearch=window.doSearch; window.doSearch=function(q){q=String(q||'').trim();if(q){const h=JSON.parse(localStorage.getItem('nx_search_history')||'[]').filter(x=>x!==q);h.unshift(q);localStorage.setItem('nx_search_history',JSON.stringify(h.slice(0,8)));} if(originalSearch)originalSearch(q);};
   async function hasGachaToday(){const d=new Date().toISOString().slice(0,10);if((typeof user!=='undefined'&&user)){try{const r=await sb.from('gacha_logs').select('id').eq('user_id',user.id).eq('date',d).maybeSingle();if(r.data)return true;}catch(e){}}return localStorage.getItem('nx_gacha_date')===d;}
   async function recordGachaToday(){const d=new Date().toISOString().slice(0,10);localStorage.setItem('nx_gacha_date',d);if((typeof user!=='undefined'&&user)){try{await sb.from('gacha_logs').insert({user_id:user.id,date:d,created_at:new Date().toISOString()});}catch(e){}}}
