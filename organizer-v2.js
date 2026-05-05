@@ -34,7 +34,8 @@
       id:e.id,title:e.title||'',g,sub:e.sub_genre||'',gl:e.genre_label||(g==='vintage'?'古着':g==='cafe'?'カフェ':'イベント・体験'),ge:e.genre_emoji||(g==='vintage'?'👗':g==='cafe'?'☕':'🎉'),
       ds:e.date_start||'',de:e.date_end||'',ts:e.time_info||e.time_range||'',loc:e.location||'',addr:e.address||'',price:e.price||'',desc:e.description||'',vid:e.video_url||'',ig:e.instagram_url||'',hp:e.website_url||e.homepage_url||'',rev:e.booking_url||e.reservation_url||'',
       code:e.participation_code||'',hasRev:!!(e.booking_url||e.reservation_url),fixed:!!e.is_fixed,official:!!e.is_official,expired:!!e.is_expired,bg:e.background||e.bg_gradient||'linear-gradient(135deg,#1a1a2e,#16213e)',em:e.emoji||(g==='vintage'?'👗':g==='cafe'?'☕':'🎉'),age:e.age_groups||[],tags:e.tags||[],wantCount:e.want_count||0,
-      char_image_url:e.char_image_url||'',char_name:e.char_name||'',char_desc:e.char_desc||'',
+      thumbnail_url:e.thumbnail_url||'',char_image_url:e.char_image_url||'',char_name:e.char_name||'',char_desc:e.char_desc||'',
+      gacha_enabled:e.gacha_enabled!==false,gacha_conditions:e.gacha_conditions||'',production_option:e.production_option||'self',
       status:e.status||((e.is_active&&e.show_in_feed)?'published':'pending_review'),submitted_by_role:e.submitted_by_role||'organizer',review_note:e.review_note||'',reviewed_at:e.reviewed_at||'',rejection_reason:e.rejection_reason||'',data_plan:e.data_plan||'free',
       date_start:e.date_start,date_end:e.date_end
     };
@@ -93,13 +94,14 @@
     h=h.replace('YouTubeのURL（動画ID）','動画URL（YouTube / Instagram / TikTok）');
     h=h.replace('ホームページURL','公式サイトURL');
     h=h.replace('申し込み・予約URL','予約リンクURL');
-    const extra=`<div class="form-group"><div class="form-label">参加コード</div><div class="code-row"><input class="form-input" id="f-code" type="text" maxlength="16" placeholder="例：ART001" value="${safe(ev?ev.code:'')}"><button class="eli-btn eli-btn-stat" type="button" onclick="genParticipationCode()">自動生成</button></div><div class="danger-note">変更すると古い参加コードは使えなくなります。無効化したい場合は空欄にしてください。</div></div><div class="form-group"><div class="form-label">主催者独自キャラ画像URL</div><input class="form-input" id="f-char-img" type="url" placeholder="Supabase Storage / GitHub画像URL" value="${safe(ev?ev.char_image_url||'':'')}"><div class="danger-note">画像を送ってくれれば、このURLに配置してイベント詳細・カードに表示できます。</div></div><div class="form-group"><div class="form-label">独自キャラ名 / 説明</div><div class="form-row"><input class="form-input" id="f-char-name" type="text" placeholder="例：ミヤジマル" value="${safe(ev?ev.char_name||'':'')}"><input class="form-input" id="f-char-desc" type="text" placeholder="キャラの一言" value="${safe(ev?ev.char_desc||'':'')}"></div></div><div class="form-group"><div class="form-label">掲載期間</div><div class="form-row"><input class="form-input" id="f-period-start" type="date" value="${safe(ev?ev.ds:'')}"><input class="form-input" id="f-period-end" type="date" value="${safe(ev?ev.de:'')}"></div></div>`;
+    const extra=`<div class="form-group"><div class="form-label">サムネイル画像URL</div><input class="form-input" id="f-thumb" type="url" placeholder="https://.../thumbnail.jpg" value="${safe(ev?ev.thumbnail_url||'':'')}"><div class="danger-note">チラシ一覧に表示される画像です。タップするとショート動画が開きます。</div></div><div class="form-group"><div class="form-label">参加コード</div><div class="code-row"><input class="form-input" id="f-code" type="text" maxlength="16" placeholder="例：ART001" value="${safe(ev?ev.code:'')}"><button class="eli-btn eli-btn-stat" type="button" onclick="genParticipationCode()">自動生成</button></div><div class="danger-note">ユーザーはQRではなく、この参加コードを入力して参加証明します。</div></div><div class="form-group"><div class="form-label">主催者独自キャラ画像URL</div><input class="form-input" id="f-char-img" type="url" placeholder="Supabase Storage / GitHub画像URL" value="${safe(ev?ev.char_image_url||'':'')}"></div><div class="form-group"><div class="form-label">独自キャラ名 / 説明</div><div class="form-row"><input class="form-input" id="f-char-name" type="text" placeholder="例：ミヤジマル" value="${safe(ev?ev.char_name||'':'')}"><input class="form-input" id="f-char-desc" type="text" placeholder="キャラの一言" value="${safe(ev?ev.char_desc||'':'')}"></div></div><div class="form-group"><div class="form-label">ガチャ出現条件</div><textarea class="form-textarea" id="f-gacha-cond" placeholder="例：友達/デート向け、夕方、雨の日OK、予算1000円、ボケミッション歓迎">${safe(ev?ev.gacha_conditions||'':'')}</textarea><label class="form-check" style="margin-top:8px;"><input type="checkbox" id="f-gacha-enabled" ${!ev||ev.gacha_enabled!==false?'checked':''}><span class="form-check-l">条件が合えばガチャ候補に入れる</span></label></div><div class="form-group"><div class="form-label">動画・キャラ制作オプション</div><select class="form-select" id="f-production"><option value="self" ${ev&&ev.production_option==='self'?'selected':''}>自分で用意する</option><option value="video_request" ${ev&&ev.production_option==='video_request'?'selected':''}>動画制作をNexcaに相談</option><option value="character_request" ${ev&&ev.production_option==='character_request'?'selected':''}>独自キャラ制作をNexcaに相談</option><option value="both_request" ${ev&&ev.production_option==='both_request'?'selected':''}>動画・キャラ両方を相談</option></select></div><div class="form-group"><div class="form-label">契約・掲載規約への同意</div><label class="form-check"><input type="checkbox" id="f-contract-ok" ${ev?'checked':''}><span class="form-check-l">Nexca掲載規約、動画/画像利用許諾、掲載審査、データ提供条件に同意します</span></label><div class="danger-note">同意日時・アカウント・規約バージョン・ブラウザ情報を保存します。正式運用前に弁護士確認を推奨します。</div></div><div class="form-group"><div class="form-label">掲載期間</div><div class="form-row"><input class="form-input" id="f-period-start" type="date" value="${safe(ev?ev.ds:'')}"><input class="form-input" id="f-period-end" type="date" value="${safe(ev?ev.de:'')}"></div></div>`;
     return h.replace('<button class="submit-btn"',extra+'<button class="submit-btn"');
   };
   window.genParticipationCode=function(){const el=$('#f-code');if(el)el.value='NX'+Math.random().toString(36).slice(2,8).toUpperCase();};
   window.submitForm=async function(){
     const title=$('#f-title')?.value.trim(), loc=$('#f-loc')?.value.trim();
     if(!title||!loc){showToast('タイトルと会場は必須です');return;}
+    if(!$('#f-contract-ok')?.checked){showToast('掲載規約への同意が必要です');return;}
     const genreRaw=$('#f-genre')?.value.split('||')||[];
     const ages=$$('input[name="age"]:checked').map(c=>c.value);
     const g=normGenre(genreRaw[0]||'event');
@@ -107,27 +109,30 @@
       title,genre:g,sub_genre:genreRaw[1]||'',genre_label:genreRaw[2]||(g==='vintage'?'古着':g==='cafe'?'カフェ':'イベント・体験'),genre_emoji:genreRaw[3]||(g==='vintage'?'👗':g==='cafe'?'☕':'🎉'),
       date_start:$('#f-period-start')?.value||$('#f-ds')?.value||null,date_end:$('#f-period-end')?.value||$('#f-de')?.value||null,time_info:$('#f-ts')?.value.trim()||'',
       location:loc,address:$('#f-addr')?.value.trim()||'',price:$('#f-price')?.value.trim()||'',description:$('#f-desc')?.value.trim()||'',
-      video_url:$('#f-vid')?.value.trim()||null,instagram_url:$('#f-ig')?.value.trim()||null,website_url:$('#f-hp')?.value.trim()||null,booking_url:$('#f-rev')?.value.trim()||null,has_reservation:!!$('#f-rev')?.value.trim(),
+      video_url:$('#f-vid')?.value.trim()||null,thumbnail_url:$('#f-thumb')?.value.trim()||null,instagram_url:$('#f-ig')?.value.trim()||null,website_url:$('#f-hp')?.value.trim()||null,booking_url:$('#f-rev')?.value.trim()||null,has_reservation:!!$('#f-rev')?.value.trim(),
       participation_code:$('#f-code')?.value.trim().toUpperCase()||null,char_image_url:$('#f-char-img')?.value.trim()||null,char_name:$('#f-char-name')?.value.trim()||null,char_desc:$('#f-char-desc')?.value.trim()||null,age_groups:ages,is_fixed:$('#f-fixed')?.checked||false,
+      gacha_enabled:$('#f-gacha-enabled')?.checked!==false,gacha_conditions:$('#f-gacha-cond')?.value.trim()||null,production_option:$('#f-production')?.value||'self',
       status:'pending_review',submitted_by_role:'organizer',submitted_at:new Date().toISOString(),review_note:null,rejection_reason:null,data_plan:'free',show_in_feed:false,is_active:false,
       organizer_id:user.id,emoji:genreRaw[3]||(g==='vintage'?'👗':g==='cafe'?'☕':'🎉'),background:'linear-gradient(135deg,#1a1a2e,#16213e)'
     };
+    const eventId=window.editingId||crypto.randomUUID();
     const savePayload=async (body)=>{
       if(window.editingId)return sb.from('events').update(body).eq('id',editingId);
-      return sb.from('events').insert({...body,id:crypto.randomUUID(),created_at:new Date().toISOString()});
+      return sb.from('events').insert({...body,id:eventId,created_at:new Date().toISOString()});
     };
     try{
       let res=await savePayload(payload);
       if(res.error){
         const msg=String(res.error.message||'');
-        if(msg.includes('char_image_url')||msg.includes('char_name')||msg.includes('char_desc')||msg.includes('status')||msg.includes('submitted_by_role')||msg.includes('submitted_at')||msg.includes('review_note')||msg.includes('rejection_reason')||msg.includes('data_plan')){
+        if(msg.includes('thumbnail_url')||msg.includes('gacha_enabled')||msg.includes('gacha_conditions')||msg.includes('production_option')||msg.includes('char_image_url')||msg.includes('char_name')||msg.includes('char_desc')||msg.includes('status')||msg.includes('submitted_by_role')||msg.includes('submitted_at')||msg.includes('review_note')||msg.includes('rejection_reason')||msg.includes('data_plan')){
           const slim={...payload};
-          delete slim.char_image_url; delete slim.char_name; delete slim.char_desc;
+          delete slim.thumbnail_url; delete slim.gacha_enabled; delete slim.gacha_conditions; delete slim.production_option; delete slim.char_image_url; delete slim.char_name; delete slim.char_desc;
           delete slim.status; delete slim.submitted_by_role; delete slim.submitted_at; delete slim.review_note; delete slim.rejection_reason; delete slim.data_plan;
           res=await savePayload(slim);
         }
       }
       if(res.error)throw res.error;
+      try{await sb.from('contract_acceptances').insert({event_id:eventId,user_id:user.id,contract_version:'nexca_listing_terms_v1',accepted_at:new Date().toISOString(),user_agent:navigator.userAgent,terms_snapshot:'Nexca掲載規約、動画/画像利用許諾、掲載審査、データ提供条件への同意'});}catch(e){}
       showToast(window.editingId?'✅ 更新しました。Nexca運営の再審査に送信しました':'📨 Nexca運営に審査依頼を送りました');
       closeModal(); await loadMyEvents(); renderHome(); renderEventList(); populateSelects();
     }catch(e){showToast('エラーが発生しました: '+e.message);}
