@@ -62,23 +62,25 @@
   function mount(){
     const ov=$('#town-ov');if(!ov)return;
     ov.className='nx-town';ov.style.display='flex';
-    ov.innerHTML=`<div class="nxt-shell"><div class="nxt-top"><button class="nxt-back" onclick="NexcaTown.close()">←</button><div class="nxt-title">Nexca Town<small>REAL LIFE MINIATURE CITY</small></div><button class="nxt-gift" onclick="NexcaTown.loginBonus()">🎁</button><div class="nxt-stats" style="grid-column:1/-1" id="nxt-stats"></div></div><main class="nxt-main"><div class="nxt-board" id="nxt-board"></div></main><nav class="nxt-bottom" id="nxt-tabs"></nav><section class="nxt-screen" id="nxt-screen"></section></div>`;
+    ov.innerHTML=`<div class="nxt-shell"><div class="nxt-top"><button class="nxt-back" onclick="NexcaTown.close()">←</button><div class="nxt-title">Nexca Town<small>体験が、わたしの街をそだてる。</small></div><div class="nxt-stats" id="nxt-stats"></div><button class="nxt-gift" onclick="NexcaTown.loginBonus()">🎁<br><span style="font-size:10px">7日ログイン</span></button></div><main class="nxt-main"><div class="nxt-board" id="nxt-board"></div></main><nav class="nxt-bottom" id="nxt-tabs"></nav><section class="nxt-screen" id="nxt-screen"></section></div>`;
   }
   function render(){
-    $('#nxt-stats').innerHTML=`<div class="nxt-pill">Lv ${state.playerLevel}</div><div class="nxt-pill">⭐ ${Math.floor(state.points)}</div><div class="nxt-pill">💎 ${state.gems}</div><div class="nxt-pill">にぎわい ${state.townPopularity}</div><div class="nxt-pill">${state.loginStreak}日連続</div>`;
-    $('#nxt-tabs').innerHTML=[['town','タウン','🏡'],['chars','キャラ','🌟'],['games','ミニゲーム','🎮'],['shop','ショップ','🛍️'],['collection','実績','🏆']].map(t=>`<button class="nxt-tab ${view===t[0]?'on':''}" onclick="NexcaTown.nav('${t[0]}')"><div>${t[2]}</div>${t[1]}</button>`).join('');
+    $('#nxt-stats').innerHTML=`<div class="nxt-pill">Lv. ${state.playerLevel}</div><div class="nxt-pill">🏅 ${state.townRank||1}</div><div class="nxt-pill">💗 ${Math.floor(state.points)} pt</div><div class="nxt-pill">💎 ${state.gems}</div><div class="nxt-pill">にぎわい ${state.townPopularity}</div><div class="nxt-pill">${state.loginStreak}日連続</div>`;
+    $('#nxt-tabs').innerHTML=[['town','マップ','🗺️'],['chars','キャラ','👧'],['games','学び','🎮'],['shop','ショップ','🛍️'],['collection','実績','🏆']].map(t=>`<button class="nxt-tab ${view===t[0]?'on':''}" onclick="NexcaTown.nav('${t[0]}')"><div>${t[2]}</div>${t[1]}</button>`).join('');
     view==='town'?renderTown():renderScreen(view);
   }
   function nav(v){view=v;activeGame=null;render();}
   function renderTown(){
     const board=$('#nxt-board'); if(!board)return;
     const screen=$('#nxt-screen'); if(screen)screen.classList.remove('on');
-    board.innerHTML=`<div class="nxt-plaza"></div><div class="nxt-quest"><div class="nxt-panel-title">TODAY QUEST</div>${state.dailyQuests.map(q=>`<div class="nxt-q"><div><div class="nxt-q-t">${safe(q.title)}</div><div class="nxt-bar"><i style="width:${Math.round(q.currentCount/q.targetCount*100)}%"></i></div></div><button class="nxt-claim" onclick="NexcaTown.claimQuest('${q.questId}')" ${!q.isCompleted||q.isClaimed?'disabled':''}>${q.isClaimed?'済':'受取'}</button></div>`).join('')}</div><div class="nxt-side"><div class="nxt-panel-title">ACTION</div><div class="nxt-side-grid"><button class="nxt-code-btn" onclick="NexcaTown.nav('code')">参加コード</button><button class="nxt-side-card" onclick="NexcaTown.nav('cards')">体験カード</button><button class="nxt-side-card" onclick="NexcaTown.nav('games')">期間限定ミッション</button></div></div><div class="nxt-zone" style="left:6%;top:11%;width:28%;height:12%;">建設中<br>SEA AREA</div><div class="nxt-zone" style="right:5%;bottom:9%;width:31%;height:13%;">未開放<br>SKY PARK</div>`;
+    const friends=Object.values(state.characters).slice(0,4);
+    const collectRate=Math.min(99,Math.round((state.collections.length+state.experienceCards.length+state.inventory.length)/24*100));
+    board.innerHTML=`<div class="nxt-plaza"></div><div class="nxt-quest"><div class="nxt-panel-title">今日のクエスト</div>${state.dailyQuests.map(q=>`<div class="nxt-q"><div><div class="nxt-q-t">${safe(q.title)}</div><div class="nxt-bar"><i style="width:${Math.round(q.currentCount/q.targetCount*100)}%"></i></div></div><button class="nxt-claim" onclick="NexcaTown.claimQuest('${q.questId}')" ${!q.isCompleted||q.isClaimed?'disabled':''}>${q.isClaimed?'済':q.rewardPoints+'pt'}</button></div>`).join('')}<button class="nxt-claim" style="width:100%;margin-top:8px" onclick="NexcaTown.claimAll()">すべて受け取る</button></div><div class="nxt-side"><div class="nxt-panel-title">イベント報酬</div><div class="nxt-side-grid"><button class="nxt-code-btn" onclick="NexcaTown.nav('code')">参加コード</button><button class="nxt-side-card" onclick="NexcaTown.nav('cards')">体験カード<br><b>${state.experienceCards.length}枚</b></button><button class="nxt-side-card" onclick="NexcaTown.nav('games')">期間限定ミッション<br>開催中</button></div></div><div class="nxt-zone" style="right:6%;top:39%;width:96px;height:82px;">🔒<br>エリア拡張<br>Lv.20で解放</div><div class="nxt-zone" style="right:5%;bottom:25%;width:104px;height:90px;">🔒<br>空の広場<br>Lv.30で解放</div><div class="nxt-friends"><div class="nxt-panel-title">仲間たち <span style="float:right">4/20</span></div><div class="nxt-friend-row">${friends.map(c=>`<div class="nxt-friend"><em>${c.id==='neku'?'🌟':c.id==='furugy'?'🧵':c.id==='caferu'?'☕':'🎪'}</em><span>Lv.${c.level}</span></div>`).join('')}</div></div><div class="nxt-collection-mini"><div class="nxt-panel-title">コレクション</div><div style="font-size:30px">📖</div><b>${collectRate}%</b></div><div class="nxt-guide">リアルの体験をすると、街のにぎわいがあがるよ！今日はカフェ通りを育ててみよう。</div>`;
     D().buildings.forEach(b=>{
       const st=state.buildings[b[0]]||{level:1,rewardReady:false};
-      board.insertAdjacentHTML('beforeend',`<button class="nxt-building" style="left:${b[4]}%;top:${b[5]}%" onclick="NexcaTown.tapBuilding('${b[0]}')"><div class="nxt-b-house">${b[3]}<span class="nxt-b-lv">Lv${st.level}</span>${st.rewardReady?'<span class="nxt-reward">⭐</span>':''}<span class="nxt-b-name">${safe(b[1])}</span></div></button>`);
+      board.insertAdjacentHTML('beforeend',`<button class="nxt-building" data-bid="${b[0]}" style="left:${b[4]}%;top:${b[5]}%" onclick="NexcaTown.tapBuilding('${b[0]}')"><div class="nxt-b-house">${b[3]}<span class="nxt-b-lv">Lv.${st.level}</span>${st.rewardReady?'<span class="nxt-reward">💗</span>':''}<span class="nxt-b-name">${safe(b[1])}</span></div></button>`);
     });
-    Object.values(state.characters).slice(0,4).forEach((c,i)=>board.insertAdjacentHTML('beforeend',`<div class="nxt-char" style="left:${32+i*13}%;top:${68+(i%2)*8}%;animation-delay:${i*.3}s" onclick="NexcaTown.talk('${c.id}')"><div class="nxt-say">${safe(c.dialogue)}</div><div class="nxt-char-body">${c.id==='neku'?'🌟':c.id==='furugy'?'🧵':c.id==='caferu'?'☕':'🎪'}</div></div>`));
+    Object.values(state.characters).slice(0,4).forEach((c,i)=>board.insertAdjacentHTML('beforeend',`<div class="nxt-char" style="left:${39+i*8}%;top:${65+(i%2)*10}%;animation-delay:${i*.3}s" onclick="NexcaTown.talk('${c.id}')"><div class="nxt-say">${i===0?'次はカフェに行こう！':safe(c.dialogue)}</div><div class="nxt-char-body">${c.id==='neku'?'🌟':c.id==='furugy'?'🧵':c.id==='caferu'?'☕':'🎪'}</div></div>`));
   }
   function renderScreen(v){
     const s=$('#nxt-screen');s.classList.add('on');
@@ -114,6 +116,12 @@
     state.totalMiniGamesPlayed++;progress('playMiniGame');grantPoints(20+Math.floor(score/10),'ミニゲーム報酬');addPlayerExp(25);addBuildingExp(genre,35);addCharExp(type==='coord'?'furugy':type==='order'?'caferu':type==='festival'?'eventy':'neku',30);state.townPopularity+=Math.floor(score/10);state.collections.push(type+'-'+rank);save();reward(rank+' RANK',`スコア ${score}。${genre==='vintage'?'古着ストリート':genre==='cafe'?'カフェ通り':genre==='event'?'イベント広場':'中央広場'}EXPが増えました。`,'🎮');nav('games');
   }
   function claimQuest(id){const q=state.dailyQuests.find(x=>x.questId===id);if(!q||!q.isCompleted||q.isClaimed)return;q.isClaimed=true;grantPoints(q.rewardPoints,'デイリークエスト');addPlayerExp(q.rewardExp);save();reward('クエスト達成',q.title+' の報酬を受け取りました。','✅');render();}
+  function claimAll(){
+    let claimed=0,pts=0,exp=0;
+    state.dailyQuests.forEach(q=>{if(q.isCompleted&&!q.isClaimed){q.isClaimed=true;claimed++;pts+=q.rewardPoints;exp+=q.rewardExp;}});
+    if(!claimed){reward('まだ受け取れません','達成したクエストがあると一括で受け取れます。','📜');return;}
+    grantPoints(pts,'デイリークエスト一括報酬');addPlayerExp(exp);save();reward('まとめて受け取り',claimed+'件のクエスト報酬を受け取りました。','🎁');render();
+  }
   function loginBonus(){if(state.claimedLoginBonus===today()){reward('受け取り済み','明日はもっといい報酬が待っています。','🎁');return;}state.claimedLoginBonus=today();state.gems+=state.loginStreak%7===0?5:1;grantPoints(state.loginStreak%7===0?120:30,'ログインボーナス');save();reward('ログインボーナス',`${state.loginStreak}日連続。ポイントとジェムを獲得しました。`,'🎁');render()}
   function tapBuilding(id){const b=state.buildings[id];if(!b)return;if(b.rewardReady){b.rewardReady=false;b.lastRewardCollectedAt=new Date().toISOString();grantPoints(10+b.level*3,b.name+'報酬');addPlayerExp(8);progress('collectReward');save();reward('建物報酬',b.name+'から報酬を回収しました。','⭐');render();}else reward(b.name,'Lv'+b.level+' / EXP '+b.exp+'。ミニゲームや参加コードで育ちます。',D().buildings.find(x=>x[0]===id)?.[3]||'🏠')}
   function talk(id){const c=state.characters[id];if(!c)return;progress('talkChar');addCharExp(id,8);save();reward(c.name,c.dialogue+' EXP+8',id==='neku'?'🌟':id==='furugy'?'🧵':id==='caferu'?'☕':'🎪');render()}
@@ -130,7 +138,7 @@
     try{if(window.user&&window.sb)sb.from('participation_code_redemptions').insert({user_id:user.id,code,genre,points_awarded:100,player_exp_awarded:80,building_exp_awarded:90,character_exp_awarded:70,redeemed_at:new Date().toISOString()}).then(()=>{});}catch(e){}
     save();reward('体験カード生成',`${ev.title||'Nexca体験'} の記録が街に刻まれました。`,'💌');nav('cards');
   }
-  window.NexcaTown={open,close,nav,loginBonus,claimQuest,tapBuilding,talk,train,buy,startGame,finishGame,selectChoice,pickFacility,placeCell,redeem};
+  window.NexcaTown={open,close,nav,loginBonus,claimQuest,claimAll,tapBuilding,talk,train,buy,startGame,finishGame,selectChoice,pickFacility,placeCell,redeem};
   window.openTown=open; window.closeTown=close;
   window.addEventListener('DOMContentLoaded',()=>{load();document.querySelectorAll('[onclick="openTown()"]').forEach(card=>{card.innerHTML=card.innerHTML.replace(/<div style="font-family:[^>]+>[^<]+<\/div>/,'<div style="font-family:var(--font-en);font-size:16px;letter-spacing:1px;margin-bottom:3px;">NEXCA TOWN</div>').replace('キャラを集めて街を育てよう','現実で遊ぶほど育つ、街づくりゲーム');});document.querySelectorAll('.town-hd-title').forEach(e=>e.textContent='NEXCA TOWN');});
 })();

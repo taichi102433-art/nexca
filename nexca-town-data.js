@@ -1,14 +1,14 @@
 window.NEXCA_TOWN_DATA={
   buildings:[
-    ['home','自分の家','home','🏠',20,62],
-    ['plaza','中央広場','all','⛲',50,55],
-    ['vintage','古着ストリート','vintage','👗',27,43],
-    ['cafe','カフェ通り','cafe','☕',71,43],
-    ['event','イベント広場','event','🎪',78,66],
-    ['station','電停','all','🚋',15,76],
-    ['shop','ショップ','shop','🛍️',39,76],
-    ['collection','コレクション館','collection','🏛️',62,77],
-    ['minigame','ミニゲーム広場','game','🎮',49,30]
+    ['home','自分の家','home','🏠',31,69],
+    ['plaza','中央広場','all','⛲',50,54],
+    ['vintage','古着','vintage','👗',31,38],
+    ['cafe','カフェ','cafe','☕',68,38],
+    ['event','イベント','event','🎪',50,31],
+    ['station','おでかけスポット','all','🚋',25,79],
+    ['shop','ショップ','shop','🛍️',72,66],
+    ['collection','コレクション','collection','📖',41,79],
+    ['minigame','学び','game','🎒',31,55]
   ],
   characters:[
     ['neku','ネクちゃん','guide','N','🌟','全ジャンルEXP +3%','今日はどこに行く？'],
