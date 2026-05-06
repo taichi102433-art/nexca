@@ -18,6 +18,47 @@
 
   function publicId(id){return String(id||'').replace(/^db_/,'');}
   function moneyCap(s){if(!s||s==='制限なし')return 999999;if(s==='無料')return 0;return Number(String(s).replace(/\D/g,''))||999999;}
+  function arr(v){if(Array.isArray(v))return v; if(!v)return []; return String(v).split(/[、,\s/]+/).map(x=>x.trim()).filter(Boolean);}
+  function textOf(ev){return [ev.title,ev.desc,ev.loc,ev.addr,ev.gl,ev.genre,ev.gacha_conditions,(ev.tags||[]).join(' ')].join(' ');}
+  function eventMeta(ev){
+    const txt=textOf(ev), tags=arr(ev.tags).concat(arr(ev.mood_tags),arr(ev.time_tags),arr(ev.gacha_conditions));
+    const indoor=ev.indoor===true||/屋内|室内|カフェ|喫茶|店|美術館|映画|雨の日OK/.test(txt);
+    const outdoor=ev.outdoor===true||/屋外|公園|川|海|港|山|島|散歩|歩|フェリー|夜景/.test(txt);
+    const budget=Number(ev.budget_max)||moneyCap(ev.price||ev.budgetLabel||'制限なし');
+    const safety=Number(ev.safety_level||(/深夜|流川|夜/.test(txt)?2:4));
+    return {tags,indoor,outdoor,budget,safety,txt};
+  }
+  function diagPrefs(){
+    try{return JSON.parse(localStorage.getItem('nx_diag_prefs')||'{}');}catch(e){return {};}
+  }
+  function scoreEvent(ev,ctx={}){
+    const m=eventMeta(ev), prefs=diagPrefs();
+    let score=0;
+    if(ev.fixed)score+=4; if(ev.isOfficial)score-=2;
+    score+=Math.min(12,Number(ev.wantCount||ev.want_count||0)/20);
+    score+=Math.min(12,Number(ev.like_count||0)*1.5);
+    if(age&&Array.isArray(ev.age)&&ev.age.includes(age))score+=12;
+    if(city&&String(ev.loc||ev.addr||'').includes(city.replace('広島市','')))score+=14;
+    if(genre&&genre!=='all'&&(ev.g===genre||ev.genre===genre))score+=8;
+    if(likes&&likes.has&&likes.has(ev.id))score+=16;
+    if(wants&&wants.has&&wants.has(ev.id))score+=18;
+    if(prefs.moods)m.tags.forEach(t=>{if(prefs.moods.includes(t))score+=8;});
+    if(prefs.genres&&(prefs.genres.includes(ev.g)||prefs.genres.includes(ev.genre)))score+=10;
+    if(ctx.moods)m.tags.forEach(t=>{if(ctx.moods.includes(t))score+=10;});
+    if(ctx.areas&&ctx.areas.some(a=>String(ev.loc||ev.addr||'').includes(a.replace('広島市',''))||m.txt.includes(a)))score+=18;
+    if(ctx.times&&ctx.times.some(t=>m.tags.includes(t)||String(ev.ts||'').includes(t)))score+=8;
+    if(ctx.budgetCap!=null&&m.budget<=ctx.budgetCap)score+=10; else if(ctx.budgetCap!=null)score-=18;
+    if(ctx.count==='1人'&&ctx.times&&ctx.times.includes('深夜')&&!m.indoor)score-=100;
+    if(['中学生','高校生'].includes(age)&&ctx.times&&ctx.times.includes('深夜'))score-=100;
+    if(ctx.badWeather&&m.outdoor&&!m.indoor)score-=60;
+    if(m.safety<3)score-=35;
+    if(ctx.lat&&ctx.lng){const d=eventDistance(ev,ctx.lat,ctx.lng); if(d<999)score+=Math.max(0,28-d*3);}
+    return score;
+  }
+  function eventToPlan(ev,ctx={}){
+    const map=`https://maps.google.com/?q=${encodeURIComponent(ev.addr||ev.loc||'')}`;
+    return {title:ev.title,desc:'Nexca掲載イベントが条件に合ったので優先召喚。'+(ev.desc||''),area:ev.loc,mood:(ctx.moods||['おまかせ'])[0],time:ev.ts||(ctx.times||['昼'])[0],budget:ev.price,map,eventId:ev.id,mission:ev.qr?'参加コードを入力してキャラEXPと参加証明を獲得':'現地で今日の一枚を残して、次の参加コード対応を待つ'};
+  }
   function videoHtml(ev){
     const u=String(ev.video_url||ev.vid||'');
     if(!u)return `<div class="nx-thumb"><div class="nx-play">${safe(ev.em||'▶')}</div></div>`;
@@ -66,18 +107,18 @@
     let times=vals('time'); if(!times.length)times=['昼','午後','夕方'];
     const count=vals('count')[0]||'1人', scene=vals('scene')[0]||'友達', areas=vals('area').length?vals('area'):['広島市中区'], budget=vals('budget')[0]||'制限なし', moodVals=vals('mood').length?vals('mood'):['おまかせ'];
     if(['中学生','高校生'].includes(age)&&times.includes('深夜')){times=times.filter(t=>t!=='深夜');toast('中高生向けに深夜プランを外しました');}
+    const badWeather=localStorage.getItem('nx_weather_bad')==='1';
     const r=Math.random()*100, rarity=r<7?'legendary':r<34?'rare':'normal', pool=rarity==='legendary'?dayPlans:plans.concat(curatedPlans);
     const cap=moneyCap(budget);
     let cand=pool.filter(p=>areas.some(a=>p.area.includes(a)||a.includes(p.area))&&moodVals.some(m=>m==='おまかせ'||p.mood===m)&&times.some(t=>p.time===t||p.time==='1日')&&p.budget<=cap);
     if(count==='1人'&&times.includes('深夜'))cand=cand.filter(p=>p.indoor);
-    const evHit=(typeof EVS!=='undefined'?EVS:[]).find(ev=>{
-      if(ev.isOfficial||ev.gacha_enabled===false)return false;
-      const locHit=areas.some(a=>String(ev.loc||ev.addr||'').includes(a.replace('広島市',''))||String(ev.gacha_conditions||'').includes(a));
-      const moodHit=moodVals.some(m=>m==='おまかせ'||String(ev.gacha_conditions||ev.tags||'').includes(m)||String(ev.desc||'').includes(m));
-      const timeHit=times.some(t=>String(ev.gacha_conditions||ev.ts||'').includes(t))||!ev.gacha_conditions;
-      return locHit&&moodHit&&timeHit;
-    });
-    const p=evHit&&rarity!=='legendary'?{title:evHit.title,desc:'Nexca掲載イベントが条件に合ったので優先召喚。'+evHit.desc,area:evHit.loc,mood:moodVals[0],time:evHit.ts||times[0],budget:evHit.price,map:`https://maps.google.com/?q=${encodeURIComponent(evHit.addr||evHit.loc)}`,eventId:evHit.id}:(cand[Math.floor(Math.random()*cand.length)]||pool[Math.floor(Math.random()*pool.length)]);
+    const ctx={areas,moods:moodVals,times,budgetCap:cap,count,badWeather};
+    const evHit=(typeof EVS!=='undefined'?EVS:[]).filter(ev=>!ev.isOfficial&&ev.gacha_enabled!==false).map(ev=>({ev,score:scoreEvent(ev,ctx)})).filter(x=>x.score>18).sort((a,b)=>b.score-a.score)[0]?.ev;
+    const p=evHit&&rarity!=='legendary'?eventToPlan(evHit,ctx):(cand.sort((a,b)=>{
+      const sa=(moodVals.includes(a.mood)?18:0)+(a.budget<=cap?10:0)+(badWeather&&a.outdoor&&!a.indoor?-70:0);
+      const sb=(moodVals.includes(b.mood)?18:0)+(b.budget<=cap?10:0)+(badWeather&&b.outdoor&&!b.indoor?-70:0);
+      return sb-sa;
+    })[Math.floor(Math.random()*Math.min(8,Math.max(1,cand.length)))]||pool[Math.floor(Math.random()*pool.length)]);
     p.rarity=rarity;p.scene=scene;p.count=count;p.budgetLabel=budget;p.moodLabel=moodVals.join(' / ');p.mission=p.mission||(rarity==='legendary'?'4つの時間帯で1枚ずつ記録して、最後にベスト瞬間を選ぶ':'参加コードがある掲載イベントなら証明、ない場合は今日の一枚を残す');p.route=rarity==='legendary'?['午前: 街歩き','昼: ごはん','午後: 体験','夜: 明るい駅周辺で締める']:['集合','メイン体験','寄り道'];
     return p;
   }
@@ -123,13 +164,13 @@
     navigator.geolocation.getCurrentPosition(pos=>{
       const lat=pos.coords.latitude,lng=pos.coords.longitude,near=nearestArea(lat,lng);
       city=near[0];localStorage.setItem('nx_city',city);
-      const evs=(EVS||[]).filter(e=>!e.isOfficial).map(e=>({...e,_d:eventDistance(e,lat,lng)})).sort((a,b)=>a._d-b._d).slice(0,8);
+      const evs=(EVS||[]).filter(e=>!e.isOfficial).map(e=>({...e,_d:eventDistance(e,lat,lng),_score:scoreEvent(e,{lat,lng,areas:[near[0]],moods:diagPrefs().moods||[]})})).sort((a,b)=>b._score-a._score||a._d-b._d).slice(0,8);
       renderNearList(evs,near[0]);
       try{if(user)sb.from('profiles').upsert({user_id:user.id,city:city,last_lat:lat,last_lng:lng,updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(()=>{});}catch(e){}
     },()=>renderNearFallback(),{enableHighAccuracy:false,timeout:7000,maximumAge:300000});
   };
-  function renderNearFallback(){const area=city||'広島市中区',evs=(EVS||[]).filter(e=>!e.isOfficial&&String(e.loc||e.addr||'').includes(area.replace('広島市',''))).slice(0,8);renderNearList(evs.length?evs:(EVS||[]).filter(e=>!e.isOfficial).slice(0,8),area);}
-  function renderNearList(evs,area){const list=$('#nx-near-list');if(!list)return;list.innerHTML=evs.map(ev=>`<div class="nx-near-card" onclick="document.getElementById('nx-near-panel').classList.remove('on');openVOV('${safe(ev.id)}')"><div class="nx-near-card-t">${safe(ev.title)}</div><div class="nx-near-card-s">${safe(ev.loc||area)}${ev._d&&ev._d<100?` · 約${ev._d.toFixed(1)}km`:''}<br>${safe(ev.ge||'🎉')} ${safe(ev.gl||'')}</div></div>`).join('')||'<div class="nx-near-card"><div class="nx-near-card-t">近くの候補がありません</div><div class="nx-near-card-s">掲載イベントが増えるとここに出ます</div></div>';}
+  function renderNearFallback(){const area=city||'広島市中区',evs=(EVS||[]).filter(e=>!e.isOfficial&&String(e.loc||e.addr||'').includes(area.replace('広島市',''))).map(e=>({...e,_score:scoreEvent(e,{areas:[area],moods:diagPrefs().moods||[]})})).sort((a,b)=>b._score-a._score).slice(0,8);renderNearList(evs.length?evs:(EVS||[]).filter(e=>!e.isOfficial).map(e=>({...e,_score:scoreEvent(e,{moods:diagPrefs().moods||[]})})).sort((a,b)=>b._score-a._score).slice(0,8),area);}
+  function renderNearList(evs,area){const list=$('#nx-near-list');if(!list)return;list.innerHTML=evs.map(ev=>`<div class="nx-near-card" onclick="document.getElementById('nx-near-panel').classList.remove('on');openVOV('${safe(ev.id)}')"><div class="nx-near-card-t">${safe(ev.title)}</div><div class="nx-near-card-s">${safe(ev.loc||area)}${ev._d&&ev._d<100?` · 約${ev._d.toFixed(1)}km`:''}<br>${safe(ev.ge||'🎉')} ${safe(ev.gl||'')} · 相性${Math.max(0,Math.round(ev._score||scoreEvent(ev)))}%</div></div>`).join('')||'<div class="nx-near-card"><div class="nx-near-card-t">近くの候補がありません</div><div class="nx-near-card-s">掲載イベントが増えるとここに出ます</div></div>';}
 
   function overrideCore(){
     if(typeof EVS==='undefined')return;
@@ -157,7 +198,8 @@
       if(v)v.style.display='flex';
     };
     window.pickGenre=function(el){$$('.fm-gopt').forEach(b=>b.classList.remove('on'));el.classList.add('on');genre=el.dataset.g;const lb={all:'すべて',vintage:'古着',cafe:'カフェ',event:'イベント・体験'};$('#fl').textContent=lb[genre]||'すべて';renderFeed();closeFM();};
-    window.renderFeed=function(){let src=feedMode==='official'?EVS.filter(e=>e.isOfficial):EVS.filter(e=>!e.isOfficial&&(!e.age||!age||e.age.includes(age)));if(feedMode!=='official'&&genre&&genre!=='all')src=src.filter(e=>e.g===genre||e.genre===genre||(genre==='event'&&!['cafe','vintage'].includes(e.g)));if(feedMode==='recommend')src=src.slice().sort((a,b)=>getRecScore(b)-getRecScore(a));fevs=src;idx=0;const st=$('#stack');st.innerHTML='';if(!src.length){st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}src.forEach((ev,i)=>st.appendChild(mkSlide(ev,i)));updPos();};
+    window.getRecScore=function(ev){return scoreEvent(ev,{moods:diagPrefs().moods||[]})+(ev.fixed?5:0);};
+    window.renderFeed=function(){let src=feedMode==='official'?EVS.filter(e=>e.isOfficial):EVS.filter(e=>!e.isOfficial&&(!e.age||!age||e.age.includes(age)));if(feedMode!=='official'&&genre&&genre!=='all')src=src.filter(e=>e.g===genre||e.genre===genre||(genre==='event'&&!['cafe','vintage'].includes(e.g)));if(feedMode==='recommend')src=src.slice().sort((a,b)=>scoreEvent(b,{moods:diagPrefs().moods||[]})-scoreEvent(a,{moods:diagPrefs().moods||[]}));fevs=src;idx=0;const st=$('#stack');st.innerHTML='';if(!src.length){st.innerHTML='<div class="empty" style="position:absolute;inset:0;display:flex;"><div class="empty-ic">🔍</div><div class="empty-t">この条件のイベントはありません</div></div>';return;}src.forEach((ev,i)=>st.appendChild(mkSlide(ev,i)));updPos();};
     window.openDrw=function(id){const ev=EVS.find(e=>e.id===id);if(!ev)return;const gs=(typeof GS!=='undefined'&&(GS[ev.g]||GS.event))||{bg:'rgba(230,57,70,.12)',c:'#ff8fa0'}, map=`https://maps.google.com/?q=${encodeURIComponent(ev.addr||ev.loc)}`, cd=ev.charKey&&OC?OC[ev.charKey]:null, info=cd?calcCprog(charExp[ev.charKey]||0):null;const link=(cls,label,url,type)=>url?`<a class="cta ${cls}" href="${safe(url)}" target="_blank" onclick="trackLinkClick('${ev.id}','${type}')">${label}</a>`:'';$('#drwbody').innerHTML=`<button class="bkbtn" onclick="closeDrw()">← 動画フィードに戻る</button><div class="drw-t">${safe(ev.title)}</div><div class="drw-gt" style="background:${gs.bg};color:${gs.c};">${safe(ev.ge)} ${safe(ev.gl)}</div><div class="drw-tags">${(ev.tags||[]).map(t=>`<div class="drw-tag">${safe(t)}</div>`).join('')}</div>${cd?`<div class="cblk"><span style="font-size:34px;">${safe(ev.charEmoji||'🎭')}</span><div style="flex:1;"><div class="cblk-name" style="color:${cd.color};">${safe(ev.charName||ev.charKey)}</div><div class="cblk-desc">${safe(ev.charDesc||cd.catch)}</div><div class="clvbar"><div class="clvfill" style="width:${info.pct}%;background:${cd.color};"></div></div><div style="font-size:9px;color:var(--dim);margin-top:3px;">Lv${info.lv} · EXP ${info.cur}/${info.need}</div></div></div>`:''}<div class="ic"><div class="ic-l">DATE / TIME</div><div class="ic-v">${safe(ev.ds||'随時')} ${safe(ev.ts||'')}</div></div><div class="ic"><div class="ic-l">LOCATION</div><div class="ic-v">${safe(ev.loc)}<br>${safe(ev.addr||'')}</div><a href="${map}" target="_blank" onclick="trackLinkClick('${ev.id}','map')" class="gmapbtn">🗺️ Googleマップで開く</a></div><div class="ic"><div class="ic-l">FEE</div><div class="ic-v">${safe(ev.price||'無料')}</div></div><p class="desc-txt">${safe(ev.desc)}</p><div class="ctas"><button class="cta cta-y" onclick="openPartM('${ev.id}')">参加コードを入力する</button><a class="cta cta-m" href="${map}" target="_blank" onclick="trackLinkClick('${ev.id}','map')">🗺️ 地図</a>${link('cta-i','Instagram',ev.ig,'instagram')}${link('cta-h','公式サイト',ev.website_url||ev.hp,'website')}${link('cta-a','予約する',ev.booking_url||ev.rev,'booking')}<button class="cta cta-h" onclick="shareLine('${ev.id}')">LINEでシェア</button></div>`;$('#drw').classList.add('on');$('#drwbg').classList.add('on');};
   }
   window.trackLinkClick=async function(id,type){try{await sb.from('event_link_clicks').insert({event_id:publicId(id),link_type:type,click_type:type,user_id:(typeof user!=='undefined'&&user)?user.id:null,clicked_at:new Date().toISOString()});}catch(e){}};
@@ -175,7 +217,8 @@
           tags:Array.isArray(e.tags)?e.tags:[],age:Array.isArray(e.age_groups)?e.age_groups:['中学生','高校生','大学生','社会人'],
           fixed:!!e.is_fixed,isOfficial:!!e.is_official,wantCount:e.want_count||0,
           charKey:e.char_key||'',charEmoji:e.char_emoji||'',charName:e.char_name||'',charDesc:e.char_desc||'',
-          qr:e.participation_code||'',genre:e.genre||'event',ig:e.instagram_url||'',website_url:e.website_url||e.homepage_url||'',booking_url:e.booking_url||e.reservation_url||'',video_url:e.video_url||'',thumbnail_url:e.thumbnail_url||'',gacha_enabled:e.gacha_enabled!==false,gacha_conditions:e.gacha_conditions||'',production_option:e.production_option||'self'
+          qr:e.participation_code||'',genre:e.genre||'event',ig:e.instagram_url||'',website_url:e.website_url||e.homepage_url||'',booking_url:e.booking_url||e.reservation_url||'',video_url:e.video_url||'',thumbnail_url:e.thumbnail_url||'',gacha_enabled:e.gacha_enabled!==false,gacha_conditions:e.gacha_conditions||'',production_option:e.production_option||'self',
+          lat:e.lat,lng:e.lng,mood_tags:e.mood_tags||[],time_tags:e.time_tags||[],area_tags:e.area_tags||[],budget_max:e.budget_max,indoor:e.indoor,outdoor:e.outdoor,safety_level:e.safety_level||4
         }));
         dbEvs.forEach(ev=>{if(!EVS.find(e=>e.id===ev.id))EVS.unshift(ev);});
         installCharSystem&&installCharSystem();renderFeed&&renderFeed();renderFlyer&&renderFlyer();renderTodayWidget&&renderTodayWidget();
@@ -212,7 +255,7 @@
   function renderNxQ(){const q=nxDQ[nxQI];$('#q-prog-fill').style.width=Math.round((nxQI/nxDQ.length)*100)+'%';$('#q-step-lbl').textContent='NEXCA DATA '+(nxQI<8?'A':nxQI<12?'B':'C');$('#q-num-lbl').textContent=(nxQI+1)+' / '+nxDQ.length;$('#q-step').textContent='QUESTION '+String(nxQI+1).padStart(2,'0');$('#q-text').textContent=q[0];$('#q-opts-wrap').innerHTML='<div class="q-opts">'+q[1].map((o,i)=>`<div class="q-opt" onclick="selQ(${i})">${safe(o[0])}</div>`).join('')+'</div>';}
   window.selQ=function(oi){const q=nxDQ[nxQI],o=q[1][oi];Object.entries(o[1]||{}).forEach(([k,v])=>nxScore[k]=(nxScore[k]||0)+v);nxAns[nxQI]=oi;$$('.q-opt').forEach((el,i)=>el.classList.toggle('sel',i===oi));setTimeout(()=>{nxQI++;nxQI>=nxDQ.length?showNxDiagResult():renderNxQ();},260);};
   window.diagBack=function(){if(nxQI<=0){$('#diag-q').style.display='none';$('#diag-start').style.display='flex';return;}nxQI--;renderNxQ();};
-  async function showNxDiagResult(){const order=[['アガル',nxScore.e+nxScore.a],['ツムギ',nxScore.c+nxScore.r],['ヌクミ',nxScore.r+Math.max(0,8-nxScore.a)],['テクル',nxScore.c+nxScore.a],['コネル',nxScore.c+Math.max(0,8-nxScore.e)],['フワリ',nxScore.r+Math.max(0,8-nxScore.e)],['ネクスケ',nxScore.e+nxScore.c+nxScore.a],['カゲ',nxScore.c+nxScore.r-Math.max(0,nxScore.e-5)]].sort((a,b)=>b[1]-a[1]);const key=order[0][0],d=DIAG_CHARS[key],color=(typeof OC!=='undefined'&&OC[key]?.color)||'#ffbe00';$('#diag-q').style.display='none';$('#diag-load').style.display='flex';try{if(user){await sb.from('diagnosis_answers').insert(Object.entries(nxAns).map(([q,a])=>({user_id:user.id,question_no:Number(q)+1,answer_index:a,age_group:age,city:city,created_at:new Date().toISOString()})));await sb.from('diagnosis_results').insert({user_id:user.id,character:key,created_at:new Date().toISOString()});}}catch(e){}setTimeout(()=>{$('#diag-load').style.display='none';$('#diag-result').style.display='block';$('#res-wrap').innerHTML=`<div style="min-height:100svh;padding:62px 18px 24px;background:radial-gradient(circle at 50% 20%,${safe(color)}55,transparent 34%),linear-gradient(180deg,#090910,#15151f);"><div style="text-align:center;animation:nxSummonJump 1.2s both;"><div style="font-family:var(--font-en);font-size:11px;letter-spacing:4px;color:var(--yellow);">DIAGNOSIS COMPLETE</div><div style="font-size:72px;margin:14px 0;">${typeof charSvg==='function'?charSvg(key,88):'✨'}</div><div style="font-size:30px;font-weight:1000;color:${safe(color)};">${safe(key)}</div><div style="font-size:13px;font-weight:900;margin-top:4px;">${safe(d[0])}</div></div><div style="margin-top:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;font-size:13px;line-height:1.9;">${safe(d[1])}</div><div id="diag-story" style="margin-top:10px;background:rgba(255,190,0,.08);border:1px solid rgba(255,190,0,.2);border-radius:16px;padding:14px;font-size:12px;line-height:1.8;color:var(--yellow);">30ptでキャラの物語を読む</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;"><button class="cta cta-y" onclick="unlockDiagStory('${safe(key)}')" style="padding:12px;">物語を解放</button><button class="cta cta-h" onclick="shareDiag('${safe(key)}')" style="padding:12px;">シェア</button></div><button class="cta cta-m" onclick="startDiag()" style="width:100%;margin-top:8px;padding:12px;">もう一度診断</button></div>`;addPt('診断完了',30,true,'diag_v2');},1500);}
+  async function showNxDiagResult(){const order=[['アガル',nxScore.e+nxScore.a],['ツムギ',nxScore.c+nxScore.r],['ヌクミ',nxScore.r+Math.max(0,8-nxScore.a)],['テクル',nxScore.c+nxScore.a],['コネル',nxScore.c+Math.max(0,8-nxScore.e)],['フワリ',nxScore.r+Math.max(0,8-nxScore.e)],['ネクスケ',nxScore.e+nxScore.c+nxScore.a],['カゲ',nxScore.c+nxScore.r-Math.max(0,nxScore.e-5)]].sort((a,b)=>b[1]-a[1]);const key=order[0][0],d=DIAG_CHARS[key],color=(typeof OC!=='undefined'&&OC[key]?.color)||'#ffbe00',prefs={character:key,moods:[],genres:[]};if(nxScore.r>=nxScore.a)prefs.moods.push('まったり','エモい');if(nxScore.a>=6)prefs.moods.push('アクティブ','非日常');if(nxScore.e>=7)prefs.moods.push('ボケ','イベント');if(nxScore.c>=7)prefs.genres.push('vintage','event');if(key==='ヌクミ')prefs.genres.push('cafe');if(key==='ツムギ')prefs.genres.push('vintage');localStorage.setItem('nx_diag_prefs',JSON.stringify(prefs));$('#diag-q').style.display='none';$('#diag-load').style.display='flex';try{if(user){await sb.from('diagnosis_answers').insert(Object.entries(nxAns).map(([q,a])=>({user_id:user.id,question_no:Number(q)+1,answer_index:a,age_group:age,city:city,created_at:new Date().toISOString()})));await sb.from('diagnosis_results').insert({user_id:user.id,character:key,created_at:new Date().toISOString()});}}catch(e){}setTimeout(()=>{$('#diag-load').style.display='none';$('#diag-result').style.display='block';$('#res-wrap').innerHTML=`<div style="min-height:100svh;padding:62px 18px 24px;background:radial-gradient(circle at 50% 20%,${safe(color)}55,transparent 34%),linear-gradient(180deg,#090910,#15151f);"><div style="text-align:center;animation:nxSummonJump 1.2s both;"><div style="font-family:var(--font-en);font-size:11px;letter-spacing:4px;color:var(--yellow);">DIAGNOSIS COMPLETE</div><div style="font-size:72px;margin:14px 0;">${typeof charSvg==='function'?charSvg(key,88):'✨'}</div><div style="font-size:30px;font-weight:1000;color:${safe(color)};">${safe(key)}</div><div style="font-size:13px;font-weight:900;margin-top:4px;">${safe(d[0])}</div></div><div style="margin-top:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;font-size:13px;line-height:1.9;">${safe(d[1])}</div><div style="margin-top:10px;background:rgba(77,159,255,.08);border:1px solid rgba(77,159,255,.2);border-radius:16px;padding:13px;font-size:12px;line-height:1.8;">おすすめ精度に反映: ${safe((prefs.moods.concat(prefs.genres)).join(' / ')||'バランス型')}</div><div id="diag-story" style="margin-top:10px;background:rgba(255,190,0,.08);border:1px solid rgba(255,190,0,.2);border-radius:16px;padding:14px;font-size:12px;line-height:1.8;color:var(--yellow);">30ptでキャラの物語を読む</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;"><button class="cta cta-y" onclick="unlockDiagStory('${safe(key)}')" style="padding:12px;">物語を解放</button><button class="cta cta-h" onclick="shareDiag('${safe(key)}')" style="padding:12px;">シェア</button></div><button class="cta cta-m" onclick="startDiag()" style="width:100%;margin-top:8px;padding:12px;">もう一度診断</button></div>`;addPt('診断完了',30,true,'diag_v2');renderFeed&&renderFeed();},1500);}
   window.unlockDiagStory=function(key){const d=DIAG_CHARS[key];if(!d)return;if(pts<30){toast('ポイントが足りません');return;}pts-=30;localStorage.setItem('nx_pts',pts);updStats&&updStats();$('#diag-story').textContent=d[2];toast('物語を解放しました');};
   window.shareDiag=function(key){const text=`Nexcaキャラ診断は「${key}」だった！ #Nexca広島`;navigator.share?navigator.share({title:'Nexcaキャラ診断',text,url:location.href}).catch(()=>{}):(navigator.clipboard&&navigator.clipboard.writeText(text),toast('コピーしました'));};
   function addProfilePrefs(){const l=$('#lsec');if(!l||$('#profile-pref-card'))return;const div=document.createElement('div');div.id='profile-pref-card';div.className='profile-pref-card';div.innerHTML=`<div style="font-size:13px;font-weight:900;">地域・年齢層</div><div style="font-size:11px;color:var(--dim);margin-top:3px;">マイページでいつでも変更できます</div><div class="pref-row"><select id="pref-age">${AGES.map(a=>`<option ${a===age?'selected':''}>${a}</option>`).join('')}</select><select id="pref-city">${AREAS.concat(['その他・県外']).map(c=>`<option ${c===city?'selected':''}>${c}</option>`).join('')}</select><button class="pref-save" onclick="saveProfilePrefs()">保存</button></div>`;l.insertBefore(div,l.firstChild);}
