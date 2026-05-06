@@ -1263,3 +1263,105 @@
   .arcade .nxt-arcade-field{grid-template-columns:repeat(2,1fr)}
   .deluxe-fes .nxt-fes-grid{grid-template-columns:repeat(3,1fr)}
 }
+
+/* Premium art-backed town map */
+.premium-board{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,0)),
+    url("assets/town/nexca-town-bg.png") center center/cover no-repeat;
+}
+.premium-board:before,
+.premium-board:after,
+.premium-city,
+.premium-plaza,
+.nxt-town-decor{display:none!important}
+.premium-building{
+  filter:none;
+  z-index:10;
+}
+.premium-building .nxt-b-house{
+  width:auto;
+  min-width:76px;
+  height:auto;
+  min-height:0;
+  padding:7px 12px 21px;
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,249,226,.98),rgba(238,191,105,.98));
+  border:2px solid rgba(255,255,255,.92);
+  box-shadow:0 5px 0 rgba(121,70,22,.34),0 12px 22px rgba(57,39,18,.2);
+  color:#5b3517;
+  font-size:0;
+}
+.premium-building .nxt-b-roof,
+.premium-building .nxt-b-wall,
+.premium-building .nxt-b-house:after,
+.premium-building .nxt-b-sign{display:none}
+.premium-building .nxt-b-name{
+  position:static;
+  transform:none;
+  display:block;
+  background:transparent!important;
+  border:0;
+  box-shadow:none;
+  padding:0;
+  color:#5a3519;
+  font-size:12px;
+  line-height:1.1;
+  text-shadow:0 1px 0 rgba(255,255,255,.9);
+}
+.premium-building .nxt-b-lv{
+  top:auto;
+  bottom:3px;
+  min-width:38px;
+  padding:2px 8px;
+  color:#fff;
+  background:linear-gradient(180deg,#5aa85d,#337b42);
+  border-color:rgba(255,255,255,.9);
+}
+.premium-building[data-bid="event"] .nxt-b-house{
+  width:auto;height:auto;background:linear-gradient(180deg,rgba(255,106,124,.98),rgba(183,54,72,.98));color:#fff;
+}
+.premium-building[data-bid="event"] .nxt-b-name{color:#fff;text-shadow:0 1px 0 rgba(99,33,33,.45)}
+.premium-building[data-bid="vintage"] .nxt-b-house{background:linear-gradient(180deg,rgba(98,150,105,.98),rgba(48,95,70,.98))}
+.premium-building[data-bid="vintage"] .nxt-b-name{color:#fff;text-shadow:0 1px 0 rgba(25,62,43,.5)}
+.premium-building[data-bid="cafe"] .nxt-b-house{background:linear-gradient(180deg,rgba(194,112,55,.98),rgba(126,67,31,.98))}
+.premium-building[data-bid="cafe"] .nxt-b-name{color:#fff;text-shadow:0 1px 0 rgba(86,43,19,.5)}
+.premium-building[data-bid="minigame"] .nxt-b-house{background:linear-gradient(180deg,rgba(90,157,230,.98),rgba(45,96,181,.98))}
+.premium-building[data-bid="minigame"] .nxt-b-name{color:#fff}
+.premium-building[data-bid="collection"] .nxt-b-house,
+.premium-building[data-bid="shop"] .nxt-b-house,
+.premium-building[data-bid="home"] .nxt-b-house{background:linear-gradient(180deg,rgba(255,249,226,.98),rgba(239,202,132,.98))}
+.premium-building .nxt-b-house small{display:none}
+.premium-building .nxt-reward{
+  right:-8px;
+  top:-18px;
+  transform:none;
+  color:#f23c68;
+  font-size:9px;
+}
+.premium-building:hover .nxt-b-house,
+.premium-building:focus .nxt-b-house{transform:translateY(-4px);box-shadow:0 8px 0 rgba(121,70,22,.34),0 18px 28px rgba(57,39,18,.24)}
+.premium-quest,
+.premium-side,
+.nxt-official-panel,
+.nxt-memory-panel,
+.premium-guide{
+  backdrop-filter:blur(8px);
+}
+.premium-quest{background:linear-gradient(180deg,rgba(255,249,231,.92),rgba(246,214,152,.9))}
+.premium-side{background:linear-gradient(180deg,rgba(255,249,231,.92),rgba(240,217,171,.9))}
+.nxt-official-panel{background:linear-gradient(180deg,rgba(255,249,231,.92),rgba(244,214,153,.9))}
+.premium-guide{background:linear-gradient(180deg,rgba(255,253,241,.92),rgba(255,229,174,.9))}
+.premium-char{z-index:11}
+.premium-char .nxt-avatar{box-shadow:0 9px 0 rgba(109,70,45,.18),0 16px 24px rgba(83,59,48,.28),0 0 0 4px rgba(255,255,255,.65)}
+
+@media (max-width:680px){
+  .premium-board{
+    background-position:center center;
+    background-size:auto 100%;
+  }
+  .premium-building .nxt-b-house{min-width:54px;padding:5px 8px 18px}
+  .premium-building .nxt-b-name{font-size:9px}
+  .premium-building .nxt-b-lv{font-size:8px;bottom:2px}
+  .premium-char .nxt-avatar{transform:scale(.86)}
+}
