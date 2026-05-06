@@ -180,6 +180,7 @@
   box-shadow:inset 0 0 0 3px rgba(255,255,255,.48),0 22px 54px rgba(28,93,117,.28);
   isolation:isolate;
 }
+.nxt-city-art{position:absolute;inset:0;width:100%;height:100%;z-index:0;object-fit:cover;filter:saturate(1.12) contrast(1.03)}
 .nxt-board:before{
   content:"";
   position:absolute;
@@ -187,7 +188,8 @@
   right:6%;
   top:18%;
   bottom:10%;
-  z-index:-1;
+  z-index:1;
+  opacity:.18;
   border-radius:46% 50% 42% 44%;
   background:
     radial-gradient(circle at 18% 82%,#ff7d72 0 1.2%,transparent 1.3%),
@@ -212,6 +214,7 @@
   border-radius:28px;
   opacity:.95;
   pointer-events:none;
+  z-index:2;
 }
 .nxt-plaza{
   position:absolute;
@@ -220,7 +223,7 @@
   width:132px;
   height:92px;
   transform:translate(-50%,-50%);
-  z-index:1;
+  z-index:3;
   border-radius:50%;
   background:
     radial-gradient(circle at 50% 42%,#8de8ff 0 15%,#3899d0 16% 24%,transparent 25%),
@@ -721,6 +724,12 @@
   font-weight:1000;
   box-shadow:inset 0 0 0 1px rgba(131,84,29,.14);
 }
+.nxt-side-card.strong{background:linear-gradient(180deg,#ff7c95,#f23c68);color:#fff7df;box-shadow:0 5px 0 #b52b45}
+.nxt-game-dock{position:absolute;left:50%;top:78%;z-index:8;transform:translate(-50%,-50%);width:min(260px,36%);min-height:78px;border:3px solid rgba(255,255,255,.86);border-radius:22px;color:#fff;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.36),transparent 24%),linear-gradient(135deg,#7057ff,#f23c68 64%,#ffbe00);box-shadow:0 8px 0 rgba(99,38,79,.34),0 20px 35px rgba(81,40,87,.25);text-align:left;padding:12px 72px 12px 16px;cursor:pointer;animation:nxtPulse 2.2s ease-in-out infinite}
+.nxt-game-dock:before{content:"🎮";position:absolute;right:15px;top:50%;transform:translateY(-50%);width:48px;height:48px;display:grid;place-items:center;border-radius:18px;background:rgba(255,255,255,.94);color:#513600;font-size:25px;box-shadow:0 5px 0 rgba(81,40,87,.22)}
+.nxt-game-dock span{display:block;font-size:11px;letter-spacing:1px;font-weight:1000}
+.nxt-game-dock b{display:block;margin-top:3px;font-size:13px;line-height:1.28}
+.nxt-game-dock i{position:absolute;left:16px;bottom:-13px;font-style:normal;color:#693500;background:linear-gradient(180deg,#fff4ae,#ffbe00);border:2px solid rgba(255,255,255,.9);border-radius:999px;padding:4px 18px;font-size:11px;font-weight:1000;box-shadow:0 4px 0 rgba(114,70,21,.25)}
 .nxt-friends{
   position:absolute;
   left:10px;
@@ -729,6 +738,7 @@
   border-radius:18px;
   padding:9px;
 }
+.nxt-friends.official{background:linear-gradient(180deg,rgba(255,249,226,.97),rgba(248,221,164,.96)),radial-gradient(circle at 12% 15%,rgba(255,99,128,.24),transparent 28%)}
 .nxt-friend-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
 .nxt-friend{
   background:#fff8e5;
@@ -863,6 +873,22 @@
 .nxt-card h3{font-size:14px;margin:0 0 4px;color:#4e321c}
 .nxt-card p{font-size:11px;line-height:1.58;color:#735434;margin:0}
 .nxt-big{font-size:40px;margin-bottom:6px}
+.nxt-card.character{display:grid;grid-template-columns:74px 1fr;gap:10px;align-items:center}
+.nxt-card.character h3,.nxt-card.character p,.nxt-card.character .nxt-exp,.nxt-card.character .nxt-play{grid-column:2}
+.nxt-card-art{grid-row:1/5;display:grid;place-items:center;min-height:98px}
+.nxt-card-art .nxt-avatar{transform:scale(1.28)}
+.nxt-char-hero,.nxt-game-hero{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-bottom:12px;padding:14px;border-radius:24px;color:#563616;background:linear-gradient(180deg,#fffdf2,#f5d79a);border:2px solid rgba(126,80,28,.18);box-shadow:0 6px 0 rgba(139,83,24,.22),0 14px 26px rgba(83,54,25,.13)}
+.nxt-char-hero b,.nxt-game-hero b{display:block;font-size:16px;font-weight:1000}
+.nxt-char-hero span,.nxt-game-hero span{display:block;margin-top:5px;font-size:12px;line-height:1.65;color:#76552f;font-weight:800}
+.nxt-game-hero{grid-template-columns:1fr;background:linear-gradient(135deg,#fff9df,#ffe1e8 48%,#e7f5ff)}
+.nxt-grid.games{grid-template-columns:repeat(2,1fr)}
+.nxt-card.game-card{position:relative;overflow:hidden;min-height:178px;padding-top:16px}
+.nxt-card.game-card:before{content:"";position:absolute;right:-22px;top:-18px;width:92px;height:92px;border-radius:34px;transform:rotate(18deg);background:rgba(255,190,0,.22)}
+.nxt-game-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:20px;background:linear-gradient(180deg,#fff,#ffe1e8);box-shadow:0 5px 0 rgba(153,91,28,.2);font-size:30px;margin-bottom:8px}
+.nxt-card.game-card[data-game="festival"]{background:linear-gradient(180deg,#fff7e5,#ffe2ae);border-color:rgba(239,76,104,.28)}
+.nxt-card.game-card[data-game="coord"]{background:linear-gradient(180deg,#f8fff1,#dbf2c0)}
+.nxt-card.game-card[data-game="order"]{background:linear-gradient(180deg,#fff7e8,#f0c995)}
+.nxt-card.game-card[data-game="manager"],.nxt-card.game-card[data-game="sns"]{background:linear-gradient(180deg,#edf9ff,#d7eaff)}
 .nxt-exp{height:9px;background:#dcc69a;border-radius:999px;overflow:hidden;margin:8px 0}
 .nxt-exp i{display:block;height:100%;background:linear-gradient(90deg,#ff7788,#ffbe00)}
 .nxt-play{
@@ -948,6 +974,7 @@
 @keyframes nxtPop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 @keyframes nxtFloat{50%{transform:rotate(-13deg) translate(7px,-5px)}}
 @keyframes nxtFlower{50%{transform:translateY(-2px) scale(1.08)}}
+@keyframes nxtPulse{50%{transform:translate(-50%,-50%) scale(1.035)}}
 @media (max-width:680px){
   .nxt-top{grid-template-columns:1fr 76px;gap:7px}
   .nxt-title{grid-column:1/-1;min-height:68px;padding:10px 72px 10px 14px}
@@ -968,6 +995,9 @@
   .nxt-q-t{font-size:9px}
   .nxt-claim{grid-column:2;padding:6px}
   .nxt-side-card,.nxt-code-btn{font-size:9px;padding:7px}
+  .nxt-game-dock{top:80%;width:52%;min-height:68px;padding:10px 58px 10px 12px}
+  .nxt-game-dock b{font-size:11px}
+  .nxt-game-dock:before{right:10px;width:40px;height:40px;font-size:21px}
   .nxt-b-house{width:58px;height:52px}
   .nxt-b-roof{top:-19px;height:29px}
   .nxt-b-wall{height:32px}
@@ -989,6 +1019,8 @@
   .nxt-bottom{grid-template-columns:repeat(5,1fr);gap:7px;padding-left:8px;padding-right:8px}
   .nxt-tab{font-size:10px;border-radius:19px}
   .nxt-grid{grid-template-columns:1fr}
+  .nxt-grid.games{grid-template-columns:1fr}
+  .nxt-card.character{grid-template-columns:64px 1fr}
 }
 @media (min-width:980px){
   .nxt-main{padding:0 22px 8px}
