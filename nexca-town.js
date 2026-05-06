@@ -62,7 +62,7 @@
   function mount(){
     const ov=$('#town-ov');if(!ov)return;
     ov.className='nx-town';ov.style.display='flex';
-    ov.innerHTML=`<div class="nxt-shell"><div class="nxt-top"><button class="nxt-back" onclick="NexcaTown.close()">←</button><div class="nxt-title">Nexca Town<small>体験が、わたしの街をそだてる。</small></div><div class="nxt-stats" id="nxt-stats"></div><button class="nxt-gift" onclick="NexcaTown.loginBonus()">🎁<br><span style="font-size:10px">7日ログイン</span></button></div><main class="nxt-main"><div class="nxt-board" id="nxt-board"></div></main><nav class="nxt-bottom" id="nxt-tabs"></nav><section class="nxt-screen" id="nxt-screen"></section></div>`;
+    ov.innerHTML=`<div class="nxt-shell"><div class="nxt-top"><button class="nxt-back" onclick="NexcaTown.close()">←</button><div class="nxt-title"><span class="nxt-logo-mark"><i></i><b></b><em></em></span><span class="nxt-logo-text">Nexca</span><strong>Nexca Town</strong><small>まだ知らない体験が、次の自分を連れてくる。</small></div><div class="nxt-stats" id="nxt-stats"></div><button class="nxt-gift" onclick="NexcaTown.loginBonus()">🎁<br><span style="font-size:10px">7日ログイン</span></button></div><main class="nxt-main"><div class="nxt-board" id="nxt-board"></div></main><nav class="nxt-bottom" id="nxt-tabs"></nav><section class="nxt-screen" id="nxt-screen"></section></div>`;
   }
   function render(){
     $('#nxt-stats').innerHTML=`<div class="nxt-pill">Lv. ${state.playerLevel}</div><div class="nxt-pill">🏅 ${state.townRank||1}</div><div class="nxt-pill">💗 ${Math.floor(state.points)} pt</div><div class="nxt-pill">💎 ${state.gems}</div><div class="nxt-pill">にぎわい ${state.townPopularity}</div><div class="nxt-pill">${state.loginStreak}日連続</div>`;
@@ -91,7 +91,7 @@
       const st=state.buildings[b[0]]||{level:1,rewardReady:false};
       board.insertAdjacentHTML('beforeend',`<button class="nxt-building" data-bid="${b[0]}" style="left:${b[4]}%;top:${b[5]}%" onclick="NexcaTown.tapBuilding('${b[0]}')"><div class="nxt-b-house">${buildingArt(b[0],b[3])}<span class="nxt-b-lv">Lv.${st.level}</span>${st.rewardReady?'<span class="nxt-reward">💗</span>':''}<span class="nxt-b-name">${safe(b[1])}</span></div></button>`);
     });
-    Object.values(state.characters).slice(0,4).forEach((c,i)=>board.insertAdjacentHTML('beforeend',`<div class="nxt-char" style="left:${39+i*8}%;top:${65+(i%2)*10}%;animation-delay:${i*.3}s" onclick="NexcaTown.talk('${c.id}')"><div class="nxt-say">${i===0?'次はカフェに行こう！':safe(c.dialogue)}</div>${charArt(c.id,false)}</div>`));
+    Object.values(state.characters).slice(0,4).forEach((c,i)=>board.insertAdjacentHTML('beforeend',`<div class="nxt-char" style="left:${42+i*7}%;top:${68+(i%2)*8}%;animation-delay:${i*.3}s" onclick="NexcaTown.talk('${c.id}')"><div class="nxt-say">${i===0?'次はカフェに行こう！':safe(c.dialogue)}</div>${charArt(c.id,false)}</div>`));
   }
   function renderScreen(v){
     const s=$('#nxt-screen');s.classList.add('on');
@@ -151,5 +151,5 @@
   }
   window.NexcaTown={open,close,nav,loginBonus,claimQuest,claimAll,tapBuilding,talk,train,buy,startGame,finishGame,selectChoice,pickFacility,placeCell,redeem};
   window.openTown=open; window.closeTown=close;
-  window.addEventListener('DOMContentLoaded',()=>{load();document.querySelectorAll('[onclick="openTown()"]').forEach(card=>{card.innerHTML=card.innerHTML.replace(/<div style="font-family:[^>]+>[^<]+<\/div>/,'<div style="font-family:var(--font-en);font-size:16px;letter-spacing:1px;margin-bottom:3px;">NEXCA TOWN</div>').replace('キャラを集めて街を育てよう','現実で遊ぶほど育つ、街づくりゲーム');});document.querySelectorAll('.town-hd-title').forEach(e=>e.textContent='NEXCA TOWN');});
+  window.addEventListener('DOMContentLoaded',()=>{load();document.querySelectorAll('[onclick="openTown()"]').forEach(card=>{card.innerHTML=card.innerHTML.replace(/<div style="font-family:[^>]+>[^<]+<\/div>/,'<div style="font-family:var(--font-en);font-size:16px;letter-spacing:1px;margin-bottom:3px;">NEXCA TOWN</div>').replace('キャラを集めて街を育てよう','まだ知らない体験が、次の自分を連れてくる。').replace('現実で遊ぶほど育つ、街づくりゲーム','まだ知らない体験が、次の自分を連れてくる。');});document.querySelectorAll('.town-hd-title').forEach(e=>e.textContent='NEXCA TOWN');});
 })();

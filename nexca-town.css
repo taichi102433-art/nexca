@@ -47,7 +47,7 @@
   z-index:8;
   padding:calc(env(safe-area-inset-top) + 9px) 10px 6px;
   display:grid;
-  grid-template-columns:minmax(150px,1fr) auto auto;
+  grid-template-columns:minmax(230px,1.15fr) minmax(190px,.85fr) 82px;
   gap:8px;
   align-items:start;
 }
@@ -67,39 +67,70 @@
 }
 .nxt-title{
   min-height:64px;
-  padding:12px 16px 12px 48px;
+  padding:10px 16px 12px 14px;
   border-radius:0 0 27px 0;
   background:linear-gradient(180deg,#fff8e9,#f6deb0);
   border:2px solid rgba(130,84,31,.28);
   box-shadow:0 8px 0 rgba(147,94,31,.18),0 14px 30px rgba(113,71,27,.18);
-  font-size:26px;
   line-height:1;
   font-weight:1000;
   letter-spacing:1.5px;
   color:#4e321c;
   text-shadow:0 2px 0 rgba(255,255,255,.8);
 }
-.nxt-title:before{
-  content:"◆";
-  display:inline-grid;
-  place-items:center;
+.nxt-title strong{
+  display:block;
+  margin-top:2px;
+  font-size:26px;
+  letter-spacing:1.2px;
+}
+.nxt-logo-mark{
+  display:inline-block;
+  position:relative;
   width:26px;
   height:26px;
   margin-right:8px;
-  border-radius:8px;
-  color:white;
-  background:conic-gradient(#df4f76,#ffbe00,#00c48c,#4d9fff,#8a5cf6,#df4f76);
-  font-size:12px;
   vertical-align:middle;
+  transform:translateY(-2px) rotate(-10deg);
+}
+.nxt-logo-mark:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  clip-path:polygon(50% 0,94% 24%,94% 74%,50% 100%,6% 74%,6% 24%);
+  background:conic-gradient(#df4f76,#ffbe00,#00c48c,#4d9fff,#8a5cf6,#df4f76);
+  border-radius:6px;
   box-shadow:0 3px 0 rgba(83,48,18,.25);
+}
+.nxt-logo-mark i,.nxt-logo-mark b,.nxt-logo-mark em{
+  position:absolute;
+  display:block;
+  width:12px;
+  height:12px;
+  clip-path:polygon(50% 0,100% 28%,100% 78%,50% 100%,0 78%,0 28%);
+  opacity:.92;
+}
+.nxt-logo-mark i{left:2px;top:3px;background:#40c867}
+.nxt-logo-mark b{right:2px;top:3px;background:#4d9fff}
+.nxt-logo-mark em{left:7px;bottom:2px;background:#ffbe00}
+.nxt-logo-text{
+  display:inline-block;
+  vertical-align:middle;
+  font-size:25px;
+  letter-spacing:-.5px;
+  color:#1d1d1f;
+  font-weight:1000;
+  text-shadow:0 2px 0 rgba(255,255,255,.65);
 }
 .nxt-title small{
   display:block;
-  margin-top:7px;
-  font-size:10px;
-  letter-spacing:5px;
+  margin-top:6px;
+  font-size:11px;
+  letter-spacing:2.4px;
   color:#7b5c36;
   font-weight:900;
+  white-space:normal;
+  line-height:1.4;
 }
 .nxt-gift{
   width:76px;
@@ -138,7 +169,7 @@
 .nxt-board{
   position:relative;
   height:100%;
-  min-height:420px;
+  min-height:470px;
   border-radius:34px;
   overflow:hidden;
   background:
@@ -207,7 +238,7 @@
 }
 .nxt-building{
   position:absolute;
-  z-index:3;
+  z-index:4;
   transform:translate(-50%,-50%);
   border:0;
   background:transparent;
@@ -307,6 +338,13 @@
 .nxt-building[data-bid="event"] .nxt-b-wall b{right:11px;top:13px;width:8px;height:25px;background:#5d9cff}
 .nxt-building[data-bid="event"] .nxt-b-wall em{left:50%;bottom:7px;width:38px;height:20px;background:linear-gradient(90deg,#ffbe00,#ff6b7d);border-radius:999px}
 .nxt-building[data-bid="event"] .nxt-b-sign{top:-7px}
+.nxt-building[data-bid="vintage"]{z-index:5}
+.nxt-building[data-bid="cafe"]{z-index:5}
+.nxt-building[data-bid="event"]{z-index:5}
+.nxt-building[data-bid="station"]{z-index:6}
+.nxt-building[data-bid="home"],
+.nxt-building[data-bid="shop"],
+.nxt-building[data-bid="collection"]{z-index:6}
 .nxt-b-name{
   position:absolute;
   left:50%;
@@ -356,7 +394,7 @@
 }
 .nxt-char{
   position:absolute;
-  z-index:5;
+  z-index:6;
   transform:translate(-50%,-50%);
   display:grid;
   place-items:center;
@@ -610,7 +648,7 @@
   position:absolute;
   left:9px;
   top:9px;
-  width:min(260px,47%);
+  width:min(250px,39%);
   border-radius:18px;
   padding:10px;
 }
@@ -618,7 +656,7 @@
   position:absolute;
   right:9px;
   top:9px;
-  width:min(146px,31%);
+  width:min(166px,28%);
   border-radius:18px;
   padding:9px;
 }
@@ -687,7 +725,7 @@
   position:absolute;
   left:10px;
   bottom:10px;
-  width:min(266px,49%);
+  width:min(276px,41%);
   border-radius:18px;
   padding:9px;
 }
@@ -719,7 +757,7 @@
 }
 .nxt-collection-mini{
   position:absolute;
-  left:calc(min(266px,49%) + 20px);
+  left:calc(min(276px,41%) + 20px);
   bottom:10px;
   width:98px;
   border-radius:18px;
@@ -730,7 +768,7 @@
   position:absolute;
   right:10px;
   bottom:10px;
-  width:min(330px,43%);
+  width:min(350px,38%);
   border-radius:20px;
   padding:10px 12px 10px 64px;
   min-height:64px;
@@ -911,22 +949,43 @@
 @keyframes nxtFloat{50%{transform:rotate(-13deg) translate(7px,-5px)}}
 @keyframes nxtFlower{50%{transform:translateY(-2px) scale(1.08)}}
 @media (max-width:680px){
-  .nxt-top{grid-template-columns:1fr 76px}
-  .nxt-title{grid-column:1/-1;font-size:23px;min-height:60px}
+  .nxt-top{grid-template-columns:1fr 76px;gap:7px}
+  .nxt-title{grid-column:1/-1;min-height:68px;padding:10px 72px 10px 14px}
+  .nxt-title strong{font-size:22px}
+  .nxt-logo-text{font-size:23px}
+  .nxt-title small{font-size:10px;letter-spacing:1.4px}
   .nxt-gift{position:absolute;right:10px;top:calc(env(safe-area-inset-top) + 14px)}
   .nxt-stats{grid-column:1/-1;grid-template-columns:repeat(3,1fr)}
   .nxt-main{padding:0 7px 4px}
-  .nxt-board{min-height:500px;border-radius:26px}
-  .nxt-quest{width:48%;padding:8px}
-  .nxt-side{width:34%;padding:8px}
+  .nxt-board{min-height:560px;border-radius:26px}
+  .nxt-board:before{left:3%;right:3%;top:23%;bottom:12%;border-width:9px}
+  .nxt-board:after{left:14%;right:14%;top:40%;bottom:18%}
+  .nxt-plaza{top:59%;width:112px;height:78px}
+  .nxt-quest{width:46%;padding:7px;top:8px;left:8px}
+  .nxt-side{width:33%;padding:7px;top:8px;right:8px}
+  .nxt-panel-title{font-size:10px;margin-bottom:5px}
   .nxt-q{grid-template-columns:22px 1fr;gap:5px}
+  .nxt-q-t{font-size:9px}
   .nxt-claim{grid-column:2;padding:6px}
-  .nxt-b-house{width:66px;height:58px;font-size:24px}
-  .nxt-b-name{font-size:10px;padding:3px 10px;top:-39px}
-  .nxt-friends{width:47%;padding:8px}
+  .nxt-side-card,.nxt-code-btn{font-size:9px;padding:7px}
+  .nxt-b-house{width:58px;height:52px}
+  .nxt-b-roof{top:-19px;height:29px}
+  .nxt-b-wall{height:32px}
+  .nxt-b-sign{width:23px;height:23px;font-size:14px;top:7px}
+  .nxt-b-lv{font-size:8px;top:-14px;padding:1px 6px}
+  .nxt-b-name{font-size:9px;padding:3px 8px;top:-34px}
+  .nxt-building[data-bid="event"] .nxt-b-house{width:78px;height:52px}
+  .nxt-friends{width:44%;padding:7px}
+  .nxt-friend-row{gap:5px}
+  .nxt-friend{padding:4px 2px}
+  .nxt-avatar.mini{width:34px;height:38px}
   .nxt-collection-mini{display:none}
-  .nxt-guide{right:8px;width:47%;padding-left:52px;font-size:11px}
+  .nxt-guide{right:8px;width:48%;padding-left:52px;font-size:10px;min-height:60px}
   .nxt-guide:before{width:42px;height:50px;font-size:22px}
+  .nxt-decor.tram{left:20%;bottom:26%;width:70px;height:30px}
+  .nxt-decor.torii{left:14%;bottom:31%;transform:scale(.78)}
+  .nxt-decor.build{left:60%;bottom:26%;width:76px;height:58px;font-size:8px}
+  .nxt-decor.bridge{left:66%;top:58%;transform:rotate(-16deg) scale(.78)}
   .nxt-bottom{grid-template-columns:repeat(5,1fr);gap:7px;padding-left:8px;padding-right:8px}
   .nxt-tab{font-size:10px;border-radius:19px}
   .nxt-grid{grid-template-columns:1fr}
