@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexca-v22';
+const CACHE_NAME = 'nexca-v23';
 const STATIC_ASSETS = [
   '/nexca/',
   '/nexca/index.html',
