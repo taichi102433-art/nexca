@@ -72,7 +72,7 @@
     if(typeof GS!=='undefined'){GS.cafe={bg:'rgba(76,175,80,.13)',bd:'rgba(76,175,80,.35)',c:'#8ee6a0'};GS.vintage={bg:'rgba(255,190,0,.13)',bd:'rgba(255,190,0,.35)',c:'#ffcf4d'};}
     if(typeof OC!=='undefined'&&!OC.ネクスケ)OC.ネクスケ={color:'#E63946',genre:'event',kuchi:'次、行ってみよ。',pers:'Nexcaそのものの好奇心を持つ案内役。',weak:'予定を詰め込みすぎる。',compat:'フワリ',cd:'勢いと観察眼の相性がいい。',catch:'まだ知らない広島を、今日の予定に変える。',mbti:{E:70,N:88,F:60,P:90},strengths:['発見力','案内力','巻き込み力'],growth:'休む時間も予定に入れて。',lvUp:[]};
     if(typeof MISSIONS!=='undefined'&&Array.isArray(MISSIONS)&&MISSIONS.length<15){
-      [['m6','カフェを1件保存する','カフェジャンルで行きたい登録',10],['m7','古着スポットを探す','古着ジャンルを閲覧',10],['m8','友達に1件シェアする','イベントをSNS共有',10],['m9','地図リンクを開く','詳細から地図を確認',8],['m10','今週のイベントを見る','日付で絞り込む',8],['m11','グループガチャを回す','条件を選んで運命を回す',15],['m12','マイ広島に建物を置く','街を育てる',15],['m13','キャラEXPを増やす','参加証明または街で交流',20],['m14','ランキングを見る','順位を確認',5],['m15','検索履歴を作る','検索を使う',5]].forEach(x=>MISSIONS.push({id:x[0],name:x[1],sub:x[2],pt:x[3],progress:0,goal:1,done:false}));
+      [['m6','カフェを1件保存する','カフェジャンルで行きたい登録',10],['m7','古着スポットを探す','古着ジャンルを閲覧',10],['m8','友達に1件シェアする','イベントをSNS共有',10],['m9','地図リンクを開く','詳細から地図を確認',8],['m10','今週のイベントを見る','日付で絞り込む',8],['m11','グループガチャを回す','条件を選んで運命を回す',15],['m12','Nexca Townで建物報酬を受け取る','街を育てる',15],['m13','キャラEXPを増やす','参加証明または街で交流',20],['m14','ランキングを見る','順位を確認',5],['m15','検索履歴を作る','検索を使う',5]].forEach(x=>MISSIONS.push({id:x[0],name:x[1],sub:x[2],pt:x[3],progress:0,goal:1,done:false}));
     }
     if(typeof GACHA!=='undefined'){
       GACHA.Common=(GACHA.Common||[]).concat(['家の近くで空を30秒見る','今日の予定に小さな寄り道を1つ足す','最近よかった店をメモする'].map(text=>({text,ev:'小さな行動変化は習慣化しやすい',type:'家',pts:15})));
@@ -468,7 +468,7 @@
     else{
       const pos=[[24,67],[42,58],[58,70],[72,55],[34,78],[83,72]][townData.chars.length%6];
       townData.chars.push({key:charKey,x:pos[0]+Math.random()*4,y:pos[1]+Math.random()*4});
-      toast(charKey+'がマイ広島に来ました');
+      toast(charKey+'がNexca Townに来ました');
     }
     persistTownState();renderTownMap();renderTownChars();updateTownLevel();
   };
@@ -488,7 +488,7 @@
       port:[['⚓','港',16,72],['⛴️','フェリー',38,59],['☕','海カフェ',62,69],['🌉','夜景',80,54],['🍋','島店',86,78]],
       shrine:[['⛩️','参道',18,70],['🍡','茶屋',36,61],['🌲','杜',58,70],['🦌','広場',76,57],['🧧','願い',86,78]]
     }[area]||[];
-    const qTitle=night?'夜は安全第一':'今日のマイマップクエスト';
+    const qTitle=night?'夜は安全第一':'今日のNexca Townクエスト';
     const qDesc=night?'明るい駅周辺か屋内スポットだけを選ぼう':'建物を1つタップして、近い掲載イベントか街の会話を開く';
     layer.innerHTML=`<div class="nx-town-quest"><div class="nx-town-quest-main"><div class="nx-town-quest-t">${qTitle}</div><div class="nx-town-quest-d">${qDesc}</div></div><button class="nx-town-quest-btn" onclick="openNearMe()">近く</button></div><div class="nx-town-river"></div><div class="nx-town-road"></div><div class="nx-town-plaza"></div>`;
     buildings.forEach(b=>layer.insertAdjacentHTML('beforeend',`<div class="nx-town-building" style="left:${b[2]}%;top:${b[3]}%" onclick="showTownAreaEvents('${safe(b[1])}')">${b[0]}<span>${safe(b[1])}</span></div>`));
@@ -513,7 +513,7 @@
     const n=(townData.items||[]).length+owned,lv=Math.max(1,Math.floor(n/2)+1),pct=Math.min(100,20+(n%4)*24);
     const b=document.getElementById('town-lv-badge'),name=document.getElementById('town-lv-name'),sub=document.getElementById('town-lv-sub'),fill=document.getElementById('town-lv-fill');
     if(b)b.textContent='LV'+lv;
-    if(name)name.textContent=lv>=8?'Nexcaキャラタウン':lv>=5?'にぎわう育成タウン':lv>=3?'キャラが暮らす街':'はじまりのマイ広島';
+    if(name)name.textContent=lv>=8?'Nexcaキャラタウン':lv>=5?'にぎわう育成タウン':lv>=3?'キャラが暮らす街':'はじまりのNexca Town';
     if(sub)sub.textContent='キャラを仲間にして、建物を置いて、街を育てる';
     if(fill)fill.style.width=pct+'%';
   };
