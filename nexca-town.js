@@ -147,7 +147,7 @@
   function gameHtml(type){
     if(type==='coord'){
       const items=[['tops','デニムジャケット','雨の日+','🧥'],['tops','白シャツ','清潔感+','👔'],['bottoms','黒スラックス','大人っぽさ+','👖'],['shoes','赤スニーカー','差し色+','👟'],['accessory','レトロ帽子','個性+','🧢'],['accessory','革バッグ','カフェ感+','👜']];
-      return `<div class="nxt-game-stage visual coord"><div class="nxt-game-hud"><b>お題</b><span>雨の日カフェコーデ</span><i id="coord-score-pill">SCORE --</i></div><div class="nxt-coord-play"><div class="nxt-mannequin" id="coord-model"><span class="head"></span><span class="body"></span><span class="legs"></span><em id="coord-label">未完成</em></div><div class="nxt-style-score"><b>COORD SCORE</b><strong id="coord-score">--</strong><span id="coord-comment">3カテゴリ以上選ぶと判定が伸びる</span></div></div><div class="nxt-items">${items.map(x=>`<button class="nxt-item fashion" data-cat="${x[0]}" onclick="NexcaTown.pickCoord(this,'${x[0]}','${x[1]}')"><b>${x[3]} ${x[1]}</b><small>${x[2]}</small></button>`).join('')}</div><button class="nxt-play" onclick="NexcaTown.finishGame('coord')">ランウェイ判定</button></div>`;
+      return `<div class="nxt-game-stage visual coord runway-game"><div class="nxt-game-hud"><b>FURUGY RUNWAY</b><span>雨の日カフェコーデ</span><i id="coord-score-pill">SCORE --</i></div><div class="nxt-runway-preview"><div class="nxt-runway-bg"><span></span><span></span><span></span><div class="nxt-audience"></div><div class="nxt-catwalk"><i></i></div><div class="nxt-runway-furugy" id="coord-model">${charArt('furugy',false)}<em id="coord-label">SELECT</em></div></div><div class="nxt-style-score deluxe"><b>JUDGE BOARD</b><strong id="coord-score">--</strong><span id="coord-comment">トップス・ボトムス・シューズ・小物で完成度UP</span><div class="nxt-judge-bars"><p>テーマ <i id="judge-theme" style="--v:20%"></i></p><p>色合わせ <i id="judge-color" style="--v:20%"></i></p><p>個性 <i id="judge-unique" style="--v:20%"></i></p></div></div></div><div class="nxt-closet-title">CLOSET</div><div class="nxt-items closet">${items.map(x=>`<button class="nxt-item fashion" data-cat="${x[0]}" onclick="NexcaTown.pickCoord(this,'${x[0]}','${x[1]}')"><b>${x[3]} ${x[1]}</b><small>${x[2]}</small></button>`).join('')}</div><button class="nxt-play runway" onclick="NexcaTown.finishGame('coord')">ランウェイへ送り出す</button></div>`;
     }
     if(type==='order'){
       const menu=['ホットコーヒー','アイスラテ','静かな席','写真映え席','チーズケーキ','抹茶ラテ'];
@@ -171,6 +171,10 @@
     if(cm)cm.textContent=count>=3?'雨の日カフェにかなり合ってる':'あと'+(3-count)+'カテゴリ選ぼう';
     if(lb)lb.textContent=count>=3?'READY':'SELECT';
     if(model)model.dataset.fit=count>=3?'good':'';
+    const theme=document.getElementById('judge-theme'), color=document.getElementById('judge-color'), unique=document.getElementById('judge-unique');
+    if(theme)theme.style.setProperty('--v',Math.min(100,40+(gameState.outfit.tops==='デニムジャケット'?35:12)+(gameState.outfit.accessory==='革バッグ'?15:0))+'%');
+    if(color)color.style.setProperty('--v',Math.min(100,35+(gameState.outfit.shoes==='赤スニーカー'?30:10)+(gameState.outfit.bottoms?20:0))+'%');
+    if(unique)unique.style.setProperty('--v',Math.min(100,30+(gameState.outfit.accessory==='レトロ帽子'?38:16)+(count>=4?18:0))+'%');
   }
   function pickOrder(el,name){
     gameState.order=gameState.order||['ホットコーヒー','静かな席'];gameState.done=gameState.done||[];
@@ -191,7 +195,18 @@
   function finishGame(type){
     const score=type==='coord'?(gameState.score||55):type==='order'?Math.min(100,Math.round((gameState.score||0)/8)):type==='festival'?70+document.querySelectorAll('.nxt-cell.filled').length*4:type==='manager'||type==='sns'?(gameState.choice===0?92:gameState.choice===1?76:38):65+Math.floor(Math.random()*31);
     const rank=score>=90?'S':score>=75?'A':score>=60?'B':'C', genre=type==='coord'?'vintage':type==='order'?'cafe':type==='festival'?'event':'plaza';
+    if(type==='coord'){runCoordShow(score,rank);return;}
     state.totalMiniGamesPlayed++;progress('playMiniGame');grantPoints(20+Math.floor(score/10),'ミニゲーム報酬');addPlayerExp(25);addBuildingExp(genre,35);addCharExp(type==='coord'?'furugy':type==='order'?'caferu':type==='festival'?'eventy':'neku',30);state.townPopularity+=Math.floor(score/10);state.collections.push(type+'-'+rank);save();reward(rank+' RANK',`スコア ${score}。${genre==='vintage'?'古着ストリート':genre==='cafe'?'カフェ通り':genre==='event'?'イベント広場':'中央広場'}EXPが増えました。`,'🎮');nav('games');
+  }
+  function runCoordShow(score,rank){
+    const outfit=Object.values(gameState.outfit||{}).join(' / ')||'未完成コーデ';
+    let ov=$('#nxt-runway-show');if(!ov){ov=document.createElement('div');ov.id='nxt-runway-show';ov.className='nxt-runway-show';document.body.appendChild(ov);}
+    ov.innerHTML=`<div class="runway-lights"><i></i><i></i><i></i></div><div class="runway-stage"><div class="runway-title">FURUGY RUNWAY</div><div class="runway-crowd"></div><div class="runway-road"></div><div class="runway-star">${charArt('furugy',false)}<span>${safe(outfit)}</span></div><div class="runway-score"><b>JUDGE SCORE</b><strong>${score}</strong><em>${rank} RANK</em><p>${score>=90?'街中が振り返る伝説コーデ。':score>=75?'テーマも個性も光る、かなり良いコーデ。':score>=60?'まとまりはある。あと一手で化ける。':'まだ伸びしろあり。カテゴリをそろえよう。'}</p><button onclick="NexcaTown.completeCoordRunway(${score},'${rank}')">報酬を受け取る</button></div></div>`;
+    ov.classList.add('on');
+  }
+  function completeCoordRunway(score,rank){
+    const ov=$('#nxt-runway-show');if(ov)ov.classList.remove('on');
+    state.totalMiniGamesPlayed++;progress('playMiniGame');grantPoints(20+Math.floor(score/10),'コーデチャレンジ報酬');addPlayerExp(25);addBuildingExp('vintage',35);addCharExp('furugy',42);state.townPopularity+=Math.floor(score/8);state.collections.push('coord-'+rank);save();reward(rank+' RANK',`フルギーがランウェイを歩いた！スコア ${score}。古着ストリートEXPとフルギーEXPが増えました。`,'👗');nav('games');
   }
   function claimQuest(id){const q=state.dailyQuests.find(x=>x.questId===id);if(!q||!q.isCompleted||q.isClaimed)return;q.isClaimed=true;grantPoints(q.rewardPoints,'デイリークエスト');addPlayerExp(q.rewardExp);save();reward('クエスト達成',q.title+' の報酬を受け取りました。','✅');render();}
   function claimAll(){
@@ -216,7 +231,7 @@
     try{if(window.user&&window.sb)sb.from('participation_code_redemptions').insert({user_id:user.id,code,genre,points_awarded:100,player_exp_awarded:80,building_exp_awarded:90,character_exp_awarded:70,redeemed_at:new Date().toISOString()}).then(()=>{});}catch(e){}
     save();reward('体験カード生成',`${ev.title||'Nexca体験'} の記録が街に刻まれました。`,'💌');nav('cards');
   }
-  window.NexcaTown={open,close,nav,loginBonus,claimQuest,claimAll,tapBuilding,talk,train,buy,startGame,finishGame,pickCoord,pickOrder,selectChoice,pickFacility,placeCell,redeem};
+  window.NexcaTown={open,close,nav,loginBonus,claimQuest,claimAll,tapBuilding,talk,train,buy,startGame,finishGame,completeCoordRunway,pickCoord,pickOrder,selectChoice,pickFacility,placeCell,redeem};
   window.openTown=open; window.closeTown=close;
   window.addEventListener('DOMContentLoaded',()=>{load();document.querySelectorAll('[onclick="openTown()"]').forEach(card=>{card.innerHTML=card.innerHTML.replace(/<div style="font-family:[^>]+>[^<]+<\/div>/,'<div style="font-family:var(--font-en);font-size:16px;letter-spacing:1px;margin-bottom:3px;">NEXCA TOWN</div>').replace('キャラを集めて街を育てよう','まだ知らない体験が、次の自分を連れてくる。').replace('現実で遊ぶほど育つ、街づくりゲーム','まだ知らない体験が、次の自分を連れてくる。');});document.querySelectorAll('.town-hd-title').forEach(e=>e.textContent='NEXCA TOWN');});
 })();
