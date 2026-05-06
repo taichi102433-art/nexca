@@ -946,6 +946,11 @@
   box-shadow:inset 0 0 0 1px rgba(133,83,26,.11);
 }
 .nxt-item.sel,.nxt-choice.sel{border-color:#ff6480;background:#ffe6ed}
+.nxt-item small{display:block;margin-top:3px;font-size:10px;color:#8a6230}
+.nxt-item.ok{animation:nxtOk .42s ease;background:#eaffdd;border-color:#35c976}
+.nxt-item.bad{animation:nxtBad .42s ease;background:#ffe0e0;border-color:#ff5b5b}
+.nxt-mannequin[data-fit="good"] .body{background:linear-gradient(180deg,#3d806e,#213e67)}
+.nxt-mannequin[data-fit="good"] .legs{background:linear-gradient(90deg,#2a2a2a 0 45%,transparent 45% 55%,#2a2a2a 55%)}
 .nxt-fes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .nxt-cell{
   height:66px;
@@ -997,6 +1002,8 @@
 @keyframes nxtFloat{50%{transform:rotate(-13deg) translate(7px,-5px)}}
 @keyframes nxtFlower{50%{transform:translateY(-2px) scale(1.08)}}
 @keyframes nxtPulse{50%{transform:translate(-50%,-50%) scale(1.035)}}
+@keyframes nxtOk{50%{transform:scale(1.06)}}
+@keyframes nxtBad{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 @media (max-width:680px){
   .nxt-top{grid-template-columns:1fr 76px;gap:7px}
   .nxt-title{grid-column:1/-1;min-height:68px;padding:10px 72px 10px 14px}
