@@ -1,7 +1,9 @@
-const CACHE_NAME = 'nexca-v24';
+const CACHE_NAME = 'nexca-v25';
 const STATIC_ASSETS = [
   '/nexca/',
   '/nexca/index.html',
+  '/nexca/nexca-core.css',
+  '/nexca/nexca-core.js',
   '/nexca/nexca-v2.js',
   '/nexca/nexca-town.css',
   '/nexca/nexca-town-data.js',
