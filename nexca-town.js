@@ -414,3 +414,4 @@
   window.closeTown=close;
   window.addEventListener('DOMContentLoaded',()=>{load();$$('[onclick="openTown()"]').forEach(card=>{card.innerHTML=card.innerHTML.replace('キャラを集めて街を育てよう','現実の体験で、君の街が育つ').replace('現実で遊ぶほど育つ、街づくりゲーム','まだ知らない体験が、次の自分を連れてくる。');});});
 })();
+

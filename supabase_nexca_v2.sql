@@ -1,6 +1,168 @@
 -- Nexca v2 support schema
 -- Run this in Supabase SQL Editor after reviewing existing policies.
 
+-- Core operations phase schema. These tables match the Phase 1 user,
+-- organizer, and admin flows: application -> review -> publish -> reaction data.
+create table if not exists public.organizers (
+  id uuid primary key default gen_random_uuid(),
+  owner_user_id uuid,
+  name text not null default '',
+  contact_name text,
+  email text,
+  phone_number text,
+  instagram_url text,
+  website_url text,
+  description text,
+  unique_info text,
+  genres text[] not null default '{}'::text[],
+  area text,
+  address text,
+  is_verified boolean not null default false,
+  is_initial_partner boolean not null default false,
+  discount_rate integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.organizer_contracts (
+  id uuid primary key default gen_random_uuid(),
+  organizer_id uuid references public.organizers(id) on delete cascade,
+  user_id uuid,
+  contract_version text not null,
+  signer_name text not null,
+  company_or_store_name text not null,
+  agreed_to_terms boolean not null default false,
+  agreed_to_media_usage boolean not null default false,
+  agreed_to_accuracy boolean not null default false,
+  agreed_to_sns_usage boolean not null default false,
+  agreed_to_survey boolean not null default false,
+  signed_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.listings (
+  id uuid primary key default gen_random_uuid(),
+  organizer_id uuid references public.organizers(id) on delete cascade,
+  title text not null,
+  catchcopy text,
+  short_description text,
+  description text,
+  detail_info text,
+  unique_info text,
+  notes text,
+  category text not null,
+  media_type text not null check (media_type in ('video','flyer','video_with_thumbnail')),
+  media_url text,
+  thumbnail_url text,
+  flyer_image_url text,
+  show_in_video_feed boolean not null default false,
+  show_in_flyer_view boolean not null default true,
+  tags text[] not null default '{}'::text[],
+  area text,
+  address text,
+  latitude double precision,
+  longitude double precision,
+  price_text text,
+  target_age_groups text[] not null default '{}'::text[],
+  event_date_type text not null default 'evergreen' check (event_date_type in ('fixed_date','date_range','evergreen')),
+  start_date date,
+  end_date date,
+  business_hours text,
+  reservation_url text,
+  instagram_url text,
+  website_url text,
+  phone_number text,
+  show_phone boolean not null default false,
+  accepts_nexca_interest boolean not null default true,
+  status text not null default 'draft' check (status in ('draft','submitted','reviewing','revision_requested','organizer_confirmation','approved','scheduled','published','archived','rejected','hidden')),
+  is_archived boolean not null default false,
+  publish_at timestamptz,
+  like_count integer not null default 0,
+  want_count integer not null default 0,
+  share_count integer not null default 0,
+  link_click_count integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.listing_applications (
+  id uuid primary key default gen_random_uuid(),
+  organizer_id uuid references public.organizers(id) on delete cascade,
+  listing_id uuid references public.listings(id) on delete cascade,
+  status text not null default 'submitted' check (status in ('draft','submitted','reviewing','revision_requested','organizer_confirmation','approved','scheduled','published','archived','rejected','hidden')),
+  submitted_at timestamptz not null default now(),
+  reviewed_at timestamptz,
+  admin_comment text,
+  organizer_reply text,
+  material_status text,
+  production_support_requested boolean not null default false,
+  production_support_types text[] not null default '{}'::text[],
+  existing_media_urls jsonb not null default '{}'::jsonb,
+  production_memo text,
+  production_status text not null default 'not_needed' check (production_status in ('not_needed','consultation_requested','estimate_needed','scheduling','shooting_scheduled','editing','organizer_review','completed')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.wanted_listings (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null,
+  listing_id uuid references public.listings(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  unique(user_id, listing_id)
+);
+
+create table if not exists public.share_events (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  listing_id uuid references public.listings(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.link_clicks (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  listing_id uuid references public.listings(id) on delete cascade,
+  organizer_id uuid references public.organizers(id) on delete set null,
+  link_type text not null,
+  age_group text,
+  region text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.participation_codes (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  listing_id uuid references public.listings(id) on delete cascade,
+  organizer_id uuid references public.organizers(id) on delete cascade,
+  category text,
+  is_active boolean not null default true,
+  max_uses integer,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.participation_code_redemptions (
+  id uuid primary key default gen_random_uuid(),
+  code_id uuid references public.participation_codes(id) on delete cascade,
+  user_id uuid not null,
+  listing_id uuid references public.listings(id) on delete cascade,
+  organizer_id uuid references public.organizers(id) on delete cascade,
+  redeemed_at timestamptz not null default now(),
+  unique(code_id, user_id)
+);
+
+create table if not exists public.pricing_plans (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  description text,
+  price integer,
+  billing_unit text,
+  media_type text,
+  is_active boolean not null default true,
+  is_free_until_2026_end boolean not null default false,
+  is_initial_partner_discount_target boolean not null default false
+);
+
 alter table public.profiles
   add column if not exists age_group text,
   add column if not exists city text,

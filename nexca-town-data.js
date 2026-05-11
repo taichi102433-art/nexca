@@ -50,3 +50,4 @@ window.NEXCA_TOWN_DATA = {
     EVENT100: { genre: 'event', title: 'イベント・体験参加', placeName: 'Nexca Experience', points: 150, playerExp: 110, buildingExp: 120, characterExp: 95, badge: '初めての体験バッジ' }
   }
 };
+
