@@ -1,10 +1,12 @@
-const CACHE_NAME = 'nexca-v28';
+const CACHE_NAME = 'nexca-v29';
 const STATIC_ASSETS = [
   '/nexca/',
   '/nexca/index.html',
   '/nexca/nexca-core.css',
+  '/nexca/nexca-diagnosis.css',
   '/nexca/nexca-ops-data.js',
   '/nexca/nexca-core.js',
+  '/nexca/nexca-diagnosis.js',
   '/nexca/nexca-portal.css',
   '/nexca/organizer-phase1.js',
   '/nexca/admin-phase1.js',

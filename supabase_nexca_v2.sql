@@ -3,6 +3,67 @@
 
 -- Core operations phase schema. These tables match the Phase 1 user,
 -- organizer, and admin flows: application -> review -> publish -> reaction data.
+create table if not exists public.diagnosis_results (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  age_group text,
+  region text,
+  result_character text not null,
+  character_scores jsonb not null default '{}'::jsonb,
+  behavior_scores jsonb not null default '{}'::jsonb,
+  brake_scores jsonb not null default '{}'::jsonb,
+  relationship_scores jsonb not null default '{}'::jsonb,
+  romance_scores jsonb not null default '{}'::jsonb,
+  experience_scores jsonb not null default '{}'::jsonb,
+  research_scores jsonb not null default '{}'::jsonb,
+  answers jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.diagnosis_results add column if not exists age_group text;
+alter table public.diagnosis_results add column if not exists region text;
+alter table public.diagnosis_results add column if not exists result_character text;
+alter table public.diagnosis_results add column if not exists character_scores jsonb not null default '{}'::jsonb;
+alter table public.diagnosis_results add column if not exists behavior_scores jsonb not null default '{}'::jsonb;
+alter table public.diagnosis_results add column if not exists brake_scores jsonb not null default '{}'::jsonb;
+alter table public.diagnosis_results add column if not exists relationship_scores jsonb not null default '{}'::jsonb;
+alter table public.diagnosis_results add column if not exists romance_scores jsonb not null default '{}'::jsonb;
+alter table public.diagnosis_results add column if not exists experience_scores jsonb not null default '{}'::jsonb;
+alter table public.diagnosis_results add column if not exists research_scores jsonb not null default '{}'::jsonb;
+alter table public.diagnosis_results add column if not exists answers jsonb not null default '[]'::jsonb;
+
+create table if not exists public.diagnosis_research_summary (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  age_group text,
+  region text,
+  result_character text not null,
+  main_brake_type text,
+  invitation_style text,
+  group_role text,
+  romance_style text,
+  decision_style text,
+  preferred_experience_condition text,
+  usual_plan_decision_style text,
+  interest_action_gap_frequency text,
+  non_participation_reason text,
+  easiest_companion_type text,
+  trusted_information_source text,
+  meal_and_conversation_need integer not null default 0,
+  relationship_comfort integer not null default 0,
+  shared_experience_motivation integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.user_behavior_events (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  event_type text not null,
+  source text not null,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.organizers (
   id uuid primary key default gen_random_uuid(),
   owner_user_id uuid,
