@@ -55,6 +55,14 @@ create table if not exists public.diagnosis_research_summary (
   created_at timestamptz not null default now()
 );
 
+alter table public.diagnosis_research_summary add column if not exists top_action_gap_reason text;
+alter table public.diagnosis_research_summary add column if not exists top_decision_style text;
+alter table public.diagnosis_research_summary add column if not exists top_companion_type text;
+alter table public.diagnosis_research_summary add column if not exists top_content_trigger text;
+alter table public.diagnosis_research_summary add column if not exists top_gacha_preference text;
+alter table public.diagnosis_research_summary add column if not exists top_non_participation_reason text;
+alter table public.diagnosis_research_summary add column if not exists top_relationship_style text;
+
 create table if not exists public.user_behavior_events (
   id uuid primary key default gen_random_uuid(),
   user_id uuid,

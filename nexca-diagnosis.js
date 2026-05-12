@@ -1,580 +1,336 @@
 (function() {
   'use strict';
 
-  var CHARS = [
-    { key: 'nexsuke', name: 'ネクスケ', type: '白紙の地図タイプ', color: '#4d9fff', glow: '#bfe5ff', icon: 'ネ' },
-    { key: 'tsugiha', name: 'ツギハ', type: '自分らしさリメイクタイプ', color: '#ffb84d', glow: '#ffe0aa', icon: 'ツ' },
-    { key: 'komorebi', name: 'コモレビ', type: 'ひと息チャージタイプ', color: '#55c985', glow: '#c8f4d8', icon: '木' },
-    { key: 'irodori', name: 'イロドリ', type: 'ワクワク点火タイプ', color: '#ff5f8f', glow: '#ffd0de', icon: '彩' },
-    { key: 'honori', name: 'ホノリ', type: '食卓あかりタイプ', color: '#ff8a45', glow: '#ffd7b8', icon: '灯' },
-    { key: 'shirube', name: 'シルベ', type: '道しるべナビタイプ', color: '#7f8cff', glow: '#d7dcff', icon: '標' }
-  ];
-  var KEY_TO_CHAR = CHARS.reduce(function(acc, c) { acc[c.key] = c; return acc; }, {});
-  var OPTION_KEYS = CHARS.map(function(c) { return c.key; });
-  var AXES = [
-    ['noveltySeeking', 'selfExpression', 'comfortSeeking', 'socialExcitement', 'warmConversation', 'claritySeeking'],
-    ['proposer', 'individualist', 'moodReader', 'energizer', 'warmConnector', 'organizer'],
-    ['growthTogether', 'senseMatching', 'emotionalSafety', 'funChemistry', 'mealBasedBonding', 'trustAndClarity'],
-    ['lowBarrier', 'selfFit', 'comfort', 'memorable', 'sharedTimeValue', 'clearInfo']
-  ];
-  var BRAKES = ['firstStepHeavy', 'fitAnxiety', 'energyLow', 'excitementLow', 'relationshipHesitation', 'informationAnxiety'];
-  var RESEARCH = [
-    'activeDiscovery',
-    'passiveInvitation',
-    'actionGap',
-    'companionDependency',
-    'trustedInformationSource',
-    'mealAndConversationNeed'
-  ];
-  var RESEARCH_QS = {
-    30: 'usualPlanDecisionStyle',
-    31: 'interestActionGapFrequency',
-    32: 'nonParticipationReason',
-    33: 'easiestCompanionType',
-    34: 'trustedInformationSource'
+  var CHAR_ORDER = ['nexsuke', 'tsugiha', 'komorebi', 'irodori', 'honori', 'shirube'];
+  var CHARS = {
+    nexsuke: { name: 'ネクスケ', type: '白紙の地図タイプ', color: '#4f9dff', bg: '#eaf5ff', icon: 'ネ', short: '最初の一歩を探す主人公', food: 'おにぎり', place: '知らない道の入口', time: '朝、まだ予定が決まっていない時間', personality: '気になるものは多いけど、最初の一歩だけ少し重い', weak: '最初から「無理」と決めつけられること', phrase: 'ちょっとだけ行ってみよ', move: 'めちゃくちゃ迷ったあと、急に一番知らない道を選ぶ', close: '急に「こっち行ってみない？」と言い出す' },
+    tsugiha: { name: 'ツギハ', type: '自分らしさリメイクタイプ', color: '#e29a24', bg: '#fff5df', icon: 'ツ', short: 'その人っぽさを仕立てる精霊', food: '焼き芋', place: '古着屋、雑貨屋、少しクセのある店', time: '夕方の買い物帰り', personality: 'こだわり強め。人の“その人っぽさ”を見つけるのが得意', weak: '「みんな同じでいいじゃん」と言われること', phrase: 'それ、君っぽくできるよ', move: '人の服を見て、勝手に“第2形態”を想像している', close: '似合う色や服を勝手に考え始める' },
+    komorebi: { name: 'コモレビ', type: 'ひと息チャージタイプ', color: '#32a875', bg: '#eafaf1', icon: '木', short: '休むことも進むことだと知っている', food: 'プリン', place: '窓辺の席、静かなカフェ', time: '午後のひと息つける時間', personality: '落ち着いていて、空気の変化に敏感', weak: '急かされること、ずっとテンション高めでいること', phrase: '少し休んだら、また行けるよ', move: '集合して5分でも、誰かが疲れてそうなら休憩を提案する', close: '疲れている時に、そっと休憩をすすめてくる' },
+    irodori: { name: 'イロドリ', type: 'ワクワク点火タイプ', color: '#ff5c8a', bg: '#fff0f5', icon: '彩', short: '退屈な日を企画に変える旗振り役', food: 'ポップコーン', place: 'イベント会場、にぎやかな通り、写真を撮りたくなる場所', time: '予定が急に動き出す瞬間', personality: '明るくて勢いがある。退屈な日を面白くしたがる', weak: '何も起きない空気、反応が薄いこと', phrase: 'それ、今日やったら面白くない？', move: '思いつきで企画を始めて、段取りはだいたいシルベを見る', close: '変な企画に巻き込んでくる' },
+    honori: { name: 'ホノリ', type: '食卓あかりタイプ', color: '#ff8b3d', bg: '#fff3e8', icon: '灯', short: '食事と会話にあかりをともす', food: 'オムライス', place: '夜ご飯をゆっくり食べられる店', time: '食べながら少し本音が出る時間', personality: 'あたたかくて、人との距離感に敏感', weak: '一緒にいる時間を雑にされること', phrase: 'ちゃんと、あったかいうちに話そ', move: 'ご飯の話になると、急にちょっと名言っぽいことを言う', close: '「ちゃんとご飯食べた？」と聞いてくる' },
+    shirube: { name: 'シルベ', type: '道しるべナビタイプ', color: '#6e7dff', bg: '#eef0ff', icon: '標', short: '予定を現実にする道案内役', food: 'サンドイッチ', place: '駅、地図のある場所、案内板の近く', time: '集合前に予定がきれいに決まった瞬間', personality: '落ち着いていて、予定を整えるのが得意', weak: '場所も時間も決まっていない曖昧な誘い', phrase: '道が見えたら、ちゃんと進める', move: '集合時間を決めただけで、なぜか少し達成感を出す', close: '集合時間とルートを勝手にまとめてくれる' },
+    yodomi: { name: 'ヨドミ', type: '行動ブレーキ', color: '#7a6895', bg: '#f3eff8', icon: '影', short: '止めたがるけど、本当は少し怖がり', food: '冷めたポテト', place: '部屋のすみ、予定を保存したままの画面', time: '「また今度でいいか」と思う瞬間', personality: '止めたがるけど、本当は少し怖がり', weak: '小さくても実際に動かれること', phrase: '今日はやめとけば？', move: '保存ボタンを押した瞬間に「もう行った気分じゃん」と言う', close: '最初は止めるけど、最後はこっそり見守っている' }
   };
 
+  function c(text, scoreCharacter, researchKey) {
+    return { text: text, scoreCharacter: scoreCharacter, researchKey: researchKey };
+  }
   var QUESTIONS = [
-    ['急に3時間だけ自由な時間ができた。最初に考えることは？', ['何か普段と違うことができないか探す', '今の気分に合うものをじっくり選ぶ', 'まず落ち着ける過ごし方を考える', '誰かを誘って楽しい予定に変えたい', '誰かとゆっくり話せる時間にしたい', '時間・場所・お金を見て現実的に決める']],
-    ['行く前は楽しみだった予定なのに、直前で気持ちが下がる時に近いのは？', ['思ったより大きな一歩に感じてきた', '自分に合わない気がしてきた', '体力や気力が残っていない気がした', '思ったより盛り上がらなそうに見えた', '相手との空気が少し不安になった', '段取りが曖昧で不安になった']],
-    ['友達の提案に乗り切れない時、心の中で思っていることに近いのは？', ['それで本当に何か変わるかな', 'それ、自分っぽくないな', '今の自分には少し重いな', 'それ、ちゃんと楽しいのかな', 'ちゃんと話せる時間はあるかな', '情報が少なすぎて決めにくいな']],
-    ['初めての場所に行く前、いちばん気になるのは？', ['自分でも一歩踏み出せそうな雰囲気か', 'そこに自分らしさを出せる余地があるか', '疲れすぎずに過ごせそうか', 'ちゃんと楽しい空気がありそうか', '一緒に行く人と自然に話せそうか', '行き方・料金・混み具合が分かるか']],
-    ['何かに誘われた時、行くかどうかを決める最後の一押しは？', ['今の自分が少し変われそうか', '自分の好みに合っていそうか', '安心して過ごせそうか', 'その場が盛り上がりそうか', '一緒に過ごす時間がよさそうか', '情報が十分にそろっているか']],
-    ['予定を立てたのに、行くのが面倒になる理由に近いのは？', ['決めた時より気持ちが弱くなった', 'なんか自分に合わない気がしてきた', '疲れて外に出る気分じゃなくなった', '思ったより楽しそうに感じなくなった', '誰かと過ごす気持ちの余裕がなくなった', '準備や移動が面倒に見えてきた']],
-    ['何かを選ぶ時、つい見てしまうものは？', ['そこで新しい発見がありそうか', '雰囲気や見た目に自分の好みがあるか', '空間や人との距離感が心地よさそうか', '写真や動画から楽しさが伝わるか', '誰かと自然に会話できそうか', '詳細情報が分かりやすく整理されているか']],
-    ['「今日はいい日だった」と思うのはどんな日？', ['ちょっとでも新しい自分を見つけた日', '自分らしい選択ができた日', '心が少し軽くなった日', '思い出に残る楽しいことがあった日', '誰かとあたたかい時間を過ごせた日', '予定通りに気持ちよく動けた日']],
-    ['苦手な状況に一番近いのは？', ['毎日が同じように過ぎていくこと', '周りに合わせすぎて自分が薄くなること', '騒がしすぎて落ち着けないこと', '退屈で何も起きないこと', '会話が浅いまま終わること', '情報が曖昧なまま動くこと']],
-    ['グループの中で自然となりやすい役割は？', ['「これやってみない？」と可能性を出す人', '少し違う視点を持ち込む人', 'みんなの温度感を見て調整する人', '場を明るくして勢いをつける人', '話しやすい空気を作る人', '候補や時間をまとめる人']],
-    ['何かを始める時、あなたを止めやすいものは？', ['最初の一歩の重さ', '自分に合うか分からない不安', 'エネルギー不足', 'ワクワクしきれない感じ', '相手との距離感の不安', '判断材料の少なさ']],
-    ['写真を撮るなら、残したいのは？', ['初めてできた瞬間', '自分らしいものや雰囲気', '光や空気感がきれいな場面', '笑っている瞬間や盛り上がり', '誰かと過ごしたあたたかい時間', '後で見返して思い出せる記録']],
-    ['友達から言われて一番うれしいのは？', ['一緒にいると新しいことできそう', 'その選び方、君っぽい', '一緒にいると落ち着く', 'いると場が明るくなる', '話してると安心する', 'いてくれると安心して決められる']],
-    ['予定を決める話し合いで、少し苦手なのは？', ['結局いつもの場所になること', 'みんなが無難な案だけを選ぶこと', '予定が詰まりすぎること', '盛り上がりどころが見えないこと', 'ちゃんと話す時間がなさそうなこと', '情報が曖昧なまま決まること']],
-    ['誰かを誘う時、あなたが言いやすい言葉は？', ['ちょっと新しいことしてみない？', 'ここ、なんか雰囲気よさそう', '無理な予定じゃないし、少しだけ行こう', 'これ絶対楽しいと思う', 'ゆっくり話せそうだから行かない？', '時間と場所はこんな感じ。どう？']],
-    ['恋愛や気になる相手との関係で、惹かれやすいのは？', ['一緒にいると自分の世界が広がる人', '自分の感性や好きなものを分かってくれる人', '無理をしなくても安心できる人', '一緒にいると日常が楽しくなる人', '食事や会話の時間が自然に心地いい人', '約束や言葉が誠実で分かりやすい人']],
-    ['距離が縮まるきっかけになりやすいのは？', ['一緒に初めてのことをした時', '好きなものの話で深く共感した時', '沈黙しても気まずくなかった時', '一緒に笑える瞬間が多かった時', '同じ時間をゆっくり味わえた時', '相手がちゃんと予定や言葉を大事にしてくれた時']],
-    ['好きな人や気になる人と出かけるなら、一番避けたいのは？', ['何も起きず、距離も変わらないこと', '自分の好きなものを分かってもらえないこと', '気を遣いすぎて疲れること', '会話や空気が盛り上がらないこと', '話したいのに落ち着く時間がないこと', '予定が曖昧で不安になること']],
-    ['恋愛で冷めやすい瞬間に近いのは？', ['可能性を否定された時', '好きなものを雑に扱われた時', 'ノリやテンションを強制された時', '反応が薄くて楽しくなさそうな時', '一緒にいる時間を雑に扱われた時', '予定や言葉が曖昧な時']],
-    ['相手から誘われるなら、どれが一番動きやすい？', ['ちょっとだけ行ってみない？', 'ここ、君っぽいと思った', '疲れたらすぐ帰っていいよ', 'これ絶対おもろいから行こう', 'ゆっくり話せるところ行かない？', '何時に、ここで、これしよう']],
-    ['あなたの中の“止まる理由”に近いのは？', ['きっかけがないと動き出せない', '自分に合わなそうだと試す前に引く', '体力や気力が足りないと閉じる', '楽しそうに見えないと興味が消える', '人との空気が読めないと不安になる', '判断材料が足りないと決められない']],
-    ['予定を保存したのに行かない時、ありがちな理由は？', ['保存した時点で少し満足してしまう', '後から「やっぱり違うかも」と感じる', '当日の自分の元気が足りない', '他にもっと楽しそうなものを探してしまう', '誰と行くか決まらず流れる', '詳細確認が面倒になって止まる']],
-    ['新しい場所に入る直前、少し不安になるのは？', ['自分が浮かないか', '自分の好みに合うか', '疲れないか', 'ちゃんと楽しめるか', '一緒にいる人と自然に過ごせるか', '何をすればいいか分かるか']],
-    ['周りから誤解されやすいところは？', ['迷っているだけなのに、やる気がないように見られる', 'こだわっているだけなのに、わがままに見られる', '疲れているだけなのに、ノリが悪く見られる', '楽しさを求めているだけなのに、軽く見られる', '空気を大事にしているだけなのに、受け身に見られる', '確認しているだけなのに、慎重すぎると思われる']],
-    ['「この人とは合うかも」と思う瞬間は？', ['一緒にいると新しい自分が出る', '自分のこだわりを面白がってくれる', '無言でも空気が重くならない', '笑うタイミングやノリが合う', '食べたり話したりする時間が自然に心地いい', '約束や言葉がちゃんとしている']],
-    ['行った後に一番後悔しやすいのは？', ['何も変わらなかったと感じる時', '自分らしくいられなかった時', '無理して疲れすぎた時', '思ったより盛り上がらなかった時', 'ちゃんと話せずに終わった時', '段取りが悪くてストレスだった時']],
-    ['予定を選ぶ時、最後に背中を押す情報は？', ['初心者でも入りやすいか', '雰囲気や世界観が伝わるか', '混み具合や落ち着きやすさが分かるか', '楽しそうな写真や動画があるか', '誰と行くと良さそうか分かるか', '料金・場所・時間が明確か']],
-    ['あなたに合いやすい“今日のミッション”は？', ['初めてのことを1つだけ試す', '自分っぽいものを1つ見つける', '心が落ち着く場所を1つ選ぶ', '誰かと楽しい瞬間を1つ作る', '誰かとゆっくり話す時間を作る', '候補を3つまで絞って1つ選ぶ']],
-    ['失敗しにくい予定に必要なのは？', ['ハードルが低いこと', '自分に合う余地があること', '途中で休めること', '盛り上がる要素があること', '会話や食事の時間が自然に入っていること', '事前に流れが分かること']],
-    ['今のあなたに一番近い言葉は？', ['正解はまだ分からないけど、何かを変えたい', 'みんなと同じより、自分にしっくりくるものを選びたい', '無理に動くより、まず整えてから進みたい', '日常に少しでも楽しい予定を入れたい', '誰かと過ごす時間を、もう少し大事にしたい', 'ちゃんと分かれば、安心して動ける']],
-    ['普段、休日の予定はどう決まることが多い？', ['自分で探して決める', '友達に誘われる', '家族や周りに合わせる', 'SNSで見て決める', '食事や会話の流れで決まる', '予定を立てずに過ごすことが多い']],
-    ['行きたいと思ったのに、実際に行かなかった経験はどれくらいある？', ['よくある', 'たまにある', 'あまりない', 'ほとんどない', '誰と行くかによって変わる', 'まだ分からない']],
-    ['行きたいと思ったのに行かなかった時、理由に近いのは？', ['一緒に行く人がいなかった', '情報が足りなかった', 'お金や距離が気になった', '面倒になった', '誰かと自然に過ごせるか不安だった', '自分に合うか不安だった']],
-    ['新しい場所や予定に行く時、誰となら動きやすい？', ['1人', '親しい友達', '恋人/気になる人', '大人数の友達', 'ゆっくり話せる相手', '誰かに誘われた時だけ']],
-    ['予定を決める時、一番信用しやすい情報は？', ['公式情報', '友達の口コミ', 'Instagram', 'TikTok/ショート動画', '実際に行った人の雰囲気が分かる声', 'Googleマップや予約サイト']]
+    { id: 'Q1', line: 'シルベ「まずは、予定の決め方から見てみるよ。」', q: '休みの日、予定を決める時に近いのは？', choices: [c('なんとなく気になる方に動く','nexsuke','spontaneous_interest'),c('雰囲気が自分に合うか見る','tsugiha','self_fit'),c('疲れないかを先に考える','komorebi','energy_check'),c('誰かと盛り上がれるかで決める','irodori','social_excitement'),c('ゆっくり話せるかを大事にする','honori','warm_conversation'),c('場所・時間・料金を見て決める','shirube','info_first')] },
+    { id: 'Q2', line: 'ネクスケ「まだ決まってない時間って、ちょっとワクワクするよね。」', q: '3時間だけ自由になったら？', choices: [c('落ち着ける場所に行く','komorebi','comfort_first'),c('ちゃんと調べてから動く','shirube','plan_first'),c('初めての場所に行ってみる','nexsuke','new_place'),c('誰かとご飯か会話の時間にする','honori','meal_conversation'),c('自分っぽい場所を探す','tsugiha','self_expression'),c('楽しそうな予定に変える','irodori','fun_conversion')] },
+    { id: 'Q3', line: 'ヨドミ「保存しただけで満足する時、あるよね。」', q: '気になる予定を見つけたあと、よくあるのは？', choices: [c('保存して終わることが多い','nexsuke','save_action_gap'),c('自分に合うか考えすぎる','tsugiha','fit_anxiety'),c('当日の元気次第になる','komorebi','energy_dependency'),c('友達に送って反応を見る','irodori','friend_reaction'),c('誰と行くかで決まる','honori','companion_dependency'),c('詳細を見てから決める','shirube','detail_check')] },
+    { id: 'Q4', line: 'シルベ「ここはかなり大事。何があれば動ける？」', q: '行く決め手になりやすいのは？', choices: [c('料金や場所が分かりやすい','shirube','clear_info'),c('写真や動画で楽しさが伝わる','irodori','visual_fun'),c('一緒に話せる時間がありそう','honori','shared_time'),c('自分の好みに合いそう','tsugiha','self_fit'),c('ハードルが低そう','nexsuke','low_barrier'),c('落ち着いて過ごせそう','komorebi','comfort')] },
+    { id: 'Q5', line: 'イロドリ「予定って、誰かの一言で急に動くことあるよね。」', q: '誘われた時、一番動きやすい言葉は？', choices: [c('「疲れたらすぐ帰っていいよ」','komorebi','escape_option'),c('「ここ、君っぽいと思った」','tsugiha','personalized_invite'),c('「ちょっとだけ行ってみない？」','nexsuke','small_step_invite'),c('「ゆっくり話せるところ行こう」','honori','conversation_invite'),c('「これ絶対おもろい」','irodori','fun_invite'),c('「何時にここ集合ね」','shirube','specific_invite')] },
+    { id: 'Q6', line: 'ホノリ「誰と過ごすかで、同じ場所でも全然違うよね。」', q: '一緒に出かけるなら大事なのは？', choices: [c('気を遣いすぎないこと','komorebi','low_pressure'),c('好きなものを分かってくれること','tsugiha','taste_understanding'),c('新しいことに乗ってくれること','nexsuke','new_challenge_partner'),c('会話が自然に続くこと','honori','natural_conversation'),c('場を明るくしてくれること','irodori','positive_energy'),c('約束や時間を守ってくれること','shirube','trust_clarity')] },
+    { id: 'Q7', line: 'コモレビ「無理に合わせすぎると、あとで疲れるよね。」', q: 'グループで疲れやすい瞬間は？', choices: [c('予定が曖昧なまま進む','shirube','unclear_plan_stress'),c('ノリが強すぎる','komorebi','high_tension_fatigue'),c('自分の好みを無視される','tsugiha','taste_ignored'),c('何も起きず退屈なまま終わる','irodori','boredom_stress'),c('本当は行きたいのに言い出せない','nexsuke','first_step_hesitation'),c('ちゃんと話せずに終わる','honori','conversation_lack')] },
+    { id: 'Q8', line: 'イロドリ「友達といる時の役割って、けっこう出るよね。」', q: '友達の中でなりがちな役割は？', choices: [c('候補をまとめる','shirube','organizer_role'),c('空気を見て調整する','komorebi','mood_reader'),c('その人らしい案を出す','tsugiha','personalizer'),c('盛り上げる','irodori','energizer'),c('話しやすい空気を作る','honori','warm_connector'),c('新しい案を出す','nexsuke','idea_starter')] },
+    { id: 'Q9', line: 'ツギハ「“分かってくれてる”って、けっこう嬉しいよね。」', q: '友達にされると嬉しいのは？', choices: [c('自分に合いそうな場所を選んでくれる','tsugiha','fit_recommendation'),c('無理しない予定にしてくれる','komorebi','comfortable_plan'),c('新しい場所に誘ってくれる','nexsuke','new_invitation'),c('ちゃんと話す時間を作ってくれる','honori','conversation_time'),c('楽しい企画にしてくれる','irodori','fun_plan'),c('段取りを整えてくれる','shirube','organized_plan')] },
+    { id: 'Q10', line: 'ヨドミ「人が絡むと、急に面倒になる時あるよね。」', q: '人と出かける前に不安になりやすいのは？', choices: [c('会話が続くか','honori','conversation_anxiety'),c('自分が浮かないか','tsugiha','self_fit_anxiety'),c('疲れすぎないか','komorebi','energy_anxiety'),c('楽しい空気になるか','irodori','fun_anxiety'),c('行くまでの流れが分かるか','shirube','process_anxiety'),c('そもそも一歩踏み出せるか','nexsuke','first_step_anxiety')] },
+    { id: 'Q11', line: 'ネクスケ「動ける時って、何か小さいきっかけがあるんだよね。」', q: '外に出るきっかけになりやすいのは？', choices: [c('近くで行けそう','nexsuke','nearby_trigger'),c('写真や動画が楽しそう','irodori','visual_trigger'),c('雰囲気が自分に合いそう','tsugiha','fit_trigger'),c('ゆっくりできそう','komorebi','comfort_trigger'),c('誰かと話せそう','honori','conversation_trigger'),c('詳細が分かりやすい','shirube','info_trigger')] },
+    { id: 'Q12', line: 'シルベ「予定が実行されるかどうかは、ここで決まるかも。」', q: '行動に移しやすい予定は？', choices: [c('時間が短め','komorebi','short_duration'),c('予約や料金が分かる','shirube','clear_cost_booking'),c('初めてでも入りやすい','nexsuke','beginner_friendly'),c('友達とネタにできる','irodori','shareable_fun'),c('自分っぽさを出せる','tsugiha','self_expression_chance'),c('食事や会話が入っている','honori','meal_conversation_included')] },
+    { id: 'Q13', line: 'イロドリ「“行く理由”があると、急に動ける。」', q: '予定にあると嬉しいものは？', choices: [c('ちょっとしたミッション','irodori','mission_preference'),c('似合うものを探せる時間','tsugiha','style_discovery'),c('休憩できる場所','komorebi','rest_space'),c('ご飯や会話の時間','honori','warm_time'),c('迷わない案内','shirube','navigation_need'),c('新しい発見','nexsuke','discovery_need')] },
+    { id: 'Q14', line: 'ホノリ「予定って、詰め込みすぎると味がしなくなるよね。」', q: 'いい予定だと思うのは？', choices: [c('新しいことが1つある','nexsuke','new_element'),c('その人らしさが出る','tsugiha','identity_expression'),c('余白がある','komorebi','plan_margin'),c('笑える瞬間がある','irodori','laughter_moment'),c('ゆっくり話せる','honori','talk_time'),c('流れが分かりやすい','shirube','clear_flow')] },
+    { id: 'Q15', line: 'ヨドミ「ここ、正直に答えた方が当たるよ。」', q: '予定をやめたくなる直前の気持ちは？', choices: [c('なんか面倒になった','nexsuke','motivation_drop'),c('自分に合わない気がした','tsugiha','fit_doubt'),c('疲れていた','komorebi','tiredness'),c('思ったより楽しそうじゃなかった','irodori','fun_doubt'),c('誰と行くか決まらなかった','honori','companion_gap'),c('情報が足りなかった','shirube','information_gap')] },
+    { id: 'Q16', line: 'ヨドミ「行かなかった理由って、だいたい小さい顔してるんだよ。」', q: '行きたいのに行かなかった理由で多いのは？', choices: [c('一緒に行く人がいなかった','honori','no_companion'),c('行き方や料金が分からなかった','shirube','unclear_info'),c('当日になって元気がなかった','komorebi','low_energy'),c('自分に合うか不安だった','tsugiha','self_fit_uncertain'),c('保存して満足した','nexsuke','saved_only'),c('楽しさが想像できなかった','irodori','low_imagination')] },
+    { id: 'Q17', line: 'シルベ「“面倒”を分解すると、けっこうヒントになる。」', q: '面倒に感じやすいのは？', choices: [c('調べること','shirube','search_friction'),c('誘うこと','honori','invite_friction'),c('移動すること','komorebi','movement_friction'),c('決めること','nexsuke','decision_friction'),c('自分に合うか見極めること','tsugiha','evaluation_friction'),c('楽しそうか判断すること','irodori','fun_judgement_friction')] },
+    { id: 'Q18', line: 'コモレビ「疲れてる時の予定って、別物に見えるよね。」', q: '疲れている時でも行けそうなのは？', choices: [c('近くで短時間','nexsuke','near_short'),c('座れて落ち着ける','komorebi','seat_rest'),c('食事しながら話せる','honori','meal_talk_low_energy'),c('行き方が簡単','shirube','easy_access'),c('友達が楽しませてくれる','irodori','friend_energy'),c('自分の好きに合っている','tsugiha','fit_even_tired')] },
+    { id: 'Q19', line: 'ツギハ「“なんか違う”の中身を見てみよう。」', q: '予定に冷める瞬間は？', choices: [c('量産感が強い','tsugiha','generic_dislike'),c('騒がしすぎる','komorebi','noise_dislike'),c('退屈そう','irodori','boredom_dislike'),c('会話する余白がない','honori','no_conversation_space'),c('情報が雑','shirube','poor_information'),c('ハードルが高そう','nexsuke','high_barrier')] },
+    { id: 'Q20', line: 'ヨドミ「止まる理由が分かれば、戻り方も分かるかも。」', q: '自分の中のブレーキに近いのは？', choices: [c('最初の一歩が重い','nexsuke','first_step_heavy'),c('しっくり来ないと動けない','tsugiha','fit_required'),c('疲れるのが怖い','komorebi','fear_of_fatigue'),c('楽しくなさそうだと冷める','irodori','fun_required'),c('相手との空気が不安','honori','relationship_anxiety'),c('情報不足だと決められない','shirube','info_required')] },
+    { id: 'Q21', line: 'イロドリ「どんな予定に心が動くか、ここから見えてくるよ。」', q: '一番テンションが上がるのは？', choices: [c('初めて行く場所','nexsuke','first_visit'),c('自分らしいものを見つける','tsugiha','self_discovery'),c('落ち着いて過ごす','komorebi','calm_experience'),c('みんなで盛り上がる','irodori','group_fun'),c('ご飯を食べながら話す','honori','meal_talk'),c('予定通りに気持ちよく動く','shirube','smooth_plan')] },
+    { id: 'Q22', line: 'ホノリ「食べる時間って、ただの食事じゃないことあるよね。」', q: 'ご飯やカフェで嬉しいのは？', choices: [c('新しい店を知れる','nexsuke','new_food_place'),c('雰囲気が自分に合う','tsugiha','food_vibe_fit'),c('落ち着ける席がある','komorebi','comfortable_seat'),c('写真やネタになる','irodori','food_shareable'),c('ゆっくり話せる','honori','food_conversation'),c('料金やメニューが分かりやすい','shirube','clear_menu_price')] },
+    { id: 'Q23', line: 'ツギハ「買い物って、その人が出るよね。」', q: '買い物や街歩きで好きなのは？', choices: [c('偶然の発見','nexsuke','shopping_discovery'),c('自分に似合うもの探し','tsugiha','fit_item_search'),c('疲れたら休めること','komorebi','shopping_rest'),c('友達とネタにできること','irodori','shopping_fun'),c('誰かに似合うものを選ぶこと','honori','choose_for_someone'),c('店やルートが分かりやすいこと','shirube','shopping_clarity')] },
+    { id: 'Q24', line: 'ネクスケ「体験って、やる前はちょっと怖いけどね。」', q: '体験系で行きやすいのは？', choices: [c('初心者歓迎','nexsuke','beginner_welcome'),c('自分の作品や個性が出る','tsugiha','creative_expression'),c('無理なく参加できる','komorebi','low_stress_participation'),c('友達と盛り上がれる','irodori','participation_fun'),c('会話しながらできる','honori','participation_conversation'),c('流れや料金が明確','shirube','participation_clarity')] },
+    { id: 'Q25', line: 'イロドリ「ガチャで出たらやりたいの、どれ？」', q: 'グループガチャで惹かれるのは？', choices: [c('完全おまかせ','nexsuke','gacha_omakase'),c('インスタ映え','tsugiha','gacha_visual'),c('王道','shirube','gacha_standard'),c('YouTube企画','irodori','gacha_youtube'),c('爆食','honori','gacha_food'),c('ゆるく話す','komorebi','gacha_relax')] },
+    { id: 'Q26', line: 'ホノリ「距離感って、近ければいいわけじゃないよね。」', q: '人と仲良くなる時に大事なのは？', choices: [c('一緒に新しいことをする','nexsuke','bond_new_experience'),c('好きなものを分かり合う','tsugiha','bond_shared_taste'),c('無理せず一緒にいられる','komorebi','bond_comfort'),c('一緒に笑える','irodori','bond_laughter'),c('ゆっくり話せる','honori','bond_conversation'),c('約束や言葉がちゃんとしている','shirube','bond_reliability')] },
+    { id: 'Q27', line: 'コモレビ「恋愛でも友達でも、無理は続かないよ。」', q: '一緒にいて安心する人は？', choices: [c('行動力をくれる人','nexsuke','partner_action'),c('自分の感性を否定しない人','tsugiha','partner_accept_taste'),c('沈黙が気まずくない人','komorebi','partner_silence_comfort'),c('笑うタイミングが合う人','irodori','partner_laughter'),c('食事や会話が自然な人','honori','partner_meal_talk'),c('誠実で分かりやすい人','shirube','partner_reliable')] },
+    { id: 'Q28', line: 'ヨドミ「距離を詰めすぎると、逆に引く時あるよね。」', q: '距離を置きたくなるのは？', choices: [c('可能性をすぐ否定される','nexsuke','denied_possibility'),c('好きなものを雑に扱われる','tsugiha','disrespected_taste'),c('テンションを強制される','komorebi','forced_energy'),c('反応が薄すぎる','irodori','low_reaction'),c('一緒の時間を雑にされる','honori','time_disrespected'),c('約束や予定が曖昧','shirube','unclear_commitment')] },
+    { id: 'Q29', line: 'イロドリ「“また行きたい”って思う瞬間、けっこう重要。」', q: 'また一緒に行きたいと思うのは？', choices: [c('新しい発見があった時','nexsuke','return_discovery'),c('自分らしくいられた時','tsugiha','return_self'),c('無理せず楽だった時','komorebi','return_comfort'),c('笑える瞬間が多かった時','irodori','return_fun'),c('会話が残った時','honori','return_conversation'),c('スムーズで安心だった時','shirube','return_smooth')] },
+    { id: 'Q30', line: 'ホノリ「誰かとの時間って、最後の余韻で決まることあるよね。」', q: '帰り道に残ると嬉しいのは？', choices: [c('「行ってよかった」感','nexsuke','after_good_step'),c('「自分っぽかった」感','tsugiha','after_self_fit'),c('「疲れすぎなかった」感','komorebi','after_not_tired'),c('「楽しかった」感','irodori','after_fun'),c('「ちゃんと話せた」感','honori','after_connected'),c('「無駄がなかった」感','shirube','after_smooth')] },
+    { id: 'Q31', line: 'シルベ「ここからは、Nexcaを良くするための質問だよ。」', q: '普段、行き先を探す時に一番使うのは？', choices: [c('Instagram','irodori','source_instagram'),c('TikTok・ショート動画','irodori','source_short_video'),c('Googleマップ','shirube','source_google_maps'),c('友達の口コミ','honori','source_friends'),c('公式サイト・公式情報','shirube','source_official'),c('なんとなく歩いて決める','nexsuke','source_walk')] },
+    { id: 'Q32', line: 'ネクスケ「行きたいと、実際に行くの間には壁があるよね。」', q: '行きたいと思っても行かないことは？', choices: [c('よくある','nexsuke','gap_often'),c('たまにある','tsugiha','gap_sometimes'),c('誰と行くかによる','honori','gap_companion'),c('情報があれば行く','shirube','gap_information'),c('元気があれば行く','komorebi','gap_energy'),c('楽しそうなら行く','irodori','gap_fun')] },
+    { id: 'Q33', line: 'イロドリ「動画で見たら、行きたくなることある？」', q: '行く気持ちが上がる情報は？', choices: [c('短い動画で雰囲気が分かる','irodori','content_short_video'),c('写真がきれい','tsugiha','content_photo'),c('料金・場所・時間が分かる','shirube','content_details'),c('実際に行った人の声','honori','content_reviews'),c('初めてでも入りやすい説明','nexsuke','content_beginner'),c('混み具合や落ち着き','komorebi','content_comfort')] },
+    { id: 'Q34', line: 'ホノリ「誰と行くか、けっこう本音が出るよ。」', q: '一番動きやすい相手は？', choices: [c('1人でも行ける','nexsuke','companion_alone'),c('親しい友達','irodori','companion_friend'),c('恋人・気になる人','honori','companion_romance'),c('家族','komorebi','companion_family'),c('クラス・サークル','irodori','companion_group'),c('誰かが計画してくれたら行く','shirube','companion_planner')] },
+    { id: 'Q35', line: 'ヨドミ「最後。君が本当に動く条件、教えて。」', q: 'Nexcaに一番あったら使いたいのは？', choices: [c('条件に合う場所を動画で見られる','irodori','nexca_video_feed'),c('ガチャで予定を決めてくれる','nexsuke','nexca_gacha'),c('友達とできる企画が出る','irodori','nexca_group_fun'),c('詳細情報がきれいにまとまっている','shirube','nexca_detail_info'),c('行った人の声が見られる','honori','nexca_user_voice'),c('落ち着ける場所を探しやすい','komorebi','nexca_comfort_search')] }
   ];
 
   var RESULT_TEXT = {
-    nexsuke: {
-      copy: 'あなたは、変わりたい気持ちはあるのに、最初の一歩だけがやたら重くなりやすいタイプです。',
-      basic: 'ネクスケ型のあなたは、まだ自分の正解を決めきっていないタイプです。心の中ではずっと「今のままでいいのかな」「何かきっかけがあれば変われるかも」と感じていることがあります。最初から強い目的を持って動くより、動いた後に意味を見つけるタイプです。',
-      outside: '周りからは少し迷いやすい人に見えるかもしれません。でも本当は、可能性を見ているからこそ迷っています。決断が遅いのではなく、選んだ先に何があるかを考えているタイプです。',
-      friends: '友達の中では、新しい案を出す人になりやすいです。誰かに「それいいじゃん」と言われると一気に動きやすくなります。',
-      romance: '恋愛では、一緒に新しいことをした時に相手の印象が変わりやすいタイプです。「この人といると、自分の世界が少し広がる」と感じた時に惹かれやすいです。',
-      invitation: '「ちょっとだけ行ってみない？」重すぎない誘いが一番動きやすいです。',
-      cooldown: '「どうせ無理」「意味なくない？」と可能性を否定された時。',
-      decision: '直感では気になっているのに、最後の決定を先延ばしにしやすいです。保存だけして満足することもあります。',
-      manual: ['大きな挑戦より、小さな一歩の方が動きやすい', '強く押されすぎると引きやすい', '「試してみるだけ」でハードルが下がる', '可能性を否定されると止まりやすい', '誰かに軽く背中を押されると動きやすい'],
-      yodomi: '「また今度でいいか」「今じゃなくてもいいか」「もう少し調べてからでいいか」と思った時、あなたの中のヨドミが出やすいです。',
-      recover: '予定を人生を変える一歩にしようとしなくて大丈夫です。まずは15分だけ試す、1件だけ保存する、誰かに送る。小さく始めるほど、あなたは動きやすくなります。',
-      good: '初めて感がある、ハードルが低い、行った後に少し気持ちが変わるもの。',
-      bad: '準備が多すぎるもの、常連感が強すぎるもの、目的意識が強すぎるもの。',
-      match: 'シルベ型。あなたの可能性を、現実の予定に落としてくれるタイプです。',
-      caution: 'イロドリ型。勢いはもらえるけど、急かされすぎると疲れることがあります。',
-      story: 'ネクスケは、誰もまだ歩いていない白紙の地図から生まれた。誰かが新しい体験に踏み出すたびに、地図の線が少しだけ濃くなる。Nexca Townで育てると、白紙の地図に隠された“最初の道”が少しずつ解放されます。',
-      today: '気になるものを1つだけ保存して、誰かに送る。送った時点で、もう半分動いています。',
-      share: '私はネクスケ型。まだ知らない体験で、次の自分を見つけるタイプ。',
-      prefs: ['低ハードル', 'はじめて', '友達と', '気軽']
-    },
-    tsugiha: {
-      copy: 'あなたは、みんなと同じ選択をしていると、少しずつ自分が薄くなる感覚を持ちやすいタイプです。',
-      basic: 'ツギハ型のあなたは、「自分に合うかどうか」をかなり大事にするタイプです。流行っているから、みんなが行っているから、便利だから、という理由だけでは心が動きにくいことがあります。',
-      outside: '周りからは、こだわりがある人に見られやすいです。それはわがままではなく、自分の感覚を雑に扱いたくないだけです。',
-      friends: '友達の中では、予定に少し個性を足したり、別の視点を持ち込むことがあります。',
-      romance: '恋愛では、見た目やノリだけより、その人のこだわりやセンスに惹かれやすいタイプです。',
-      invitation: '「ここ、君っぽいと思った」自分の感性を見てくれている誘いに弱いです。',
-      cooldown: '自分の好きなものを軽く扱われた時。雑にまとめられると、一気に距離を取りたくなります。',
-      decision: '人気順より雰囲気を見ます。写真、言葉、空気感で判断しやすいです。',
-      manual: ['「流行ってる」より「似合いそう」が刺さる', '雑に扱われると心が閉じる', '自分らしさを見てくれる人に弱い', '量産感が強い場所は苦手', '一部でも好きになれる要素があると動きやすい'],
-      yodomi: '「どうせ自分には合わない」「なんか違う」と、試す前に切ってしまう時に出やすいです。',
-      recover: '完璧に合う場所を探さなくて大丈夫です。色・音・雰囲気・言葉のどれか1つが気になれば、それは行く理由になります。',
-      good: '個性がある、背景がある、自分なりの楽しみ方ができるもの。',
-      bad: '量産感が強いもの、映えるだけで中身が薄いもの、みんな同じ楽しみ方を求められるもの。',
-      match: 'コモレビ型。あなたの感性を急かさず、自然に受け止めてくれるタイプです。',
-      caution: 'シルベ型。整理してくれるのは助かるけど、正しさで詰められると息苦しく感じることがあります。',
-      story: 'ツギハは、忘れられた布、ほどけた糸、古いタグの中から生まれた。終わったものを、明日の形へ仕立て直す存在。参加コードを入力すると、羽に新しい布の記憶が縫い込まれていきます。',
-      today: '“全部好き”じゃなくていい。気になる色、音、雰囲気が1つでもある場所を選んでみる。',
-      share: '私はツギハ型。昨日の自分を、明日の形に仕立てるタイプ。',
-      prefs: ['古着', 'おしゃれ', '感性', '自分らしさ']
-    },
-    komorebi: {
-      copy: 'あなたは、予定の楽しさよりも“その場で自分が消耗しないか”を無意識に見ているタイプです。',
-      basic: 'コモレビ型のあなたは、刺激よりも心地よさを大切にするタイプです。自分の気分や空気の変化に敏感だからこそ、合う場所に行った時の回復力が大きいタイプです。',
-      outside: '周りからは、落ち着いている人、やさしい人、空気を読める人に見られやすいです。',
-      friends: '友達の中では、みんなの疲れ具合や空気を見ているタイプです。',
-      romance: '恋愛では、ドキドキよりも安心できるかどうかをかなり見ています。沈黙が気まずくない人に惹かれやすいです。',
-      invitation: '「疲れたらすぐ帰っていいよ」逃げ道を作ってくれる誘いに安心します。',
-      cooldown: 'ノリを強制された時。無理にテンションを上げさせられると、しんどくなりやすいです。',
-      decision: '距離、混み具合、座れるか、静かに過ごせるかを見がちです。',
-      manual: ['無理に盛り上げなくていい', '逃げ道があると安心する', '静かな時間を軽く見ないでほしい', '人混みや騒がしさで消耗しやすい', '短時間の予定なら動きやすい'],
-      yodomi: '「今日は無理」「外に出るだけで疲れる」と、全部閉じたくなる時に出やすいです。',
-      recover: '予定を小さくしてください。楽しむためではなく、整えるために行く。そう考えると、動き出しやすくなります。',
-      good: '落ち着ける、話しやすい、長居できる、自分のペースで楽しめるもの。',
-      bad: '大人数、騒がしい、ノリを強要される、休む余白がないもの。',
-      match: 'ツギハ型。静かに感性を共有できる相性です。',
-      caution: 'イロドリ型。楽しい刺激をくれる一方で、ペースが速すぎると疲れやすいです。',
-      story: 'コモレビは、誰かが深く息をついた窓辺に差し込んだ光から生まれた。カフェや落ち着ける場所の参加コードを入力すると、胸の小さな窓に少しずつ光が戻ります。',
-      today: '近くで、短時間で、座れる場所を1つ選ぶ。それだけで十分です。',
-      share: '私はコモレビ型。ひと息つきながら、次の自分へ進むタイプ。',
-      prefs: ['カフェ', '屋内', '落ち着く', '短時間']
-    },
-    irodori: {
-      copy: 'あなたは、予定そのものよりも“その場が動き出す感じ”に心が反応するタイプです。',
-      basic: 'イロドリ型のあなたは、面白そうな空気を感じると一気に動けるタイプです。正しさや効率より、「楽しそう」「盛り上がりそう」「今しかなさそう」に反応します。',
-      outside: '周りからは、明るい人、誘いやすい人、場を動かしてくれる人に見られやすいです。',
-      friends: '友達の中では、予定に勢いをつける人です。誰かが迷っている時に、空気を変えることがあります。',
-      romance: '恋愛では、一緒にいて日常が少し楽しくなる人に惹かれやすいです。',
-      invitation: '「これ絶対おもろいから行こう」楽しい未来が見える誘いに弱いです。',
-      cooldown: '反応が薄い時。自分だけが盛り上げている感じになると、少し疲れやすいです。',
-      decision: '写真や動画の雰囲気にかなり左右されます。「誰と行くか」で楽しさが大きく変わるタイプです。',
-      manual: ['楽しい未来が見えると動きやすい', '反応が薄いと冷めやすい', '誰かと共有できる予定に強い', '退屈そうな説明だと興味を失いやすい', 'ミッションがあると一気に動ける'],
-      yodomi: '「なんかつまらなそう」「別に今日じゃなくていい」と感じた時に出やすいです。',
-      recover: '予定にミッションを足してください。ただ行くのではなく、「写真を1枚撮る」みたいに、面白さを作ると動きやすくなります。',
-      good: 'その場の熱がある、誰かと共有できる、写真や動画に残したくなる、話のネタになるもの。',
-      bad: '静かすぎる、変化が少ない、何を楽しめばいいか分かりにくいもの。',
-      match: 'ネクスケ型。あなたの勢いが、相手の一歩を引き出すことがあります。',
-      caution: 'コモレビ型。相手のペースを見ないと疲れさせてしまうことがあります。',
-      story: 'イロドリは、何も起きない一日に落ちた“最初の色”から生まれた。誰かが退屈な日常を動かすたびに、旗の白い部分が少しだけ震えます。',
-      today: '気になる予定を1つ、友達に送ってみる。返信が来た瞬間に、日常が少し動き出します。',
-      share: '私はイロドリ型。日常にワクワクを灯すタイプ。',
-      prefs: ['イベント・体験', '友達と', 'ワクワク', 'ミッション']
-    },
-    honori: {
-      copy: 'あなたは、派手な予定よりも“誰と、どんな空気で過ごしたか”を大切にするタイプです。',
-      basic: 'ホノリ型のあなたは、場所そのものよりも、その時間に流れていた空気や会話をよく覚えているタイプです。どこに行ったかより、誰と何を話したか。細かいあたたかさを自然に受け取る力があります。',
-      outside: '周りからは、話しやすい人、あたたかい人、気を張らずに一緒にいられる人に見られやすいです。',
-      friends: '友達との関係では、最後にご飯を食べながら話す時間で満足感が高まりやすいです。',
-      romance: '恋愛では、強いドキドキよりも「一緒にご飯を食べていて落ち着くか」をかなり見ています。',
-      invitation: '「ゆっくり話せるところ行かない？」食事や会話の時間が自然に想像できる誘いに弱いです。',
-      cooldown: '一緒にいる時間を雑に扱われた時。会話を急がれたり、ずっとスマホを見られたりすると、心が離れやすいです。',
-      decision: '場所の派手さより、誰と行くか、どんな会話ができそうかを重視しがちです。',
-      manual: ['食事や会話の時間を大事にする', '場所よりも空気を覚えている', '急かされると心が閉じやすい', '相手の小さな言葉に反応しやすい', '一緒に食べる時間で距離が縮まりやすい'],
-      yodomi: '「ちゃんと話せないなら行かなくてもいいか」「気まずくなりそうだからやめよう」と感じた時に出やすいです。',
-      recover: '完璧に盛り上がる予定を作らなくて大丈夫です。短い食事、軽い会話、帰り道の一言。それだけでも関係は少し進みます。',
-      good: 'ランチ・ディナー、落ち着いて話せる場所、気になる人との食事、友達と今日のことを話せる時間。',
-      bad: '会話する余白がない予定、食事や休憩が雑な予定、ずっと急かされる予定。',
-      match: 'コモレビ型。落ち着いた空気を一緒に大切にできる相性です。',
-      caution: 'イロドリ型。楽しい刺激をくれる一方で、勢いが強すぎると自分のペースを失いやすいです。',
-      story: 'ホノリは、食卓の湯気とやさしい灯りから生まれた。ランチや夜ご飯の来店コードを入力すると、灯りに“言葉のかけら”が戻っていきます。',
-      today: '誰かとゆっくり話せる時間を1つ作る。短いご飯でも、関係が少し近づくことがあります。',
-      share: '私はホノリ型。ひと皿の時間に、会話の灯りをともすタイプ。',
-      prefs: ['ランチ・ディナー', '話す', 'デート', '屋内']
-    },
-    shirube: {
-      copy: 'あなたは、勢いで動けないのではなく、納得できる道が見えないと動きたくないタイプです。',
-      basic: 'シルベ型のあなたは、情報を整理してから動きたいタイプです。場所、時間、料金、雰囲気、行き方、誰と行くか。判断材料がそろうと安心して動けます。',
-      outside: '周りからは、しっかりしている人、頼れる人、考えてから動く人に見られやすいです。',
-      friends: '友達の中では、予定を成立させる人です。時間、場所、料金、移動を整理して、みんなが動ける形にすることがあります。',
-      romance: '恋愛では、勢いだけで好きになるより、相手の誠実さや安心できる行動を見て惹かれやすいです。',
-      invitation: '「何時に、ここで、これしよう」具体的な誘いが一番安心します。',
-      cooldown: '予定や言葉が曖昧な時。「たぶん」「そのうち」が多い相手には疲れやすいです。',
-      decision: '詳細ページをちゃんと読むタイプです。口コミ、地図、料金、時間を見てから判断したくなります。',
-      manual: ['情報があると安心して動ける', '曖昧な誘いは苦手', '誠実さや具体性に弱い', '予定の流れが見えると楽しめる', '調べすぎて疲れることがある'],
-      yodomi: '「もう少し調べてから」「失敗したら嫌だな」と、調べ続けて止まる時に出やすいです。',
-      recover: '情報収集に制限時間をつけてください。場所・時間・料金の3つがそろったら決める、くらいで十分です。',
-      good: '情報が整理されている、予約や料金が分かりやすい、当日の流れが想像できるもの。',
-      bad: '情報が雑、場所や料金が分からない、その場ノリが強すぎる、不確定要素が多いもの。',
-      match: 'ネクスケ型。あなたが道を作ることで、相手が一歩踏み出しやすくなります。',
-      caution: 'ツギハ型。感性を大事にする相手なので、正しさや効率だけで進めるとすれ違うことがあります。',
-      story: 'シルベは、誰かが迷ったあとに残した小さな道しるべから生まれた記録者。参加コードや体験カードが増えるほど、記録帳に失われたページの手がかりが戻ります。',
-      today: '気になる候補を3つまでに絞る。その中で一番ハードルが低いものを選んでみる。',
-      share: '私はシルベ型。選んだ道を、未来につなげるタイプ。',
-      prefs: ['予約しやすい', '情報明確', '地図あり', '安心']
-    }
+    nexsuke: { copy: '行きたい気持ちはある。でも、最初の一歩だけがやたら重い人。', basic: 'ネクスケ型のあなたは、「何かしたい」という気持ちはあるのに、動き出す直前で止まりやすいタイプです。\nやる気がないわけではありません。\nむしろ、可能性を感じるからこそ迷います。\n保存したり、調べたり、誰かに送ろうとしたりするところまでは行くのに、最後の一歩で「まあ今度でいいか」となりやすいかもしれません。\nでも、一度外に出ると、思っていたより楽しめることが多いタイプでもあります。', friends: '友達に軽く背中を押されると動きやすいです。\n強く誘われるより、「ちょっとだけ行こう」が合っています。\n勢いで連れ出されるのは苦手だけど、軽く誘われると意外と動けます。', romance: '一緒にいると自分の世界が広がる人に惹かれやすいです。\nただし、自分から踏み出すまでに時間がかかります。\n気になっているのに、理由を探して先延ばしにすることもあります。', decision: '気になるものは見つけられます。\nでも、最後の決定が少し苦手です。\n「行きたい」と「実際に行く」の間に小さな壁があります。', yodomi: '「保存したし、もういいか」\n「失敗したら面倒だし、今度でいいか」\nこの声が出たらヨドミです。', recover: '大きく変わろうとしなくていいです。\n15分だけ、1件だけ、近くだけ。\n小さく動くほど、あなたは強いです。', fit: '初めての場所、短時間の予定、ハードルが低い体験、完全おまかせガチャ。', today: '気になる予定を1つだけ誰かに送る。', gacha: ['完全おまかせ','遊び','体験','短時間','初めてでも入りやすい'] },
+    tsugiha: { copy: 'みんなと同じより、「これ自分っぽい」で動く人。', basic: 'ツギハ型のあなたは、流行っているかより、自分にしっくりくるかを大事にするタイプです。\n人気だから、便利だから、みんなが行くから、だけでは心が動きません。\n写真、色、雰囲気、言葉、店の空気。\nそういう細かいものから「ここ好きかも」を感じ取ります。\n逆に、量産感が強かったり、雑におすすめされると一気に冷めやすいです。', friends: '友達の“その人っぽさ”に気づくのが得意です。\n似合う色や雰囲気を勝手に考えていることがあります。\nでも、それを押しつけたいわけではなく、その人がしっくりくるものを一緒に探したいタイプです。', romance: '自分の好きなものを雑に扱わない人に惹かれます。\n感性を分かってくれる人に弱いです。\n逆に、「それ何がいいの？」と雑に言われると、一気に距離を取りたくなります。', decision: '写真や雰囲気をかなり見ます。\n説明が雑な場所より、世界観やこだわりが伝わる場所の方が動きやすいです。', yodomi: '「なんか違う」\n「自分には合わなそう」\nそう思って、試す前に切ってしまう時があります。', recover: '全部がしっくり来なくても、1つだけ気になる要素があれば十分です。\n色、空気、言葉、写真。\n小さな“好き”を拾ってください。', fit: '古着、買い物、雰囲気のある店、インスタ映え、友達プロデュース系。', today: '「これ自分っぽいかも」と思うものを1つ保存する。', gacha: ['買い物','インスタ映え','古着','自分らしさ','プロデュース系'] },
+    komorebi: { copy: '楽しみたいけど、消耗する予定はちゃんと避けたい人。', basic: 'コモレビ型のあなたは、刺激よりも心地よさを大事にするタイプです。\n楽しい予定でも、人が多すぎたり、音が大きすぎたり、ずっとテンションを上げ続ける必要があると疲れやすいです。\nでも、それはノリが悪いわけではありません。\n自分の体力や空気の変化に敏感なだけです。\n落ち着ける場所、座れる時間、無理しなくていい相手がいると、自然に動けます。', friends: '周りの疲れや空気を見ています。\n誰かが無理していると気づきやすいタイプです。\n自分から強く場を動かすより、場の温度を整えることが得意です。', romance: '沈黙が気まずくない人に安心します。\n強いドキドキより、一緒にいて楽かどうかを見ています。\n安心できる相手には、ゆっくり深く心を開きます。', decision: '座れるか、混みすぎていないか、休めるかを見ています。\n予定が詰まりすぎていると、行く前から疲れることがあります。', yodomi: '「今日は外出るだけでしんどい」\n「人と会うの無理かも」\nそういう時にヨドミが出やすいです。', recover: '予定を小さくしてください。\n短時間、近場、座れる場所。\n楽しむためではなく、整えるために出てもいいです。', fit: 'カフェ・スイーツ、静かな会話、短時間プラン、屋内、王道。', today: '近くで座れる場所を1つ探す。', gacha: ['話す','カフェ・スイーツ','屋内','短時間','王道'] },
+    irodori: { copy: '予定は“行く場所”じゃなくて、“事件にできるか”で見ている人。', basic: 'イロドリ型のあなたは、何かが起きそうな空気に反応するタイプです。\nただ行くだけ、ただ見るだけ、ただ食べるだけだと少し物足りません。\n友達と笑える、写真が残る、あとで話せる、変な企画になる。\nそういう要素があると一気に動けます。\n逆に、説明が静かすぎたり、盛り上がるイメージがない予定には冷めやすいです。', friends: '空気を動かす人です。\n誰かが迷っていると、「やろうや」と言いたくなります。\nただし、相手の温度を見ずに走りすぎると、少し疲れさせることもあります。', romance: '一緒に笑える人に惹かれます。\n日常が少し面白くなる相手に弱いです。\n何でもない時間を一緒にネタにできる人とは相性がいいです。', decision: '写真、動画、タイトル、企画感に反応します。\n「これやったらおもろそう」が一番強い行動理由になります。', yodomi: '「なんか普通すぎる」\n「別に今日じゃなくていい」\nそう感じると動かなくなります。', recover: '予定にミッションを足してください。\n写真、MVP、タイトル、勝負。\n“ただ行く”を“企画”にすると動けます。', fit: 'イベント・体験、YouTube企画、ボケ、友達とのガチャ、投稿ミッション。', today: '友達に「これ企画にしたらおもろくない？」と送る。', gacha: ['YouTube企画','ボケ','イベント・体験','友達','投稿ミッション'] },
+    honori: { copy: 'どこに行ったかより、誰と何を話したかを覚えている人。', basic: 'ホノリ型のあなたは、派手な予定よりも、一緒に過ごした時間の空気を大事にするタイプです。\nご飯を食べながら出た一言、帰り際の雰囲気、相手の表情。\nそういう小さいものをよく覚えています。\nランチや夜ご飯は、あなたにとってただの食事ではありません。\n相手との距離が少し近づいたり、言えなかったことが少し言える時間です。', friends: '最後にご飯を食べながら話す時間で、満足度が上がりやすいです。\n友達の小さな変化にも気づきやすいです。\n「最近なんかあった？」みたいな会話を自然に大事にします。', romance: '一緒に食べていて落ち着く人に惹かれます。\n派手なデートより、自然に話せる食事の時間が大事です。\nスマホばかり見られたり、時間を雑に扱われると冷めやすいです。', decision: '場所そのものより、「誰とどんな時間になるか」を見ています。\nご飯、会話、帰り道の余韻がある予定に満足しやすいです。', yodomi: '「ちゃんと話せないなら行かなくていいか」\n「気まずくなりそう」\nそう思うと止まりやすいです。', recover: '完璧に盛り上げなくていいです。\n短いご飯、軽い会話、帰り道の一言。\nそれだけで十分進みます。', fit: 'ランチ・ディナー、話す、気になる人、恋人、家族、爆食ではなく爆満足プラン。', today: '誰かとゆっくり話せるご飯の時間を1つ作る。', gacha: ['ランチ・ディナー','話す','爆食','恋人','気になる人','家族'] },
+    shirube: { copy: 'ノリで動けないんじゃなくて、道が見えればちゃんと動ける人。', basic: 'シルベ型のあなたは、情報が整理されると安心して動けるタイプです。\n場所、時間、料金、行き方、予約、混み具合。\nそういう判断材料があると、予定を現実にできます。\n慎重すぎるわけではありません。\nむしろ、みんなの「行きたい」を実際に行ける形にする力があります。\nただし、曖昧な誘いや、勢いだけの予定には疲れやすいです。', friends: '候補をまとめたり、時間を見たり、ルートを確認したりする役になりやすいです。\nあなたがいると予定が成立しやすいです。\nただし、全部を自分が背負いすぎると疲れます。', romance: '誠実で、言葉や約束がちゃんとしている人に惹かれます。\n曖昧な態度が続くと冷めやすいです。\nちゃんと予定を決めてくれる人には安心します。', decision: '詳細情報をかなり見ます。\n料金、場所、時間、移動、予約が分かると安心します。\n逆に情報が少ないと、気になっていても行動が止まりやすいです。', yodomi: '「もう少し調べてから」\n「失敗したら嫌だな」\nそう思って、調べ続けて止まる時があります。', recover: '情報収集に制限をつけてください。\n場所・時間・料金の3つが分かれば、もう動いて大丈夫です。', fit: '王道、詳細情報が分かりやすい予定、予約しやすい店、移動が簡単なプラン。', today: '候補を3つまでに絞って、一番行きやすいものを選ぶ。', gacha: ['王道','詳細情報','移動しやすい','予約しやすい','条件整理'] }
   };
 
-  var INTROS = [
-    ['ネクスケ', '白紙の地図を持つ、Nexcaの主人公。まだ何者でもないから、どこへでも行ける。'],
-    ['ツギハ', '忘れられた布やほどけた糸から生まれた、リメイクの精霊。'],
-    ['コモレビ', '窓辺に差し込む光と、誰かのひと息から生まれた存在。'],
-    ['イロドリ', '何も起きない一日に落ちた、最初の色から生まれた存在。'],
-    ['ホノリ', '食卓の湯気とやさしい灯りから生まれた存在。'],
-    ['シルベ', '誰かが迷ったあとに残した、小さな道しるべから生まれた記録者。'],
-    ['ヨドミ', '止まれば傷つかない、とささやく停滞の影。倒す敵ではなく、動けなくなる理由を教えてくれる存在。']
-  ];
+  var MILESTONES = {
+    5: { char: 'nexsuke', title: 'ネクスケの地図に、最初の線が浮かびました。', text: '少しずつ、あなたの動き出し方が見えてきたよ。' },
+    10: { char: 'shirube', title: 'シルベが、あなたの予定の決め方を整理しています。', text: 'どんな条件なら動けるか、かなり分かってきました。' },
+    15: { char: 'yodomi', title: 'ヨドミが、あなたが止まりやすい理由をのぞいています。', text: '行きたいのに行けない理由、ちゃんと見えてきたね。' },
+    20: { char: 'komorebi', title: 'コモレビが、あなたが安心できる条件を見つけています。', text: '無理なく楽しめる場所のヒントが集まってきました。' },
+    25: { char: 'irodori', title: 'イロドリが、あなたのワクワクする瞬間を探しています。', text: 'どんな予定ならテンションが上がるか、もう少しで分かります。' },
+    30: { char: 'honori', title: 'ホノリが、人との距離感をそっと読み取っています。', text: '誰と、どんな時間を過ごしたいのかが見えてきました。' },
+    35: { char: 'shirube', title: '6つの光が集まっています。', text: 'あなたに近いNexcaキャラを見つけています。' }
+  };
 
-  var state = { started: false, index: 0, answers: [], scores: null, latestResult: null };
+  var state = { index: 0, answers: [], scores: null, latestResult: null, syncing: false };
 
   function $(id) { return document.getElementById(id); }
-  function esc(v) {
-    return String(v == null ? '' : v).replace(/[&<>"']/g, function(s) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s];
-    });
-  }
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function(s) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s]; }); }
   function zero(keys) { return keys.reduce(function(o, k) { o[k] = 0; return o; }, {}); }
-  function freshScores() {
-    return {
-      characterScores: zero(OPTION_KEYS),
-      behaviorScores: zero(['noveltySeeking', 'selfExpression', 'comfortSeeking', 'socialExcitement', 'warmConversation', 'claritySeeking']),
-      brakeScores: zero(BRAKES),
-      relationshipScores: zero(['proposer', 'individualist', 'moodReader', 'energizer', 'warmConnector', 'organizer']),
-      romanceScores: zero(['growthTogether', 'senseMatching', 'emotionalSafety', 'funChemistry', 'mealBasedBonding', 'trustAndClarity']),
-      experienceScores: zero(['lowBarrier', 'selfFit', 'comfort', 'memorable', 'sharedTimeValue', 'clearInfo']),
-      researchScores: zero(['activeDiscovery', 'passiveInvitation', 'actionGap', 'companionDependency', 'trustedInformationSource', 'mealAndConversationNeed', 'relationshipComfort', 'sharedExperienceMotivation'])
-    };
-  }
-  function addScore(scores, qIndex, optionIndex) {
-    var charKey = OPTION_KEYS[optionIndex];
-    scores.characterScores[charKey] += 1;
-    AXES.forEach(function(axisSet, axisGroupIndex) {
-      var target = ['behaviorScores', 'relationshipScores', 'romanceScores', 'experienceScores'][axisGroupIndex];
-      scores[target][axisSet[optionIndex]] += 1;
-    });
-    if ([1, 2, 5, 10, 20, 21, 22, 23, 25, 32].indexOf(qIndex) >= 0) {
-      scores.brakeScores[BRAKES[optionIndex]] += 1;
-    }
-    if (qIndex >= 30) {
-      scores.researchScores[RESEARCH[Math.min(optionIndex, RESEARCH.length - 1)]] += 1;
-    }
-    if (charKey === 'honori') {
-      scores.researchScores.mealAndConversationNeed += 1;
-      scores.researchScores.relationshipComfort += 1;
-      scores.researchScores.sharedExperienceMotivation += 1;
-    }
-  }
-  function recompute() {
-    state.scores = freshScores();
-    state.answers.forEach(function(answer, qIndex) {
-      if (typeof answer === 'number') addScore(state.scores, qIndex, answer);
-    });
-  }
+  function freshScores() { return { character_scores: zero(CHAR_ORDER), core_scores: zero(CHAR_ORDER), recent_scores: zero(CHAR_ORDER), research_scores: {} }; }
   function mainEl() { return $('diag') || $('diagnosis') || document.querySelector('[data-screen="diag"]'); }
-
-  function boot() {
-    var root = mainEl();
-    if (!root) return;
-    root.classList.add('nxdiag-screen');
-    renderStart();
-  }
-
   function shell(inner) {
     var root = mainEl();
     if (!root) return;
+    root.classList.add('nxdiag-screen');
     root.innerHTML = '<div class="nxdiag" id="nxdiag-root">' + inner + '</div>';
   }
-
+  function charOrb(key, extraClass) {
+    var ch = CHARS[key];
+    return '<div class="nxdiag-orb ' + (extraClass || '') + '" style="--c:' + ch.color + ';--bg:' + ch.bg + '"><span>' + esc(ch.icon) + '</span></div>';
+  }
+  function boot() {
+    syncLocalResults();
+    renderStart();
+  }
   function renderStart() {
-    var chars = CHARS.map(function(c) {
-      return '<div class="nxdiag-mini-char" style="--c:' + c.color + '"><div class="nxdiag-char-orb">' + esc(c.icon) + '</div><b>' + esc(c.name) + '</b><span>' + esc(c.type.replace('タイプ', '')) + '</span></div>';
+    var cards = CHAR_ORDER.map(function(k) {
+      var ch = CHARS[k];
+      return '<div class="nxdiag-mini" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' + charOrb(k) + '<b>' + ch.name + '</b><span>' + ch.short + '</span></div>';
     }).join('');
-    var intros = INTROS.map(function(x) { return '<div class="nxdiag-intro"><b>' + esc(x[0]) + '</b><span>' + esc(x[1]) + '</span></div>'; }).join('');
-    shell(
-      '<div class="nxdiag-start">' +
-        '<div class="nxdiag-brand">Nexca</div>' +
-        '<h1>Nexcaキャラ診断</h1>' +
-        '<p class="nxdiag-sub">まだ知らない体験が、次の自分を連れてくる</p>' +
-        '<div class="nxdiag-meta"><span>35問</span><span>約5〜7分</span><span>自己理解診断</span></div>' +
-        '<p class="nxdiag-lead">この診断は、あなたの予定の決め方、友達との関わり方、恋愛での距離感、動き出せなくなる理由をもとに、Nexcaの6キャラの中から近いタイプを見つける自己理解診断です。</p>' +
-        '<p class="nxdiag-note">心理学や行動科学で扱われる意思決定の傾向、人との距離感、刺激への反応、安心感、不確実な状況への向き合い方などの考え方を参考にしています。医療診断・正式な性格検査ではなく、まだ知らない体験へ一歩踏み出すためのヒントとして楽しんでください。</p>' +
-        '<div class="nxdiag-char-grid">' + chars + '</div>' +
-        '<label class="nxdiag-consent"><input id="nxdiag-consent" type="checkbox" onchange="NexcaDiagnosis.toggleConsent(this.checked)"> <span>診断結果や回答データは、個人が特定されない形で、Nexcaの改善や研究・分析に利用される場合があります。</span></label>' +
-        '<button class="nxdiag-primary" id="nxdiag-start-btn" disabled onclick="NexcaDiagnosis.start()">診断をはじめる</button>' +
-        '<details class="nxdiag-intros"><summary>公式キャラを少し見る</summary><div>' + intros + '</div></details>' +
-      '</div>'
-    );
+    shell('<div class="nxdiag-start">' +
+      '<div class="nxdiag-logo">Nexca</div>' +
+      '<h1>Nexcaキャラ診断</h1>' +
+      '<p class="nxdiag-sub">まだ知らない体験が、次の自分を連れてくる。</p>' +
+      '<p class="nxdiag-lead">35問で、あなたの「動き出し方」「人との距離感」「予定の決め方」を診断します。あなたに近いNexcaキャラと、合う過ごし方・あなたの中のヨドミまで分かります。</p>' +
+      '<div class="nxdiag-meta"><span>35問</span><span>1問ずつ</span><span>約5分</span></div>' +
+      '<div class="nxdiag-char-grid">' + cards + '</div>' +
+      '<p class="nxdiag-small">※結果はあなたを決めつけるものではなく、自己理解のヒントです。<br>※回答データは個人が特定されない形で、Nexcaの改善に使われる場合があります。</p>' +
+      '<button class="nxdiag-primary" onclick="NexcaDiagnosis.start()">診断をはじめる</button>' +
+    '</div>');
   }
-
-  function toggleConsent(ok) {
-    var btn = $('nxdiag-start-btn');
-    if (btn) btn.disabled = !ok;
-  }
-
   function start() {
-    state.started = true;
     state.index = 0;
     state.answers = [];
     state.scores = freshScores();
     recordEvent('start_diagnosis', {});
     renderQuestion();
   }
-
   function renderQuestion() {
     var q = QUESTIONS[state.index];
     var pct = Math.round((state.index / QUESTIONS.length) * 100);
-    var options = q[1].map(function(opt, i) {
-      var c = CHARS[i];
-      var selected = state.answers[state.index] === i ? ' is-selected' : '';
-      return '<button class="nxdiag-option' + selected + '" style="--c:' + c.color + '" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + String.fromCharCode(65 + i) + '</span><b>' + esc(opt) + '</b></button>';
+    var lineKey = lineCharacter(q.line);
+    var options = q.choices.map(function(choice, i) {
+      var ch = CHARS[choice.scoreCharacter];
+      return '<button class="nxdiag-option" style="--c:' + ch.color + ';--bg:' + ch.bg + '" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + (i + 1) + '</span><b>' + esc(choice.text) + '</b></button>';
     }).join('');
-    shell(
-      '<div class="nxdiag-question-wrap">' +
-        '<div class="nxdiag-qtop"><button class="nxdiag-back" onclick="NexcaDiagnosis.back()">戻る</button><div><b>' + (state.index + 1) + '/35</b><span>あなたの中の輪郭を読み取り中</span></div></div>' +
-        '<div class="nxdiag-progress"><i style="width:' + pct + '%"></i></div>' +
-        '<div class="nxdiag-question-card">' +
-          '<div class="nxdiag-qno">QUESTION ' + String(state.index + 1).padStart(2, '0') + '</div>' +
-          '<h2>' + esc(q[0]) + '</h2>' +
-          '<div class="nxdiag-options">' + options + '</div>' +
-        '</div>' +
-      '</div>'
-    );
+    shell('<div class="nxdiag-question-wrap">' +
+      '<div class="nxdiag-qtop"><button class="nxdiag-back" onclick="NexcaDiagnosis.back()">戻る</button><div><b>' + (state.index + 1) + '/35</b><span>あなたのNexcaタイプを読み取り中</span></div></div>' +
+      '<div class="nxdiag-progress"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="nxdiag-question-card">' +
+        '<div class="nxdiag-line">' + charOrb(lineKey, 'small') + '<p>' + esc(q.line) + '</p></div>' +
+        '<div class="nxdiag-qno">' + q.id + '</div><h2>' + esc(q.q) + '</h2><div class="nxdiag-options">' + options + '</div>' +
+      '</div>' +
+    '</div>');
   }
-
+  function lineCharacter(line) {
+    var name = line.split('「')[0];
+    var found = Object.keys(CHARS).find(function(k) { return CHARS[k].name === name; });
+    return found || 'nexsuke';
+  }
   function answer(optionIndex) {
-    state.answers[state.index] = optionIndex;
+    var q = QUESTIONS[state.index];
+    var selected = q.choices[optionIndex];
+    state.answers[state.index] = { questionId: q.id, selectedText: selected.text, scoreCharacter: selected.scoreCharacter, researchKey: selected.researchKey };
     recompute();
-    recordEvent('answer_diagnosis_question', { question: state.index + 1, answer: String.fromCharCode(65 + optionIndex) });
-    var buttons = document.querySelectorAll('.nxdiag-option');
-    buttons.forEach(function(btn, i) { btn.classList.toggle('is-selected', i === optionIndex); });
+    recordEvent('answer_diagnosis_question', state.answers[state.index]);
+    document.querySelectorAll('.nxdiag-option').forEach(function(btn, i) { btn.classList.toggle('is-selected', i === optionIndex); });
     setTimeout(function() {
+      var completed = state.index + 1;
       state.index += 1;
-      if (state.index >= QUESTIONS.length) {
-        showLoading();
-      } else if ([10, 20, 30].indexOf(state.index) >= 0) {
-        showMilestone(state.index);
-      } else {
-        renderQuestion();
-      }
-    }, 260);
+      if (completed === 35) return showMilestone(35, true);
+      if (MILESTONES[completed]) return showMilestone(completed, false);
+      renderQuestion();
+    }, 220);
   }
-
   function back() {
-    if (!state.started || state.index <= 0) {
-      renderStart();
-      return;
-    }
+    if (state.index <= 0) return renderStart();
     state.index -= 1;
     renderQuestion();
   }
-
-  function showMilestone(n) {
-    var messages = {
-      10: '少しずつ、あなたの中のキャラが見えてきました',
-      20: '行動のクセと、人との距離感を読み解いています',
-      30: '最後に、あなたが動き出す条件を確かめます'
-    };
-    shell(
-      '<div class="nxdiag-mid">' +
-        '<div class="nxdiag-mid-orbs">' + CHARS.map(function(c) { return '<i style="--c:' + c.color + '"></i>'; }).join('') + '</div>' +
-        '<h2>' + esc(messages[n]) + '</h2>' +
-        '<p>' + n + '/35 まで進みました。もう少しで、あなたの体験タイプが見えてきます。</p>' +
-        '<button class="nxdiag-primary" onclick="NexcaDiagnosis.renderQuestion()">続ける</button>' +
-      '</div>'
-    );
+  function recompute() {
+    state.scores = freshScores();
+    state.answers.forEach(function(a, i) {
+      if (!a) return;
+      state.scores.character_scores[a.scoreCharacter] += 1;
+      if (i < 30) state.scores.core_scores[a.scoreCharacter] += 1;
+      if (i >= Math.max(0, state.answers.length - 10)) state.scores.recent_scores[a.scoreCharacter] += 1;
+      state.scores.research_scores[a.researchKey] = (state.scores.research_scores[a.researchKey] || 0) + 1;
+    });
   }
-
+  function showMilestone(n, finalStep) {
+    var m = MILESTONES[n], ch = CHARS[m.char];
+    shell('<div class="nxdiag-mid" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' +
+      charOrb(m.char, 'big') + '<h2>' + esc(m.title) + '</h2><p>' + esc(m.text) + '</p>' +
+      '<button class="nxdiag-primary" onclick="' + (finalStep ? 'NexcaDiagnosis.showLoading()' : 'NexcaDiagnosis.renderQuestion()') + '">' + (finalStep ? '結果を見る' : '続ける') + '</button>' +
+      '<button class="nxdiag-skip" onclick="' + (finalStep ? 'NexcaDiagnosis.showLoading()' : 'NexcaDiagnosis.renderQuestion()') + '">スキップ</button>' +
+    '</div>');
+  }
   function showLoading() {
-    shell(
-      '<div class="nxdiag-loading">' +
-        '<div class="nxdiag-light-ring">' + CHARS.map(function(c) { return '<i style="--c:' + c.color + '"></i>'; }).join('') + '<em></em></div>' +
-        '<h2>診断結果を生成中...</h2>' +
-        '<p>ネクスケ、ツギハ、コモレビ、イロドリ、ホノリ、シルベの光が順番に灯っています。</p>' +
-        '<p class="nxdiag-yodomi-line">あなたの中のヨドミも読み解いています</p>' +
-      '</div>'
-    );
-    setTimeout(showResult, 2100);
+    var lights = CHAR_ORDER.map(function(k) { var ch = CHARS[k]; return '<i style="--c:' + ch.color + '">' + esc(ch.icon) + '</i>'; }).join('');
+    shell('<div class="nxdiag-loading">' +
+      '<div class="nxdiag-lamp">' + lights + '<em>影</em></div>' +
+      '<h2>あなたに近いNexcaキャラを見つけています。</h2>' +
+      '<p>あなたの中のヨドミも読み解いています</p>' +
+    '</div>');
+    setTimeout(showResult, 1600);
   }
-
   function resultKey() {
-    var scores = state.scores.characterScores;
-    var max = Math.max.apply(null, OPTION_KEYS.map(function(k) { return scores[k]; }));
-    var tied = OPTION_KEYS.filter(function(k) { return scores[k] === max; });
+    recompute();
+    var scores = state.scores.character_scores;
+    var max = Math.max.apply(null, CHAR_ORDER.map(function(k) { return scores[k]; }));
+    var tied = CHAR_ORDER.filter(function(k) { return scores[k] === max; });
     if (tied.length === 1) return tied[0];
-    for (var i = state.answers.length - 1; i >= 0; i--) {
-      var key = OPTION_KEYS[state.answers[i]];
-      if (tied.indexOf(key) >= 0) return key;
-    }
-    var brakeTop = topKey(state.scores.brakeScores);
-    var consistency = {
-      firstStepHeavy: 'nexsuke',
-      fitAnxiety: 'tsugiha',
-      energyLow: 'komorebi',
-      excitementLow: 'irodori',
-      relationshipHesitation: 'honori',
-      informationAnxiety: 'shirube'
-    };
-    return tied.indexOf(consistency[brakeTop]) >= 0 ? consistency[brakeTop] : 'nexsuke';
+    var coreMax = Math.max.apply(null, tied.map(function(k) { return state.scores.core_scores[k]; }));
+    tied = tied.filter(function(k) { return state.scores.core_scores[k] === coreMax; });
+    if (tied.length === 1) return tied[0];
+    var recentCounts = zero(CHAR_ORDER);
+    state.answers.slice(-10).forEach(function(a) { if (a) recentCounts[a.scoreCharacter] += 1; });
+    var recentMax = Math.max.apply(null, tied.map(function(k) { return recentCounts[k]; }));
+    tied = tied.filter(function(k) { return recentCounts[k] === recentMax; });
+    return CHAR_ORDER.find(function(k) { return tied.indexOf(k) >= 0; }) || 'nexsuke';
   }
-
-  function topKey(obj) {
-    return Object.keys(obj).sort(function(a, b) { return obj[b] - obj[a]; })[0];
+  function percentFor(key) {
+    var max = Math.max(1, Math.max.apply(null, CHAR_ORDER.map(function(k) { return state.scores.character_scores[k]; })));
+    return Math.round((state.scores.character_scores[key] / max) * 100);
   }
-
   function showResult() {
-    var key = resultKey();
-    var char = KEY_TO_CHAR[key];
-    var text = RESULT_TEXT[key];
+    var key = resultKey(), ch = CHARS[key], txt = RESULT_TEXT[key];
     state.latestResult = key;
     saveResult(key);
     recordEvent('complete_diagnosis', { result_character: key });
-    try { if (window.addPt) window.addPt('診断完了', 15, false, 'diag_final_v1'); } catch (e) {}
-    var scoreBars = CHARS.map(function(c) {
-      var score = state.scores.characterScores[c.key] || 0;
-      var pct = Math.max(8, Math.round((score / QUESTIONS.length) * 100));
-      return '<div class="nxdiag-score-row"><span>' + esc(c.name) + '</span><div><i style="width:' + pct + '%;background:' + c.color + '"></i></div><b>' + score + '</b></div>';
+    try { if (window.addPt) window.addPt('診断完了', 15, false, 'diag_final_v2'); } catch (e) {}
+    var bars = CHAR_ORDER.map(function(k) {
+      var c = CHARS[k], pct = percentFor(k);
+      return '<div class="nxdiag-score-row"><span>' + c.name + 'との近さ</span><div><i style="width:' + pct + '%;background:' + c.color + '"></i></div><b>' + pct + '%</b></div>';
     }).join('');
-    var sections = [
-      ['基本性格', text.basic],
-      ['周りから見たあなた', text.outside],
-      ['友達関係でのあなた', text.friends],
-      ['恋愛でのあなた', text.romance],
-      ['刺さる誘われ方', text.invitation],
-      ['冷めやすい瞬間', text.cooldown],
-      ['予定を決める時のクセ', text.decision],
-      ['あなたの取扱説明書', '<ul>' + text.manual.map(function(x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'],
-      ['あなたの中のヨドミ', text.yodomi],
-      ['ヨドミから戻る方法', text.recover],
-      ['合う過ごし方', text.good],
-      ['合わない過ごし方', text.bad],
-      ['相性の良いタイプ', text.match],
-      ['注意が必要なタイプ', text.caution],
-      ['誕生秘話：物語のかけら', text.story],
-      ['今日の一歩', text.today]
-    ].map(function(sec) { return '<section class="nxdiag-result-section"><h3>' + esc(sec[0]) + '</h3><div>' + sec[1] + '</div></section>'; }).join('');
-    var shareCard =
-      '<div class="nxdiag-share-card" style="--c:' + char.color + '">' +
-        '<span>Nexcaキャラ診断</span><h3>' + esc(char.name) + '型</h3><b>' + esc(char.type) + '</b><p>' + esc(text.copy) + '</p><small>' + esc(text.share) + '</small>' +
-      '</div>';
-    shell(
-      '<div class="nxdiag-result" style="--c:' + char.color + ';--g:' + char.glow + '">' +
-        '<div class="nxdiag-result-hero">' +
-          '<div class="nxdiag-result-badge">RESULT</div>' +
-          '<div class="nxdiag-result-orb">' + esc(char.icon) + '</div>' +
-          '<h1>' + esc(char.name) + '型</h1>' +
-          '<h2>' + esc(char.type) + '</h2>' +
-          '<p>' + esc(text.copy) + '</p>' +
-        '</div>' +
-        '<section class="nxdiag-score-card"><h3>6キャラのスコア内訳</h3>' + scoreBars + '</section>' +
-        sections +
-        '<section class="nxdiag-result-section nxdiag-yodomi"><h3>ヨドミについて</h3><div>ヨドミは診断結果キャラではありません。あなたの中の行動ブレーキ、迷い、停滞、「また今度でいいか」という気持ちを映す影です。倒す敵ではなく、動けなくなる理由を教えてくれる存在です。</div></section>' +
-        '<section class="nxdiag-result-section"><h3>ガチャ・Nexca Town連動</h3><div>この結果は、次のガチャ条件やNexca Townのキャラ育成に使えるよう保存されます。' + esc(char.name) + 'に合う条件：' + text.prefs.map(function(p) { return '<span class="nxdiag-chip">' + esc(p) + '</span>'; }).join('') + '</div></section>' +
-        '<section class="nxdiag-result-section"><h3>SNS共有カード</h3>' + shareCard + '</section>' +
-        '<div class="nxdiag-actions"><button onclick="NexcaDiagnosis.share()">結果を共有する</button><button onclick="NexcaDiagnosis.goGacha()">ガチャへ進む</button><button onclick="NexcaDiagnosis.goTown()">Nexca Townで続きを見る</button><button onclick="NexcaDiagnosis.retry()">もう一度診断する</button></div>' +
-      '</div>'
-    );
+    var profile = profileHtml(key);
+    var cards = [
+      card('基本性格', txt.basic, true),
+      card('友達関係', txt.friends, false),
+      card('恋愛・距離感', txt.romance, false),
+      card('予定の決め方', txt.decision, false),
+      card('あなたの中のヨドミ', txt.yodomi, true, 'yodomi'),
+      card('ヨドミから戻る方法', txt.recover, false),
+      card('合う過ごし方', txt.fit, false),
+      card('今日の一歩', txt.today, true),
+      card('キャラプロフィール', profile, false, 'profile')
+    ].join('');
+    var shareCard = '<div class="nxdiag-share-card" style="--c:' + ch.color + ';--bg:' + ch.bg + '"><span>Nexcaキャラ診断</span><b>' + ch.name + '型</b><em>' + ch.type + '</em><p>' + txt.copy + '</p><small>Nexca｜あなたも診断してみる？</small></div>';
+    shell('<div class="nxdiag-result" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' +
+      '<div class="nxdiag-result-hero">' + charOrb(key, 'result') + '<p class="nxdiag-result-kicker">RESULT</p><h1>' + ch.name + '型</h1><h2>' + ch.type + '</h2><p class="nxdiag-result-copy">' + esc(txt.copy) + '</p></div>' +
+      '<section class="nxdiag-score-card"><h3>キャラとの近さ</h3><p>点数ではなく、今の回答傾向として近いキャラを表示しています。</p>' + bars + '</section>' +
+      cards +
+      '<section class="nxdiag-result-section"><h3>共有カード</h3>' + shareCard + '</section>' +
+      '<div class="nxdiag-actions"><button onclick="NexcaDiagnosis.goGacha()">ガチャへ進む</button><button onclick="NexcaDiagnosis.goTown()">Nexca Townで続きを見る</button><button onclick="NexcaDiagnosis.share()">SNS共有</button><button onclick="NexcaDiagnosis.retry()">もう一度診断する</button></div>' +
+    '</div>');
   }
-
-  function researchSummary(key) {
-    var answers = state.answers;
-    function label(q) {
-      var opt = answers[q];
-      return opt == null ? null : QUESTIONS[q][1][opt];
-    }
+  function card(title, body, open, extra) {
+    return '<details class="nxdiag-result-section ' + (extra || '') + '" ' + (open ? 'open' : '') + '><summary>' + esc(title) + '</summary><div>' + (extra === 'profile' ? body : esc(body).replace(/\n/g, '<br>')) + '</div></details>';
+  }
+  function profileHtml(key) {
+    var p = CHARS[key];
+    var rows = [['性格', p.personality], ['好きな食べ物', p.food], ['好きな場所', p.place], ['好きな時間', p.time], ['苦手なこと', p.weak], ['口ぐせ', p.phrase], ['名物ムーブ', p.move], ['仲良くなると', p.close]];
+    return rows.map(function(r) { return '<dl><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></dl>'; }).join('');
+  }
+  function summaryFor(key) {
+    function answerAt(num) { return state.answers[num - 1] || {}; }
     return {
       result_character: key,
-      main_brake_type: topKey(state.scores.brakeScores),
-      invitation_style: label(19) || label(14),
-      group_role: label(9),
-      romance_style: label(15),
-      decision_style: label(26),
-      preferred_experience_condition: label(28),
-      usual_plan_decision_style: label(30),
-      interest_action_gap_frequency: label(31),
-      non_participation_reason: label(32),
-      easiest_companion_type: label(33),
-      trusted_information_source: label(34),
-      meal_and_conversation_need: state.scores.researchScores.mealAndConversationNeed,
-      relationship_comfort: state.scores.researchScores.relationshipComfort,
-      shared_experience_motivation: state.scores.researchScores.sharedExperienceMotivation
+      top_action_gap_reason: firstResearch([15, 16, 17, 20]),
+      top_decision_style: firstResearch([1, 2, 4, 5]),
+      top_companion_type: firstResearch([6, 26, 27, 34]),
+      top_content_trigger: firstResearch([31, 33, 35]),
+      top_gacha_preference: firstResearch([25, 35]),
+      top_non_participation_reason: firstResearch([16, 17, 20]),
+      top_relationship_style: firstResearch([26, 27, 28, 29, 30]),
+      invitation_style: answerAt(5).researchKey || null
     };
   }
-
-  function profileMeta() {
-    var age = window.age || localStorage.getItem('nx_age') || localStorage.getItem('nexca_age_group') || null;
-    var region = localStorage.getItem('nx_region') || localStorage.getItem('nexca_region') || null;
-    try {
-      var p = JSON.parse(localStorage.getItem('nexca_profile') || '{}');
-      age = age || p.age_group || p.age;
-      region = region || p.region || p.area;
-    } catch (e) {}
-    return { age_group: age, region: region };
+  function firstResearch(nums) {
+    var found = nums.map(function(n) { return state.answers[n - 1]; }).filter(Boolean);
+    return found.length ? found[0].researchKey : null;
   }
-
   function saveResult(key) {
-    var meta = profileMeta();
-    var answers = state.answers.map(function(opt, idx) {
-      return { question_no: idx + 1, answer: String.fromCharCode(65 + opt), text: QUESTIONS[idx][1][opt], character: OPTION_KEYS[opt] };
-    });
     var payload = {
       user_id: window.user && window.user.id ? window.user.id : null,
-      age_group: meta.age_group,
-      region: meta.region,
       result_character: key,
-      character_scores: state.scores.characterScores,
-      behavior_scores: state.scores.behaviorScores,
-      brake_scores: state.scores.brakeScores,
-      relationship_scores: state.scores.relationshipScores,
-      romance_scores: state.scores.romanceScores,
-      experience_scores: state.scores.experienceScores,
-      research_scores: state.scores.researchScores,
-      answers: answers,
+      answers: state.answers,
+      character_scores: state.scores.character_scores,
+      research_scores: state.scores.research_scores,
       created_at: new Date().toISOString()
     };
-    var summary = Object.assign({
-      user_id: payload.user_id,
-      age_group: payload.age_group,
-      region: payload.region,
-      created_at: payload.created_at
-    }, researchSummary(key));
+    var summary = Object.assign({ user_id: payload.user_id, created_at: payload.created_at }, summaryFor(key));
     try {
-      localStorage.setItem('nexca_diagnosis_latest_v1', JSON.stringify(payload));
-      var all = JSON.parse(localStorage.getItem('nexca_diagnosis_results_v1') || '[]');
-      all.unshift(payload);
-      localStorage.setItem('nexca_diagnosis_results_v1', JSON.stringify(all.slice(0, 20)));
-      localStorage.setItem('nexca_gacha_initial_v1', JSON.stringify({ result_character: key, character_name: KEY_TO_CHAR[key].name, prefs: RESULT_TEXT[key].prefs, created_at: payload.created_at }));
+      localStorage.setItem('nexca_diagnosis_latest_v2', JSON.stringify(payload));
+      var pending = JSON.parse(localStorage.getItem('nexca_diagnosis_pending_sync_v2') || '[]');
+      pending.unshift({ result: payload, summary: summary });
+      localStorage.setItem('nexca_diagnosis_pending_sync_v2', JSON.stringify(pending.slice(0, 20)));
+      localStorage.setItem('nexca_gacha_initial_v2', JSON.stringify({ result_character: key, recommended: RESULT_TEXT[key].gacha, created_at: payload.created_at }));
       localStorage.setItem('nexca_town_focus_character', key);
     } catch (e) {}
-    if (window.sb && window.user && window.user.id) {
-      window.sb.from('diagnosis_results').insert(payload).then(function() {}).catch(function() {});
-      window.sb.from('diagnosis_research_summary').insert(summary).then(function() {}).catch(function() {});
-    }
+    trySaveSupabase(payload, summary, false);
   }
-
+  function trySaveSupabase(payload, summary, removePending) {
+    if (!window.sb || !window.user || !window.user.id) return Promise.resolve(false);
+    payload.user_id = window.user.id;
+    summary.user_id = window.user.id;
+    return Promise.all([
+      window.sb.from('diagnosis_results').insert(payload),
+      window.sb.from('diagnosis_research_summary').insert(summary)
+    ]).then(function() {
+      if (removePending) localStorage.removeItem('nexca_diagnosis_pending_sync_v2');
+      return true;
+    }).catch(function(err) {
+      try { console.warn('diagnosis save failed', err); } catch (e) {}
+      return false;
+    });
+  }
+  function syncLocalResults() {
+    if (state.syncing || !window.sb || !window.user || !window.user.id) return;
+    state.syncing = true;
+    var pending = [];
+    try { pending = JSON.parse(localStorage.getItem('nexca_diagnosis_pending_sync_v2') || '[]'); } catch (e) {}
+    if (!pending.length) { state.syncing = false; return; }
+    Promise.all(pending.map(function(item) { return trySaveSupabase(item.result, item.summary, false); })).then(function(results) {
+      if (results.every(Boolean)) localStorage.removeItem('nexca_diagnosis_pending_sync_v2');
+      state.syncing = false;
+    }).catch(function() { state.syncing = false; });
+  }
   function recordEvent(type, metadata) {
-    var meta = { event_type: type, source: 'nexca_character_diagnosis', metadata: metadata || {}, created_at: new Date().toISOString() };
-    if (window.user && window.user.id) meta.user_id = window.user.id;
+    var evt = { event_type: type, source: 'nexca_character_diagnosis', metadata: metadata || {}, created_at: new Date().toISOString() };
+    if (window.user && window.user.id) evt.user_id = window.user.id;
     try {
-      var events = JSON.parse(localStorage.getItem('nexca_user_behavior_events_v1') || '[]');
-      events.unshift(meta);
-      localStorage.setItem('nexca_user_behavior_events_v1', JSON.stringify(events.slice(0, 100)));
+      var events = JSON.parse(localStorage.getItem('nexca_user_behavior_events_v2') || '[]');
+      events.unshift(evt);
+      localStorage.setItem('nexca_user_behavior_events_v2', JSON.stringify(events.slice(0, 100)));
     } catch (e) {}
-    if (window.sb && window.user && window.user.id) {
-      window.sb.from('user_behavior_events').insert(meta).then(function() {}).catch(function() {});
-    }
+    if (window.sb && window.user && window.user.id) window.sb.from('user_behavior_events').insert(evt).then(function() {}).catch(function() {});
   }
-
   function share() {
     var key = state.latestResult || resultKey();
-    var char = KEY_TO_CHAR[key];
-    var text = '私は' + char.name + '型。まだ知らない体験が、次の自分を連れてくる。#Nexcaキャラ診断';
+    var text = '私は' + CHARS[key].name + '型でした。\nまだ知らない体験が、次の自分を連れてくる。\n#Nexcaキャラ診断';
     recordEvent('share_diagnosis_result', { result_character: key });
-    if (navigator.share) {
-      navigator.share({ title: 'Nexcaキャラ診断', text: text, url: location.href }).catch(function() {});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(text + '\n' + location.href).then(function() {
-        if (window.toast) window.toast('診断結果をコピーしました');
-      });
-    }
+    if (navigator.share) navigator.share({ title: 'Nexcaキャラ診断', text: text, url: location.href }).catch(function() {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(text + '\n' + location.href).then(function() { if (window.toast) window.toast('診断結果をコピーしました'); });
   }
-
   function goGacha() {
     var key = state.latestResult || resultKey();
-    recordEvent('click_gacha_from_diagnosis', { result_character: key, prefs: RESULT_TEXT[key].prefs });
-    try { localStorage.setItem('nexca_gacha_initial_v1', JSON.stringify({ result_character: key, prefs: RESULT_TEXT[key].prefs, created_at: new Date().toISOString() })); } catch (e) {}
-    if (window.goTab) {
-      var nav = document.querySelectorAll('.nb')[3];
-      window.goTab('points', nav);
-      if (window.toast) window.toast('結果キャラをガチャ条件に保存しました');
-    }
+    recordEvent('click_gacha_from_diagnosis', { result_character: key, recommended: RESULT_TEXT[key].gacha });
+    try { localStorage.setItem('nexca_gacha_initial_v2', JSON.stringify({ result_character: key, recommended: RESULT_TEXT[key].gacha, created_at: new Date().toISOString() })); } catch (e) {}
+    if (window.goTab) window.goTab('points', document.querySelectorAll('.nb')[3]);
+    if (window.toast) window.toast('診断結果をガチャ条件に保存しました');
   }
-
   function goTown() {
     var key = state.latestResult || resultKey();
     recordEvent('click_town_from_diagnosis', { result_character: key });
@@ -582,32 +338,14 @@
     if (window.openTown) window.openTown();
     else if (window.goTab) window.goTab('mypage', document.querySelectorAll('.nb')[4]);
   }
+  function retry() { renderStart(); }
 
-  function retry() {
-    renderStart();
-  }
-
-  window.NexcaDiagnosis = {
-    boot: boot,
-    toggleConsent: toggleConsent,
-    start: start,
-    renderQuestion: renderQuestion,
-    answer: answer,
-    back: back,
-    share: share,
-    goGacha: goGacha,
-    goTown: goTown,
-    retry: retry
-  };
+  window.NexcaDiagnosis = { boot: boot, start: start, answer: answer, back: back, renderQuestion: renderQuestion, showLoading: showLoading, share: share, goGacha: goGacha, goTown: goTown, retry: retry };
   window.startDiag = start;
   window.diagBack = back;
   window.selQ = answer;
   window.retryDiag = retry;
   window.shareDiag = share;
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
