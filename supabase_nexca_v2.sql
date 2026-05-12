@@ -621,3 +621,64 @@ create policy "users manage own collections" on public.user_collections
 drop policy if exists "users manage own mini game results" on public.mini_game_results;
 create policy "users manage own mini game results" on public.mini_game_results
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Nexca Group Gacha final schema
+alter table public.listings add column if not exists area_group text;
+alter table public.listings add column if not exists price_range text;
+alter table public.listings add column if not exists indoor_outdoor text;
+alter table public.listings add column if not exists recommended_people text[] not null default '{}'::text[];
+alter table public.listings add column if not exists recommended_relationships text[] not null default '{}'::text[];
+alter table public.listings add column if not exists recommended_situations text[] not null default '{}'::text[];
+alter table public.listings add column if not exists recommended_styles text[] not null default '{}'::text[];
+alter table public.listings add column if not exists recommended_time_of_day text[] not null default '{}'::text[];
+alter table public.listings add column if not exists stay_duration text;
+alter table public.listings add column if not exists movement_suitability text[] not null default '{}'::text[];
+alter table public.listings add column if not exists photo_friendly boolean not null default false;
+alter table public.listings add column if not exists conversation_friendly boolean not null default false;
+alter table public.listings add column if not exists beginner_friendly boolean not null default false;
+alter table public.listings add column if not exists group_friendly boolean not null default false;
+alter table public.listings add column if not exists rainy_day_friendly boolean not null default false;
+alter table public.listings add column if not exists reservation_required boolean not null default false;
+alter table public.listings add column if not exists gacha_priority integer not null default 0;
+alter table public.listings add column if not exists listing_status text generated always as (status) stored;
+
+alter table public.listing_applications add column if not exists area_group text;
+alter table public.listing_applications add column if not exists price_range text;
+alter table public.listing_applications add column if not exists indoor_outdoor text;
+alter table public.listing_applications add column if not exists recommended_people text[] not null default '{}'::text[];
+alter table public.listing_applications add column if not exists recommended_relationships text[] not null default '{}'::text[];
+alter table public.listing_applications add column if not exists recommended_situations text[] not null default '{}'::text[];
+alter table public.listing_applications add column if not exists recommended_styles text[] not null default '{}'::text[];
+alter table public.listing_applications add column if not exists recommended_time_of_day text[] not null default '{}'::text[];
+alter table public.listing_applications add column if not exists stay_duration text;
+alter table public.listing_applications add column if not exists movement_suitability text[] not null default '{}'::text[];
+alter table public.listing_applications add column if not exists photo_friendly boolean not null default false;
+alter table public.listing_applications add column if not exists conversation_friendly boolean not null default false;
+alter table public.listing_applications add column if not exists beginner_friendly boolean not null default false;
+alter table public.listing_applications add column if not exists group_friendly boolean not null default false;
+alter table public.listing_applications add column if not exists rainy_day_friendly boolean not null default false;
+alter table public.listing_applications add column if not exists reservation_required boolean not null default false;
+alter table public.listing_applications add column if not exists gacha_priority integer not null default 0;
+
+create table if not exists public.gacha_results (
+  id text primary key,
+  user_id uuid,
+  selected_conditions jsonb not null default '{}'::jsonb,
+  result_template_id text,
+  result_title text not null,
+  result_style text,
+  result_place_mode text,
+  matched_listing_ids jsonb not null default '[]'::jsonb,
+  generated_schedule jsonb not null default '[]'::jsonb,
+  story_card_data jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists gacha_results_user_idx on public.gacha_results(user_id, created_at desc);
+create index if not exists listings_gacha_published_idx on public.listings(status, is_archived, publish_at, gacha_priority desc);
+
+alter table public.gacha_results enable row level security;
+
+drop policy if exists "users manage own gacha results" on public.gacha_results;
+create policy "users manage own gacha results" on public.gacha_results
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
