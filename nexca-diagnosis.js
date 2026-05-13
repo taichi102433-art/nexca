@@ -1,15 +1,17 @@
 (function() {
   'use strict';
 
+  var appBase = location.pathname.indexOf('/nexca/') >= 0 ? '/nexca/' : '';
+  function charImage(key) { return appBase + 'assets/characters/' + key + '.png'; }
   var CHAR_ORDER = ['nexsuke', 'tsugiha', 'komorebi', 'irodori', 'honori', 'shirube'];
   var CHARS = {
-    nexsuke: { name: 'ネクスケ', type: '白紙の地図タイプ', color: '#4f9dff', bg: '#eaf5ff', icon: 'ネ', short: '最初の一歩を探す主人公', food: 'おにぎり', place: '知らない道の入口', time: '朝、まだ予定が決まっていない時間', personality: '気になるものは多いけど、最初の一歩だけ少し重い', weak: '最初から「無理」と決めつけられること', phrase: 'ちょっとだけ行ってみよ', move: 'めちゃくちゃ迷ったあと、急に一番知らない道を選ぶ', close: '急に「こっち行ってみない？」と言い出す' },
-    tsugiha: { name: 'ツギハ', type: '自分らしさリメイクタイプ', color: '#e29a24', bg: '#fff5df', icon: 'ツ', short: 'その人っぽさを仕立てる精霊', food: '焼き芋', place: '古着屋、雑貨屋、少しクセのある店', time: '夕方の買い物帰り', personality: 'こだわり強め。人の“その人っぽさ”を見つけるのが得意', weak: '「みんな同じでいいじゃん」と言われること', phrase: 'それ、君っぽくできるよ', move: '人の服を見て、勝手に“第2形態”を想像している', close: '似合う色や服を勝手に考え始める' },
-    komorebi: { name: 'コモレビ', type: 'ひと息チャージタイプ', color: '#32a875', bg: '#eafaf1', icon: '木', short: '休むことも進むことだと知っている', food: 'プリン', place: '窓辺の席、静かなカフェ', time: '午後のひと息つける時間', personality: '落ち着いていて、空気の変化に敏感', weak: '急かされること、ずっとテンション高めでいること', phrase: '少し休んだら、また行けるよ', move: '集合して5分でも、誰かが疲れてそうなら休憩を提案する', close: '疲れている時に、そっと休憩をすすめてくる' },
-    irodori: { name: 'イロドリ', type: 'ワクワク点火タイプ', color: '#ff5c8a', bg: '#fff0f5', icon: '彩', short: '退屈な日を企画に変える旗振り役', food: 'ポップコーン', place: 'イベント会場、にぎやかな通り、写真を撮りたくなる場所', time: '予定が急に動き出す瞬間', personality: '明るくて勢いがある。退屈な日を面白くしたがる', weak: '何も起きない空気、反応が薄いこと', phrase: 'それ、今日やったら面白くない？', move: '思いつきで企画を始めて、段取りはだいたいシルベを見る', close: '変な企画に巻き込んでくる' },
-    honori: { name: 'ホノリ', type: '食卓あかりタイプ', color: '#ff8b3d', bg: '#fff3e8', icon: '灯', short: '食事と会話にあかりをともす', food: 'オムライス', place: '夜ご飯をゆっくり食べられる店', time: '食べながら少し本音が出る時間', personality: 'あたたかくて、人との距離感に敏感', weak: '一緒にいる時間を雑にされること', phrase: 'ちゃんと、あったかいうちに話そ', move: 'ご飯の話になると、急にちょっと名言っぽいことを言う', close: '「ちゃんとご飯食べた？」と聞いてくる' },
-    shirube: { name: 'シルベ', type: '道しるべナビタイプ', color: '#6e7dff', bg: '#eef0ff', icon: '標', short: '予定を現実にする道案内役', food: 'サンドイッチ', place: '駅、地図のある場所、案内板の近く', time: '集合前に予定がきれいに決まった瞬間', personality: '落ち着いていて、予定を整えるのが得意', weak: '場所も時間も決まっていない曖昧な誘い', phrase: '道が見えたら、ちゃんと進める', move: '集合時間を決めただけで、なぜか少し達成感を出す', close: '集合時間とルートを勝手にまとめてくれる' },
-    yodomi: { name: 'ヨドミ', type: '行動ブレーキ', color: '#7a6895', bg: '#f3eff8', icon: '影', short: '止めたがるけど、本当は少し怖がり', food: '冷めたポテト', place: '部屋のすみ、予定を保存したままの画面', time: '「また今度でいいか」と思う瞬間', personality: '止めたがるけど、本当は少し怖がり', weak: '小さくても実際に動かれること', phrase: '今日はやめとけば？', move: '保存ボタンを押した瞬間に「もう行った気分じゃん」と言う', close: '最初は止めるけど、最後はこっそり見守っている' }
+    nexsuke: { name: 'ネクスケ', type: '白紙の地図タイプ', color: '#8FC7E8', bg: '#f2f8fb', image: charImage('nexsuke'), short: 'はじめの一歩', food: 'おにぎり', place: '知らない道の入口', time: '朝、まだ予定が決まっていない時間', personality: '気になるものは多いけど、最初の一歩だけ少し重い', weak: '最初から「無理」と決めつけられること', phrase: 'ちょっとだけ行ってみよ', move: 'めちゃくちゃ迷ったあと、急に一番知らない道を選ぶ', close: '急に「こっち行ってみない？」と言い出す' },
+    tsugiha: { name: 'ツギハ', type: '自分らしさリメイクタイプ', color: '#9B6A4B', bg: '#fbf3ec', image: charImage('tsugiha'), short: 'らしさをつくる', food: '焼き芋', place: '古着屋、雑貨屋、少しクセのある店', time: '夕方の買い物帰り', personality: 'こだわり強め。人の“その人っぽさ”を見つけるのが得意', weak: '「みんな同じでいいじゃん」と言われること', phrase: 'それ、君っぽくできるよ', move: '人の服を見て、勝手に“第2形態”を想像している', close: '似合う色や服を勝手に考え始める' },
+    komorebi: { name: 'コモレビ', type: 'ひと息チャージタイプ', color: '#A7C88A', bg: '#f5faef', image: charImage('komorebi'), short: 'ひとやすみ上手', food: 'プリン', place: '窓辺の席、静かなカフェ', time: '午後のひと息つける時間', personality: '落ち着いていて、空気の変化に敏感', weak: '急かされること、ずっとテンション高めでいること', phrase: '少し休んだら、また行けるよ', move: '集合して5分でも、誰かが疲れてそうなら休憩を提案する', close: '疲れている時に、そっと休憩をすすめてくる' },
+    irodori: { name: 'イロドリ', type: 'ワクワク点火タイプ', color: '#F26A3D', bg: '#fff1eb', image: charImage('irodori'), short: 'ワクワク点火', food: 'ポップコーン', place: 'イベント会場、にぎやかな通り、写真を撮りたくなる場所', time: '予定が急に動き出す瞬間', personality: '明るくて勢いがある。退屈な日を面白くしたがる', weak: '何も起きない空気、反応が薄いこと', phrase: 'それ、今日やったら面白くない？', move: '思いつきで企画を始めて、段取りはだいたいシルベを見る', close: '変な企画に巻き込んでくる' },
+    honori: { name: 'ホノリ', type: '食卓あかりタイプ', color: '#F0A43A', bg: '#fff6e6', image: charImage('honori'), short: 'ぬくもりごはん', food: 'オムライス', place: '夜ご飯をゆっくり食べられる店', time: '食べながら少し本音が出る時間', personality: 'あたたかくて、人との距離感に敏感', weak: '一緒にいる時間を雑にされること', phrase: 'ちゃんと、あったかいうちに話そ', move: 'ご飯の話になると、急にちょっと名言っぽいことを言う', close: '「ちゃんとご飯食べた？」と聞いてくる' },
+    shirube: { name: 'シルベ', type: '道しるべナビタイプ', color: '#5D8FAE', bg: '#eef6fa', image: charImage('shirube'), short: 'やさしい案内役', food: 'サンドイッチ', place: '駅、地図のある場所、案内板の近く', time: '集合前に予定がきれいに決まった瞬間', personality: '落ち着いていて、予定を整えるのが得意', weak: '場所も時間も決まっていない曖昧な誘い', phrase: '道が見えたら、ちゃんと進める', move: '集合時間を決めただけで、なぜか少し達成感を出す', close: '集合時間とルートを勝手にまとめてくれる' },
+    yodomi: { name: 'ヨドミ', type: '行動ブレーキ', color: '#7C6A8E', bg: '#f5f0f8', image: charImage('yodomi'), short: '迷いの影', food: '冷めたポテト', place: '部屋のすみ、予定を保存したままの画面', time: '「また今度でいいか」と思う瞬間', personality: '止めたがるけど、本当は少し怖がり', weak: '小さくても実際に動かれること', phrase: '今日はやめとけば？', move: '保存ボタンを押した瞬間に「もう行った気分じゃん」と言う', close: '最初は止めるけど、最後はこっそり見守っている' }
   };
 
   function c(text, scoreCharacter, researchKey) {
@@ -85,9 +87,20 @@
     root.classList.add('nxdiag-screen');
     root.innerHTML = '<div class="nxdiag" id="nxdiag-root">' + inner + '</div>';
   }
+  function logoHtml() {
+    return '<div class="nxdiag-logo"><span class="logo-nex">Nex</span><span class="logo-ca">ca</span></div>';
+  }
+  function headerHtml(title, showBack) {
+    return '<div class="nxdiag-header">' +
+      '<div>' + logoHtml() + '<span class="nxdiag-age-pill">' + esc(window.age || localStorage.getItem('nx_age') || '高校生') + '</span></div>' +
+      '<div class="nxdiag-header-center">' + esc(title || '') + '</div>' +
+      '<button class="nxdiag-cond" type="button" onclick="window.openAgeMod&&openAgeMod()">条件</button>' +
+      (showBack ? '<button class="nxdiag-floating-back" type="button" onclick="NexcaDiagnosis.back()">戻る</button>' : '') +
+    '</div>';
+  }
   function charOrb(key, extraClass) {
     var ch = CHARS[key];
-    return '<div class="nxdiag-orb ' + (extraClass || '') + '" style="--c:' + ch.color + ';--bg:' + ch.bg + '"><span>' + esc(ch.icon) + '</span></div>';
+    return '<div class="nxdiag-char ' + (extraClass || '') + '" style="--c:' + ch.color + ';--bg:' + ch.bg + '"><img src="' + ch.image + '" alt="' + esc(ch.name) + '" onerror="this.parentNode.classList.add(\'is-missing\');this.remove();"><span>' + esc(ch.name) + '</span></div>';
   }
   function boot() {
     syncLocalResults();
@@ -99,14 +112,15 @@
       return '<div class="nxdiag-mini" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' + charOrb(k) + '<b>' + ch.name + '</b><span>' + ch.short + '</span></div>';
     }).join('');
     shell('<div class="nxdiag-start">' +
-      '<div class="nxdiag-logo">Nexca</div>' +
+      headerHtml('', false) +
+      '<div class="nxdiag-hero-visual"><div class="nxdiag-mapline"></div><img src="' + CHARS.nexsuke.image + '" alt="ネクスケ"><img src="' + CHARS.irodori.image + '" alt="イロドリ"><img src="' + CHARS.honori.image + '" alt="ホノリ"><img src="' + CHARS.shirube.image + '" alt="シルベ"><img src="' + CHARS.yodomi.image + '" alt="ヨドミ"></div>' +
       '<h1>Nexcaキャラ診断</h1>' +
       '<p class="nxdiag-sub">まだ知らない体験が、次の自分を連れてくる。</p>' +
-      '<p class="nxdiag-lead">35問で、あなたの「動き出し方」「人との距離感」「予定の決め方」を診断します。あなたに近いNexcaキャラと、合う過ごし方・あなたの中のヨドミまで分かります。</p>' +
+      '<p class="nxdiag-lead">35問で、あなたの「動き出し方」「人との距離感」「予定の決め方」を読み解きます。</p>' +
       '<div class="nxdiag-meta"><span>35問</span><span>1問ずつ</span><span>約5分</span></div>' +
       '<div class="nxdiag-char-grid">' + cards + '</div>' +
-      '<p class="nxdiag-small">※結果はあなたを決めつけるものではなく、自己理解のヒントです。<br>※回答データは個人が特定されない形で、Nexcaの改善に使われる場合があります。</p>' +
       '<button class="nxdiag-primary" onclick="NexcaDiagnosis.start()">診断をはじめる</button>' +
+      '<p class="nxdiag-small">※結果はあなたを決めつけるものではなく、自己理解のヒントです。</p>' +
     '</div>');
   }
   function start() {
@@ -121,11 +135,11 @@
     var pct = Math.round((state.index / QUESTIONS.length) * 100);
     var lineKey = lineCharacter(q.line);
     var options = q.choices.map(function(choice, i) {
-      var ch = CHARS[choice.scoreCharacter];
-      return '<button class="nxdiag-option" style="--c:' + ch.color + ';--bg:' + ch.bg + '" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + (i + 1) + '</span><b>' + esc(choice.text) + '</b></button>';
+      return '<button class="nxdiag-option" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + (i + 1) + '</span><b>' + esc(choice.text) + '</b><em>›</em></button>';
     }).join('');
     shell('<div class="nxdiag-question-wrap">' +
-      '<div class="nxdiag-qtop"><button class="nxdiag-back" onclick="NexcaDiagnosis.back()">戻る</button><div><b>' + (state.index + 1) + '/35</b><span>あなたのNexcaタイプを読み取り中</span></div></div>' +
+      headerHtml('診断中', true) +
+      '<div class="nxdiag-qtop"><div><b>' + (state.index + 1) + ' / 35</b><span>あなたのNexcaタイプを読み取り中</span></div></div>' +
       '<div class="nxdiag-progress"><i style="width:' + pct + '%"></i></div>' +
       '<div class="nxdiag-question-card">' +
         '<div class="nxdiag-line">' + charOrb(lineKey, 'small') + '<p>' + esc(q.line) + '</p></div>' +
@@ -177,9 +191,9 @@
     '</div>');
   }
   function showLoading() {
-    var lights = CHAR_ORDER.map(function(k) { var ch = CHARS[k]; return '<i style="--c:' + ch.color + '">' + esc(ch.icon) + '</i>'; }).join('');
+    var lights = CHAR_ORDER.map(function(k) { var ch = CHARS[k]; return '<i style="--c:' + ch.color + '"><img src="' + ch.image + '" alt="' + esc(ch.name) + '"></i>'; }).join('');
     shell('<div class="nxdiag-loading">' +
-      '<div class="nxdiag-lamp">' + lights + '<em>影</em></div>' +
+      '<div class="nxdiag-lamp">' + lights + '<em><img src="' + CHARS.yodomi.image + '" alt="ヨドミ"></em></div>' +
       '<h2>あなたに近いNexcaキャラを見つけています。</h2>' +
       '<p>あなたの中のヨドミも読み解いています</p>' +
     '</div>');
@@ -212,7 +226,7 @@
     try { if (window.addPt) window.addPt('診断完了', 15, false, 'diag_final_v2'); } catch (e) {}
     var bars = CHAR_ORDER.map(function(k) {
       var c = CHARS[k], pct = percentFor(k);
-      return '<div class="nxdiag-score-row"><span>' + c.name + 'との近さ</span><div><i style="width:' + pct + '%;background:' + c.color + '"></i></div><b>' + pct + '%</b></div>';
+      return '<div class="nxdiag-score-row ' + (k === key ? 'top' : '') + '"><span><img src="' + c.image + '" alt="' + esc(c.name) + '"><em>' + c.name + 'との近さ</em></span><div><i style="width:' + pct + '%"></i></div><b>' + pct + '%</b></div>';
     }).join('');
     var profile = profileHtml(key);
     var cards = [
@@ -226,9 +240,10 @@
       card('今日の一歩', txt.today, true),
       card('キャラプロフィール', profile, false, 'profile')
     ].join('');
-    var shareCard = '<div class="nxdiag-share-card" style="--c:' + ch.color + ';--bg:' + ch.bg + '"><span>Nexcaキャラ診断</span><b>' + ch.name + '型</b><em>' + ch.type + '</em><p>' + txt.copy + '</p><small>Nexca｜あなたも診断してみる？</small></div>';
+    var shareCard = '<div class="nxdiag-share-card" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' + logoHtml() + '<img src="' + ch.image + '" alt="' + esc(ch.name) + '"><span>Nexcaキャラ診断</span><b>私は<br>' + ch.name + '型</b><em>' + ch.type + '</em><p>' + txt.copy + '</p><small>#Nexcaキャラ診断<br>あなたも診断してみる？</small></div>';
     shell('<div class="nxdiag-result" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' +
-      '<div class="nxdiag-result-hero">' + charOrb(key, 'result') + '<p class="nxdiag-result-kicker">RESULT</p><h1>' + ch.name + '型</h1><h2>' + ch.type + '</h2><p class="nxdiag-result-copy">' + esc(txt.copy) + '</p></div>' +
+      headerHtml('診断結果', false) +
+      '<div class="nxdiag-result-hero">' + charOrb(key, 'result') + '<p class="nxdiag-result-kicker">あなたの診断結果</p><h1>' + ch.name + '型</h1><h2>' + ch.type + '</h2><p class="nxdiag-result-copy">' + esc(txt.copy) + '</p></div>' +
       '<section class="nxdiag-score-card"><h3>キャラとの近さ</h3><p>点数ではなく、今の回答傾向として近いキャラを表示しています。</p>' + bars + '</section>' +
       cards +
       '<section class="nxdiag-result-section"><h3>共有カード</h3>' + shareCard + '</section>' +
@@ -236,7 +251,8 @@
     '</div>');
   }
   function card(title, body, open, extra) {
-    return '<details class="nxdiag-result-section ' + (extra || '') + '" ' + (open ? 'open' : '') + '><summary>' + esc(title) + '</summary><div>' + (extra === 'profile' ? body : esc(body).replace(/\n/g, '<br>')) + '</div></details>';
+    var yodomi = extra === 'yodomi' ? charOrb('yodomi', 'yodomi-card') : '';
+    return '<details class="nxdiag-result-section ' + (extra || '') + '" ' + (open ? 'open' : '') + '><summary><span class="nxdiag-sec-mark"></span>' + esc(title) + '</summary><div>' + yodomi + (extra === 'profile' ? body : esc(body).replace(/\n/g, '<br>')) + '</div></details>';
   }
   function profileHtml(key) {
     var p = CHARS[key];
