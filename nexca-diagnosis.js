@@ -94,7 +94,7 @@
     return '<div class="nxdiag-header">' +
       '<div>' + logoHtml() + '</div>' +
       '<div class="nxdiag-header-center">' + esc(title || '') + '</div>' +
-      '<button class="nxdiag-cond" type="button" onclick="window.openAgeMod&&openAgeMod()">条件</button>' +
+      '<button class="nxdiag-cond" type="button" onclick="window.openAgeMod&&openAgeMod()">条件 ▾</button>' +
     '</div>';
   }
   function charOrb(key, extraClass) {
@@ -134,7 +134,7 @@
   }
   function renderQuestion() {
     var q = QUESTIONS[state.index];
-    var pct = Math.round((state.index / QUESTIONS.length) * 100);
+    var pct = Math.round(((state.index + 1) / QUESTIONS.length) * 100);
     var lineKey = lineCharacter(q.line);
     var options = q.choices.map(function(choice, i) {
       return '<button class="nxdiag-option" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + (i + 1) + '</span><b>' + esc(choice.text) + '</b><em>›</em></button>';
@@ -210,7 +210,7 @@
         '<p>6つの光と、あなたの中のヨドミを読み解いています。</p>' +
       '</main>' +
     '</div>');
-    setTimeout(showResult, 1600);
+    setTimeout(showResult, 2000);
   }
   function resultKey() {
     recompute();
@@ -239,7 +239,7 @@
     try { if (window.addPt) window.addPt('診断完了', 15, false, 'diag_final_v2'); } catch (e) {}
     var bars = CHAR_ORDER.map(function(k) {
       var c = CHARS[k], pct = percentFor(k);
-      return '<div class="nxdiag-score-row ' + (k === key ? 'top' : '') + '"><span><img src="' + c.image + '" alt="' + esc(c.name) + '"><em>' + c.name + 'との近さ</em></span><div><i style="width:' + pct + '%"></i></div><b>' + pct + '%</b></div>';
+      return '<div class="nxdiag-score-row ' + (k === key ? 'top' : '') + '"><span><img src="' + c.image + '" alt="' + esc(c.name) + '"><em>' + c.name + '</em></span><div><i style="width:' + pct + '%"></i></div><b>' + pct + '%</b></div>';
     }).join('');
     var profile = profileHtml(key);
     var tags = resultTags(key).map(function(t) {

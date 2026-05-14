@@ -2016,3 +2016,1040 @@
     font-size: 31px;
   }
 }
+
+/* v5 emergency stability pass: compact, non-overlapping production UI */
+#diag.nxdiag-screen {
+  background: #111 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  overflow: hidden auto !important;
+}
+
+#diag.nxdiag-screen .nxdiag,
+#diag.nxdiag-screen #nxdiag-root {
+  width: 100% !important;
+  max-width: 430px !important;
+  min-height: 100% !important;
+  margin: 0 auto !important;
+  background: #fff9f0 !important;
+  color: #2b211d !important;
+  overflow-x: hidden !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif !important;
+}
+
+#diag.nxdiag-screen .nxdiag-view {
+  width: 100% !important;
+  min-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #fff9f0 !important;
+  overflow-x: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 30 !important;
+  width: 100% !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 0 18px !important;
+  box-sizing: border-box !important;
+  background: #111 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-header .nxdiag-logo {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: baseline !important;
+  justify-content: flex-start !important;
+  width: auto !important;
+  height: auto !important;
+  color: inherit !important;
+  font-size: 0 !important;
+  line-height: 1 !important;
+  text-shadow: none !important;
+  background: transparent !important;
+}
+
+#diag.nxdiag-screen .nxdiag-header .logo-nex,
+#diag.nxdiag-screen .nxdiag-header .logo-ca {
+  font-size: 26px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+}
+
+#diag.nxdiag-screen .nxdiag-header .logo-nex { color: #fff !important; }
+#diag.nxdiag-screen .nxdiag-header .logo-ca { color: #e63218 !important; }
+
+#diag.nxdiag-screen .nxdiag-header-center {
+  display: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-cond {
+  flex: none !important;
+  min-width: 76px !important;
+  height: 38px !important;
+  padding: 0 16px !important;
+  border: 1px solid rgba(166,119,46,.22) !important;
+  border-radius: 999px !important;
+  background: #fff9f0 !important;
+  color: #2b211d !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,.14) !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-panel {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 430px !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  padding: 16px 18px 28px !important;
+  box-sizing: border-box !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #fff9f0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+#diag.nxdiag-screen .nxdiag-panel::before,
+#diag.nxdiag-screen .nxdiag-panel::after,
+#diag.nxdiag-screen .nxdiag-result-hero::before {
+  display: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-panel > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-age-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 76px !important;
+  height: 34px !important;
+  padding: 0 14px !important;
+  border: 1px solid rgba(166,119,46,.28) !important;
+  border-radius: 999px !important;
+  background: #fffdf8 !important;
+  color: #2b211d !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-start-panel h1 {
+  margin: 16px 0 10px !important;
+  color: #2b211d !important;
+  font-size: clamp(30px, 8vw, 34px) !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  text-align: left !important;
+}
+
+#diag.nxdiag-screen .nxdiag-start-panel .nxdiag-sub {
+  margin: 0 0 12px !important;
+  color: #2b211d !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  font-weight: 700 !important;
+  text-align: left !important;
+}
+
+#diag.nxdiag-screen .nxdiag-start-panel .nxdiag-lead {
+  margin: 0 0 16px !important;
+  color: #74665d !important;
+  font-size: 14px !important;
+  line-height: 1.75 !important;
+  text-align: left !important;
+}
+
+#diag.nxdiag-screen .nxdiag-meta {
+  height: 66px !important;
+  margin: 0 0 14px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0 !important;
+  border: 1px solid rgba(166,119,46,.18) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-meta span {
+  min-width: 0 !important;
+  padding: 9px 4px !important;
+  border: 0 !important;
+  border-left: 1px solid rgba(166,119,46,.14) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-meta span:first-child { border-left: 0 !important; }
+#diag.nxdiag-screen .nxdiag-meta b { font-size: 22px !important; color: #2b211d !important; }
+#diag.nxdiag-screen .nxdiag-meta small { font-size: 14px !important; color: #2b211d !important; }
+#diag.nxdiag-screen .nxdiag-meta em { margin-top: 2px !important; font-size: 10px !important; color: #74665d !important; }
+
+#diag.nxdiag-screen .nxdiag-char-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mini {
+  min-width: 0 !important;
+  height: 142px !important;
+  padding: 8px 8px 10px !important;
+  border: 1px solid rgba(166,119,46,.22) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow: 0 8px 20px rgba(65,45,25,.06) !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mini .nxdiag-char {
+  width: 100% !important;
+  height: 86px !important;
+  margin: 0 auto 4px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mini .nxdiag-char img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mini .nxdiag-char span { display: none !important; }
+#diag.nxdiag-screen .nxdiag-mini b { font-size: 16px !important; line-height: 1.15 !important; color: #2b211d !important; }
+#diag.nxdiag-screen .nxdiag-mini span { font-size: 12px !important; color: #74665d !important; }
+
+#diag.nxdiag-screen .nxdiag-small {
+  margin: 14px 0 0 !important;
+  font-size: 12px !important;
+  line-height: 1.6 !important;
+  color: #74665d !important;
+}
+
+#diag.nxdiag-screen .nxdiag-primary {
+  width: 100% !important;
+  height: 54px !important;
+  margin: 18px 0 24px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #e63218, #f29a22) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 24px rgba(230,50,24,.2) !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-question-panel {
+  flex: 1 0 auto !important;
+  padding-top: 8px !important;
+  padding-bottom: 14px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-panel-top {
+  height: 38px !important;
+  margin: 0 0 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-back-btn {
+  flex: none !important;
+  width: 40px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(166,119,46,.22) !important;
+  border-radius: 50% !important;
+  background: #fffdf8 !important;
+  color: transparent !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-back-btn::before {
+  content: "<" !important;
+  color: #2b211d !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-qtop {
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+#diag.nxdiag-screen .nxdiag-qtop b {
+  color: #2b211d !important;
+  font-size: 20px !important;
+  line-height: 1.1 !important;
+  font-weight: 700 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-qtop small {
+  color: #74665d !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-progress {
+  width: min(210px, 62vw) !important;
+  height: 6px !important;
+  margin: 8px auto 10px !important;
+  border-radius: 999px !important;
+  background: #eadfce !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-progress i {
+  display: block !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+  background: linear-gradient(90deg, #d6a64a, #f29a22) !important;
+  transition: width .25s ease !important;
+}
+
+#diag.nxdiag-screen .nxdiag-line {
+  height: 82px !important;
+  min-height: 82px !important;
+  margin: 0 0 10px !important;
+  padding: 10px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  border: 1px solid rgba(166,119,46,.2) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow: 0 8px 18px rgba(65,45,25,.05) !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-line .nxdiag-char.talk {
+  flex: none !important;
+  width: 64px !important;
+  height: 64px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-line .nxdiag-char.talk img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+#diag.nxdiag-screen .nxdiag-line .nxdiag-char.talk span { display: none !important; }
+
+#diag.nxdiag-screen .nxdiag-line p {
+  min-width: 0 !important;
+  margin: 0 !important;
+  color: #2b211d !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  font-weight: 600 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-line strong {
+  color: #2b211d !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-question-card {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: center !important;
+}
+
+#diag.nxdiag-screen .nxdiag-qno {
+  margin: 8px 0 4px !important;
+  color: #a9772e !important;
+  font-size: 16px !important;
+  line-height: 1.1 !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-qno span {
+  display: inline-block !important;
+  width: 36px !important;
+  height: 1px !important;
+  margin: 0 8px 4px !important;
+  background: rgba(166,119,46,.28) !important;
+}
+
+#diag.nxdiag-screen .nxdiag-question-card h2 {
+  max-width: 100% !important;
+  margin: 0 0 12px !important;
+  color: #2b211d !important;
+  font-size: clamp(22px, 6.1vw, 26px) !important;
+  line-height: 1.35 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  text-align: center !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+  line-break: strict !important;
+}
+
+#diag.nxdiag-screen .nxdiag-options {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 7px !important;
+  margin: 0 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-option {
+  width: 100% !important;
+  height: 50px !important;
+  min-height: 50px !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  border: 1px solid rgba(166,119,46,.22) !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  box-shadow: 0 4px 12px rgba(65,45,25,.04) !important;
+  color: #2b211d !important;
+  text-align: left !important;
+  transform: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-option span {
+  flex: none !important;
+  width: 30px !important;
+  height: 30px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(214,166,74,.38) !important;
+  border-radius: 50% !important;
+  background: #fff9f0 !important;
+  color: #a9772e !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-option b {
+  min-width: 0 !important;
+  flex: 1 !important;
+  color: #2b211d !important;
+  font-size: 15px !important;
+  line-height: 1.35 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+}
+
+#diag.nxdiag-screen .nxdiag-option em {
+  flex: none !important;
+  margin-left: auto !important;
+  color: #a9772e !important;
+  font-size: 22px !important;
+  font-style: normal !important;
+}
+
+#diag.nxdiag-screen .nxdiag-option:active {
+  transform: scale(.98) !important;
+}
+
+#diag.nxdiag-screen .nxdiag-option.is-selected {
+  border-color: #e63218 !important;
+  background: #fff7f1 !important;
+  box-shadow: 0 6px 18px rgba(230,50,24,.12) !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mid .nxdiag-panel,
+#diag.nxdiag-screen .nxdiag-loading {
+  min-height: calc(100dvh - var(--nav-h, 64px) - 60px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mid-card .nxdiag-char.big {
+  width: 170px !important;
+  height: 170px !important;
+  margin: 0 auto 10px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  animation: nxdiagFloatLoop 2.4s ease-in-out infinite !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mid-card h2,
+#diag.nxdiag-screen .nxdiag-loading h2 {
+  margin: 8px 0 !important;
+  color: #2b211d !important;
+  font-size: 21px !important;
+  line-height: 1.45 !important;
+  font-weight: 900 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-mid-card p,
+#diag.nxdiag-screen .nxdiag-loading p {
+  margin: 0 0 14px !important;
+  color: #74665d !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-skip {
+  margin: -12px 0 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #74665d !important;
+  font-size: 13px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-lamp {
+  width: 100% !important;
+  max-width: 280px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+  margin: 0 auto 16px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-lamp i,
+#diag.nxdiag-screen .nxdiag-lamp em {
+  width: 74px !important;
+  height: 74px !important;
+  margin: 0 auto !important;
+  border: 1px solid rgba(166,119,46,.18) !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  overflow: hidden !important;
+  animation: nxdiagCardPop 1.2s ease-in-out infinite !important;
+}
+
+#diag.nxdiag-screen .nxdiag-lamp img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-panel {
+  padding-bottom: 32px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-hero {
+  min-height: 0 !important;
+  margin: 0 0 14px !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  align-items: stretch !important;
+  text-align: center !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-text {
+  order: 2 !important;
+  min-width: 0 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-char.result {
+  order: 1 !important;
+  width: 100% !important;
+  height: 210px !important;
+  margin: 0 auto 4px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-char.result img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+#diag.nxdiag-screen .nxdiag-char.result span { display: none !important; }
+
+#diag.nxdiag-screen .nxdiag-result-kicker {
+  margin: 0 auto 8px !important;
+  padding: 6px 14px !important;
+  border: 1px solid rgba(214,166,74,.38) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: #74665d !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-hero h1 {
+  margin: 0 !important;
+  color: #2b211d !important;
+  font-size: clamp(34px, 10vw, 40px) !important;
+  line-height: 1.15 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-hero h1 small {
+  margin-left: 4px !important;
+  font-size: .55em !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-hero h2 {
+  margin: 6px 0 0 !important;
+  color: #d97900 !important;
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+  font-weight: 900 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-copy,
+#diag.nxdiag-screen .nxdiag-result-desc {
+  max-width: 100% !important;
+  margin: 10px 0 0 !important;
+  color: #2b211d !important;
+  font-size: 14px !important;
+  line-height: 1.75 !important;
+  font-weight: 700 !important;
+  text-align: left !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-card {
+  margin: 14px 0 0 !important;
+  padding: 16px !important;
+  border: 1px solid rgba(166,119,46,.18) !important;
+  border-radius: 22px !important;
+  background: #fff !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-card h3 {
+  margin: 0 0 10px !important;
+  color: #2b211d !important;
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row {
+  min-width: 0 !important;
+  height: 38px !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-columns: 104px minmax(0, 1fr) 42px !important;
+  align-items: center !important;
+  gap: 8px !important;
+  border-top: 1px solid rgba(166,119,46,.1) !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row:first-of-type { border-top: 0 !important; }
+
+#diag.nxdiag-screen .nxdiag-score-row span {
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row span img {
+  flex: none !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row em {
+  min-width: 0 !important;
+  color: #2b211d !important;
+  font-size: 13px !important;
+  line-height: 1.1 !important;
+  font-style: normal !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row div {
+  min-width: 0 !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  background: #f1e7d8 !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row div i {
+  display: block !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+  background: #d6a64a !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row.top div i {
+  background: linear-gradient(90deg, #e63218, #f29a22) !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row b {
+  color: #2b211d !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  text-align: right !important;
+}
+
+#diag.nxdiag-screen .nxdiag-score-row.top b,
+#diag.nxdiag-screen .nxdiag-score-row.top em {
+  color: #e63218 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-tags {
+  margin: 12px 0 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-tags span {
+  min-width: 0 !important;
+  padding: 10px 6px !important;
+  border: 1px solid rgba(166,119,46,.18) !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+}
+
+#diag.nxdiag-screen .nxdiag-tags b { font-size: 12px !important; color: #2b211d !important; }
+#diag.nxdiag-screen .nxdiag-tags small { font-size: 10px !important; color: #74665d !important; line-height: 1.25 !important; }
+
+#diag.nxdiag-screen .nxdiag-quick {
+  margin: 12px 0 0 !important;
+  padding: 14px 10px !important;
+  border: 1px solid rgba(166,119,46,.18) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+}
+
+#diag.nxdiag-screen .nxdiag-quick h3 {
+  margin: 0 0 10px !important;
+  font-size: 17px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-quick div {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 8px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-quick span {
+  font-size: 12px !important;
+  color: #2b211d !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-section {
+  margin: 10px 0 0 !important;
+  border: 1px solid rgba(166,119,46,.16) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-section summary {
+  min-height: 62px !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  color: #2b211d !important;
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  font-weight: 900 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-sec-mark {
+  flex: none !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+  background: #fff4dc !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-section summary::after {
+  width: 8px !important;
+  height: 8px !important;
+  margin-left: auto !important;
+  border-right: 2px solid #4b2317 !important;
+  border-bottom: 2px solid #4b2317 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-section > div {
+  padding: 0 16px 16px !important;
+  color: #2b211d !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-char.yodomi-card {
+  float: right !important;
+  width: 76px !important;
+  height: 76px !important;
+  margin: 0 0 6px 8px !important;
+  opacity: .78 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-section.profile dl {
+  margin: 8px 0 0 !important;
+  display: grid !important;
+  grid-template-columns: 92px 1fr !important;
+  gap: 8px !important;
+  align-items: start !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-section.profile dt {
+  padding: 5px 8px !important;
+  border: 1px solid rgba(166,119,46,.2) !important;
+  border-radius: 999px !important;
+  background: #fff9f0 !important;
+  color: #74665d !important;
+  font-size: 12px !important;
+  text-align: center !important;
+}
+
+#diag.nxdiag-screen .nxdiag-result-section.profile dd {
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 16px 0 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-wrap > h3 {
+  margin: 0 0 10px !important;
+  color: #2b211d !important;
+  font-size: 18px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-wrap > h3::before,
+#diag.nxdiag-screen .nxdiag-share-wrap > h3::after {
+  display: none !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 190px !important;
+  aspect-ratio: auto !important;
+  padding: 16px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 118px !important;
+  gap: 8px !important;
+  align-items: center !important;
+  border: 1px solid rgba(166,119,46,.22) !important;
+  border-radius: 22px !important;
+  background: #fffdf8 !important;
+  overflow: hidden !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card .nxdiag-logo {
+  grid-column: 1 !important;
+  margin: 0 0 4px !important;
+  justify-content: flex-start !important;
+  font-size: 0 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card .logo-nex,
+#diag.nxdiag-screen .nxdiag-share-card .logo-ca {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card .logo-nex { color: #2b211d !important; }
+#diag.nxdiag-screen .nxdiag-share-card .logo-ca { color: #e63218 !important; }
+
+#diag.nxdiag-screen .nxdiag-share-card img {
+  grid-column: 2 !important;
+  grid-row: 1 / span 6 !important;
+  width: 130px !important;
+  height: 170px !important;
+  margin: 0 -12px -10px 0 !important;
+  object-fit: contain !important;
+  align-self: end !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card span,
+#diag.nxdiag-screen .nxdiag-share-card b,
+#diag.nxdiag-screen .nxdiag-share-card em,
+#diag.nxdiag-screen .nxdiag-share-card p,
+#diag.nxdiag-screen .nxdiag-share-card small {
+  grid-column: 1 !important;
+  min-width: 0 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card span {
+  color: #74665d !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card b {
+  color: #2b211d !important;
+  font-size: clamp(24px, 7vw, 30px) !important;
+  line-height: 1.18 !important;
+  font-weight: 900 !important;
+  word-break: keep-all !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card em {
+  color: #e63218 !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  font-weight: 900 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card p {
+  margin: 4px 0 !important;
+  color: #2b211d !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-share-card small {
+  color: #74665d !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-actions {
+  margin: 16px 0 32px !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+
+#diag.nxdiag-screen .nxdiag-actions button {
+  width: 100% !important;
+  min-height: 52px !important;
+  padding: 0 12px !important;
+  border: 1px solid rgba(166,119,46,.24) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: #2b211d !important;
+  box-shadow: 0 8px 18px rgba(65,45,25,.06) !important;
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+}
+
+#diag.nxdiag-screen .nxdiag-actions button.main {
+  border: 0 !important;
+  background: linear-gradient(90deg, #e63218, #f29a22) !important;
+  color: #fff !important;
+}
+
+body:has(#diag.on) #nav {
+  max-width: 430px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  height: var(--nav-h) !important;
+  background: rgba(255,249,240,.96) !important;
+  border-top: 1px solid rgba(166,119,46,.16) !important;
+  backdrop-filter: blur(10px) !important;
+  color: #8d7b69 !important;
+}
+
+body:has(#diag.on) #nav .nb {
+  color: #8d7b69 !important;
+}
+
+body:has(#diag.on) #nav .nb.on {
+  color: #e63218 !important;
+}
+
+body:has(#diag.on) #nav .nb.on .nav-svg {
+  stroke: #e63218 !important;
+}
+
+body:has(#diag.on) #nav .nb.on .nb-ic {
+  filter: drop-shadow(0 0 6px rgba(230,50,24,.18)) !important;
+}
+
+@keyframes nxdiagFloatLoop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@media (max-width: 390px) {
+  #diag.nxdiag-screen .nxdiag-panel {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  #diag.nxdiag-screen .nxdiag-question-card h2 {
+    font-size: 22px !important;
+    margin-bottom: 10px !important;
+  }
+  #diag.nxdiag-screen .nxdiag-option {
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+  #diag.nxdiag-screen .nxdiag-option b {
+    font-size: 14px !important;
+  }
+  #diag.nxdiag-screen .nxdiag-line {
+    height: 78px !important;
+    min-height: 78px !important;
+  }
+  #diag.nxdiag-screen .nxdiag-line .nxdiag-char.talk {
+    width: 58px !important;
+    height: 58px !important;
+  }
+}
