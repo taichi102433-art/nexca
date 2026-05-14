@@ -92,10 +92,9 @@
   }
   function headerHtml(title, showBack) {
     return '<div class="nxdiag-header">' +
-      '<div>' + logoHtml() + '<span class="nxdiag-age-pill">' + esc(window.age || localStorage.getItem('nx_age') || '高校生') + '</span></div>' +
+      '<div>' + logoHtml() + '</div>' +
       '<div class="nxdiag-header-center">' + esc(title || '') + '</div>' +
       '<button class="nxdiag-cond" type="button" onclick="window.openAgeMod&&openAgeMod()">条件</button>' +
-      (showBack ? '<button class="nxdiag-floating-back" type="button" onclick="NexcaDiagnosis.back()">戻る</button>' : '') +
     '</div>';
   }
   function charOrb(key, extraClass) {
@@ -111,16 +110,19 @@
       var ch = CHARS[k];
       return '<div class="nxdiag-mini" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' + charOrb(k) + '<b>' + ch.name + '</b><span>' + ch.short + '</span></div>';
     }).join('');
-    shell('<div class="nxdiag-start">' +
+    shell('<div class="nxdiag-start nxdiag-view">' +
       headerHtml('', false) +
-      '<div class="nxdiag-hero-visual"><div class="nxdiag-mapline"></div><img src="' + CHARS.nexsuke.image + '" alt="ネクスケ"><img src="' + CHARS.irodori.image + '" alt="イロドリ"><img src="' + CHARS.honori.image + '" alt="ホノリ"><img src="' + CHARS.shirube.image + '" alt="シルベ"><img src="' + CHARS.yodomi.image + '" alt="ヨドミ"></div>' +
-      '<h1>Nexcaキャラ診断</h1>' +
-      '<p class="nxdiag-sub">まだ知らない体験が、次の自分を連れてくる。</p>' +
-      '<p class="nxdiag-lead">35問で、あなたの「動き出し方」「人との距離感」「予定の決め方」を読み解きます。</p>' +
-      '<div class="nxdiag-meta"><span>35問</span><span>1問ずつ</span><span>約5分</span></div>' +
-      '<div class="nxdiag-char-grid">' + cards + '</div>' +
-      '<button class="nxdiag-primary" onclick="NexcaDiagnosis.start()">診断をはじめる</button>' +
-      '<p class="nxdiag-small">※結果はあなたを決めつけるものではなく、自己理解のヒントです。</p>' +
+      '<main class="nxdiag-panel nxdiag-start-panel">' +
+        '<span class="nxdiag-age-pill">' + esc(window.age || localStorage.getItem('nx_age') || '高校生') + '</span>' +
+        '<div class="nxdiag-hero-mark" aria-hidden="true"></div>' +
+        '<h1>Nexcaキャラ診断</h1>' +
+        '<p class="nxdiag-sub">まだ知らない体験が、次の自分を連れてくる。</p>' +
+        '<p class="nxdiag-lead">35問で、あなたの「動き出し方」「人との距離感」「予定の決め方」を読み解く。6体のキャラから、今の自分に近いタイプを見つけよう。</p>' +
+        '<div class="nxdiag-meta"><span><b>35</b><small>問</small><em>質問数</em></span><span><b>5</b><small>分</small><em>所要時間</em></span><span><b>6</b><small>タイプ</small><em>診断タイプ</em></span></div>' +
+        '<div class="nxdiag-char-grid">' + cards + '</div>' +
+        '<p class="nxdiag-small">※結果はあなたを決めつけるものではなく、自己理解のヒントです。</p>' +
+        '<button class="nxdiag-primary" onclick="NexcaDiagnosis.start()">診断をはじめる</button>' +
+      '</main>' +
     '</div>');
   }
   function start() {
@@ -137,14 +139,17 @@
     var options = q.choices.map(function(choice, i) {
       return '<button class="nxdiag-option" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + (i + 1) + '</span><b>' + esc(choice.text) + '</b><em>›</em></button>';
     }).join('');
-    shell('<div class="nxdiag-question-wrap">' +
-      headerHtml('診断中', true) +
-      '<div class="nxdiag-qtop"><div><b>' + (state.index + 1) + ' / 35</b><span>あなたのNexcaタイプを読み取り中</span></div></div>' +
-      '<div class="nxdiag-progress"><i style="width:' + pct + '%"></i></div>' +
-      '<div class="nxdiag-question-card">' +
-        '<div class="nxdiag-line">' + charOrb(lineKey, 'small') + '<p>' + esc(q.line) + '</p></div>' +
-        '<div class="nxdiag-qno">' + q.id + '</div><h2>' + esc(q.q) + '</h2><div class="nxdiag-options">' + options + '</div>' +
-      '</div>' +
+    shell('<div class="nxdiag-question-wrap nxdiag-view">' +
+      headerHtml('', false) +
+      '<main class="nxdiag-panel nxdiag-question-panel">' +
+        '<div class="nxdiag-panel-top"><button class="nxdiag-back-btn" onclick="NexcaDiagnosis.back()">戻る</button><span class="nxdiag-age-pill">' + esc(window.age || localStorage.getItem('nx_age') || '高校生') + '</span></div>' +
+        '<div class="nxdiag-qtop"><b>' + (state.index + 1) + '<small>/ 35</small></b></div>' +
+        '<div class="nxdiag-progress"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="nxdiag-line">' + charOrb(lineKey, 'talk') + '<p><strong>' + esc(CHARS[lineKey].name) + '</strong><br>' + esc(q.line.replace(CHARS[lineKey].name, '').replace(/[「」]/g, '')) + '</p></div>' +
+        '<div class="nxdiag-question-card">' +
+          '<div class="nxdiag-qno"><span></span>' + q.id + '<span></span></div><h2>' + esc(q.q) + '</h2><div class="nxdiag-options">' + options + '</div>' +
+        '</div>' +
+      '</main>' +
     '</div>');
   }
   function lineCharacter(line) {
@@ -184,18 +189,26 @@
   }
   function showMilestone(n, finalStep) {
     var m = MILESTONES[n], ch = CHARS[m.char];
-    shell('<div class="nxdiag-mid" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' +
-      charOrb(m.char, 'big') + '<h2>' + esc(m.title) + '</h2><p>' + esc(m.text) + '</p>' +
-      '<button class="nxdiag-primary" onclick="' + (finalStep ? 'NexcaDiagnosis.showLoading()' : 'NexcaDiagnosis.renderQuestion()') + '">' + (finalStep ? '結果を見る' : '続ける') + '</button>' +
-      '<button class="nxdiag-skip" onclick="' + (finalStep ? 'NexcaDiagnosis.showLoading()' : 'NexcaDiagnosis.renderQuestion()') + '">スキップ</button>' +
+    shell('<div class="nxdiag-mid nxdiag-view" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' +
+      headerHtml('', false) +
+      '<main class="nxdiag-panel nxdiag-mid-card">' +
+        '<div class="nxdiag-hero-mark" aria-hidden="true"></div>' + charOrb(m.char, 'big') +
+        '<h2>' + esc(m.title) + '</h2><p>' + esc(m.text) + '</p>' +
+        '<button class="nxdiag-primary" onclick="' + (finalStep ? 'NexcaDiagnosis.showLoading()' : 'NexcaDiagnosis.renderQuestion()') + '">' + (finalStep ? '結果を見る' : '続ける') + '</button>' +
+        '<button class="nxdiag-skip" onclick="' + (finalStep ? 'NexcaDiagnosis.showLoading()' : 'NexcaDiagnosis.renderQuestion()') + '">スキップ</button>' +
+      '</main>' +
     '</div>');
   }
   function showLoading() {
     var lights = CHAR_ORDER.map(function(k) { var ch = CHARS[k]; return '<i style="--c:' + ch.color + '"><img src="' + ch.image + '" alt="' + esc(ch.name) + '"></i>'; }).join('');
-    shell('<div class="nxdiag-loading">' +
-      '<div class="nxdiag-lamp">' + lights + '<em><img src="' + CHARS.yodomi.image + '" alt="ヨドミ"></em></div>' +
-      '<h2>あなたに近いNexcaキャラを見つけています。</h2>' +
-      '<p>あなたの中のヨドミも読み解いています</p>' +
+    shell('<div class="nxdiag-loading-wrap nxdiag-view">' +
+      headerHtml('', false) +
+      '<main class="nxdiag-panel nxdiag-loading">' +
+        '<div class="nxdiag-result-light"></div>' +
+        '<div class="nxdiag-lamp">' + lights + '<em><img src="' + CHARS.yodomi.image + '" alt="ヨドミ"></em></div>' +
+        '<h2>あなたの診断結果が見つかりました</h2>' +
+        '<p>6つの光と、あなたの中のヨドミを読み解いています。</p>' +
+      '</main>' +
     '</div>');
     setTimeout(showResult, 1600);
   }
@@ -229,8 +242,10 @@
       return '<div class="nxdiag-score-row ' + (k === key ? 'top' : '') + '"><span><img src="' + c.image + '" alt="' + esc(c.name) + '"><em>' + c.name + 'との近さ</em></span><div><i style="width:' + pct + '%"></i></div><b>' + pct + '%</b></div>';
     }).join('');
     var profile = profileHtml(key);
+    var tags = resultTags(key).map(function(t) {
+      return '<span><b>' + esc(t[0]) + '</b><small>' + esc(t[1]) + '</small></span>';
+    }).join('');
     var cards = [
-      card('基本性格', txt.basic, true),
       card('友達関係', txt.friends, false),
       card('恋愛・距離感', txt.romance, false),
       card('予定の決め方', txt.decision, false),
@@ -241,14 +256,32 @@
       card('キャラプロフィール', profile, false, 'profile')
     ].join('');
     var shareCard = '<div class="nxdiag-share-card" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' + logoHtml() + '<img src="' + ch.image + '" alt="' + esc(ch.name) + '"><span>Nexcaキャラ診断</span><b>私は<br>' + ch.name + '型</b><em>' + ch.type + '</em><p>' + txt.copy + '</p><small>#Nexcaキャラ診断<br>あなたも診断してみる？</small></div>';
-    shell('<div class="nxdiag-result" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' +
-      headerHtml('診断結果', false) +
-      '<div class="nxdiag-result-hero">' + charOrb(key, 'result') + '<p class="nxdiag-result-kicker">あなたの診断結果</p><h1>' + ch.name + '型</h1><h2>' + ch.type + '</h2><p class="nxdiag-result-copy">' + esc(txt.copy) + '</p></div>' +
-      '<section class="nxdiag-score-card"><h3>キャラとの近さ</h3><p>点数ではなく、今の回答傾向として近いキャラを表示しています。</p>' + bars + '</section>' +
-      cards +
-      '<section class="nxdiag-result-section"><h3>共有カード</h3>' + shareCard + '</section>' +
-      '<div class="nxdiag-actions"><button onclick="NexcaDiagnosis.goGacha()">ガチャへ進む</button><button onclick="NexcaDiagnosis.goTown()">Nexca Townで続きを見る</button><button onclick="NexcaDiagnosis.share()">SNS共有</button><button onclick="NexcaDiagnosis.retry()">もう一度診断する</button></div>' +
+    shell('<div class="nxdiag-result nxdiag-view" style="--c:' + ch.color + ';--bg:' + ch.bg + '">' +
+      headerHtml('', false) +
+      '<main class="nxdiag-panel nxdiag-result-panel">' +
+        '<span class="nxdiag-age-pill">' + esc(window.age || localStorage.getItem('nx_age') || '高校生') + '</span>' +
+        '<section class="nxdiag-result-hero">' +
+          '<div class="nxdiag-result-text"><p class="nxdiag-result-kicker">あなたの診断結果</p><h1>' + ch.name + '<small>型</small></h1><h2>' + ch.type + '</h2><p class="nxdiag-result-copy">' + esc(txt.copy) + '</p><p class="nxdiag-result-desc">' + esc(txt.basic.split('\n')[0]) + '</p></div>' +
+          charOrb(key, 'result') +
+        '</section>' +
+        '<section class="nxdiag-score-card"><h3>キャラとの近さ</h3>' + bars + '</section>' +
+        '<section class="nxdiag-tags">' + tags + '</section>' +
+        '<section class="nxdiag-quick"><h3>つづきでわかること</h3><div><span>友達関係</span><span>恋愛・距離感</span><span>予定の決め方</span><span>あなたの中のヨドミ</span></div></section>' +
+        cards +
+        '<section class="nxdiag-share-wrap"><h3>共有カード</h3>' + shareCard + '</section>' +
+        '<div class="nxdiag-actions"><button class="main" onclick="NexcaDiagnosis.goGacha()">ガチャへ進む</button><button onclick="NexcaDiagnosis.goTown()">Nexca Townで続きを見る</button><button onclick="NexcaDiagnosis.share()">SNS共有</button><button onclick="NexcaDiagnosis.retry()">もう一度診断する</button></div>' +
+      '</main>' +
     '</div>');
+  }
+  function resultTags(key) {
+    return {
+      nexsuke: [['小さな一歩', '始める勇気'], ['発見重視', '新しい流れ'], ['低ハードル', '動きやすい']],
+      tsugiha: [['自分らしさ', 'しっくり感'], ['雰囲気重視', '世界観で選ぶ'], ['編集上手', '似合うを探す']],
+      komorebi: [['安心重視', '無理しない'], ['休憩上手', '整える時間'], ['落ち着き', '静かな心地よさ']],
+      irodori: [['盛り上がり重視', 'ワクワクが原動力'], ['思い出をつくりたい', '記憶に残る体験が好き'], ['変化に強い', '新しい流れを楽しめる']],
+      honori: [['会話重視', 'あたたかい時間'], ['食卓の余白', '一緒に味わう'], ['関係性', '自然な距離感']],
+      shirube: [['条件整理', '道が見える'], ['安心設計', '失敗しにくい'], ['予定化', '行ける形にする']]
+    }[key] || [];
   }
   function card(title, body, open, extra) {
     var yodomi = extra === 'yodomi' ? charOrb('yodomi', 'yodomi-card') : '';
