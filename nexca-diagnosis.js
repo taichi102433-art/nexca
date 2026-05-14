@@ -117,7 +117,7 @@
         '<div class="nxdiag-hero-mark" aria-hidden="true"></div>' +
         '<h1>Nexcaキャラ診断</h1>' +
         '<p class="nxdiag-sub">まだ知らない体験が、次の自分を連れてくる。</p>' +
-        '<p class="nxdiag-lead">35問で、あなたの「動き出し方」「人との距離感」「予定の決め方」を読み解く。6体のキャラから、今の自分に近いタイプを見つけよう。</p>' +
+        '<p class="nxdiag-lead">35問で、あなたの「動き出し方」「人との距離感」「予定の決め方」を読み解きます。</p>' +
         '<div class="nxdiag-meta"><span><b>35</b><small>問</small><em>質問数</em></span><span><b>5</b><small>分</small><em>所要時間</em></span><span><b>6</b><small>タイプ</small><em>診断タイプ</em></span></div>' +
         '<div class="nxdiag-char-grid">' + cards + '</div>' +
         '<p class="nxdiag-small">※結果はあなたを決めつけるものではなく、自己理解のヒントです。</p>' +
@@ -136,8 +136,10 @@
     var q = QUESTIONS[state.index];
     var pct = Math.round(((state.index + 1) / QUESTIONS.length) * 100);
     var lineKey = lineCharacter(q.line);
+    var previous = state.answers[state.index];
     var options = q.choices.map(function(choice, i) {
-      return '<button class="nxdiag-option" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + (i + 1) + '</span><b>' + esc(choice.text) + '</b><em>›</em></button>';
+      var selected = previous && previous.selectedText === choice.text;
+      return '<button class="nxdiag-option ' + (selected ? 'is-selected' : '') + '" onclick="NexcaDiagnosis.answer(' + i + ')"><span>' + (i + 1) + '</span><b>' + esc(choice.text) + '</b><em>›</em></button>';
     }).join('');
     shell('<div class="nxdiag-question-wrap nxdiag-view">' +
       headerHtml('', false) +
